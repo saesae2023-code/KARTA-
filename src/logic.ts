@@ -1,4 +1,4 @@
-import { POINTS, compareHalls, hallDistance } from './data';
+import { POINTS, hallDistance } from './data';
 import type { Point, PointState, StatusFilter } from './types';
 
 export const DEFAULT_STATE: PointState = { visit: 'pending', price: false, followUp: false, contact: false, notes: '' };
@@ -24,22 +24,6 @@ export function nearestHall(p: Point, current: string | null): string {
 export function boothsInHall(p: Point, hall: string): string[] {
   const list = p.booths.filter((b) => b.hall === hall).map((b) => b.label);
   return list.length ? list : p.booths.map((b) => b.label);
-}
-
-/**
- * Recommendation order: priority A, then B; inside the same priority points in
- * the current hall first, then by hall-number distance, then by Excel ID.
- */
-export function recommend(states: Record<number, PointState>, current: string | null): Point[] {
-  return POINTS.filter((p) => states[p.id].visit === 'pending').sort((a, b) => {
-    const pr = priorityRank(a) - priorityRank(b);
-    if (pr) return pr;
-    const ia = current && a.halls.includes(current) ? 0 : 1;
-    const ib = current && b.halls.includes(current) ? 0 : 1;
-    if (ia !== ib) return ia - ib;
-    const d = hallDistance(current, nearestHall(a, current)) - hallDistance(current, nearestHall(b, current));
-    return d || a.id - b.id;
-  });
 }
 
 export function matchesStatus(s: PointState, f: StatusFilter): boolean {
@@ -68,53 +52,6 @@ export function matchesQuery(p: Point, q: string): boolean {
     [p.company, p.category, p.products, p.hall, p.booth, p.halls.join(' '), p.mapGroup, String(p.id)].join(' '),
   );
   return hay.includes(n);
-}
-
-export interface RouteStop {
-  hall: string;
-  points: Point[];
-  primary: Set<number>;
-}
-
-/**
- * Groups points by hall and orders halls greedily from the current hall to the
- * nearest remaining one, so each pavilion is walked once. A point with booths
- * in several halls is assigned to the hall reached first; it is also listed as
- * "доп. стенд" in its other halls.
- */
-export function buildRoute(points: Point[], current: string | null): RouteStop[] {
-  const byHall = new Map<string, Point[]>();
-  for (const p of points) for (const h of p.halls) byHall.set(h, [...(byHall.get(h) ?? []), p]);
-  const remaining = Array.from(byHall.keys()).sort(compareHalls);
-  const order: string[] = [];
-  let at = current && byHall.has(current) ? current : null;
-  while (remaining.length) {
-    let next: string;
-    if (at === null) {
-      next = remaining[0];
-    } else {
-      const from = at;
-      next = remaining.slice().sort((a, b) => hallDistance(from, a) - hallDistance(from, b) || compareHalls(a, b))[0];
-    }
-    order.push(next);
-    remaining.splice(remaining.indexOf(next), 1);
-    at = next;
-  }
-  const assigned = new Set<number>();
-  return order.map((hall) => {
-    const pts = (byHall.get(hall) ?? []).slice().sort((a, b) => {
-      const pr = priorityRank(a) - priorityRank(b);
-      return pr || boothsInHall(a, hall)[0].localeCompare(boothsInHall(b, hall)[0]) || a.id - b.id;
-    });
-    const primary = new Set<number>();
-    for (const p of pts) {
-      if (!assigned.has(p.id)) {
-        assigned.add(p.id);
-        primary.add(p.id);
-      }
-    }
-    return { hall, points: pts, primary };
-  });
 }
 
 /** Extract phone numbers present in the text (only what is written, nothing guessed). */

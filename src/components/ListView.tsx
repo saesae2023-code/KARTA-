@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { ALL_CATEGORIES, ALL_GROUPS, ALL_HALLS, ALL_PRIORITIES, POINTS } from '../data';
 import { matchesQuery, matchesStatus, priorityRank } from '../logic';
 import type { PointState, StatusFilter } from '../types';
-import { PriorityBadge, StatusPills } from './common';
+import { GroupTag, PriorityBadge, StatusPills } from './common';
+import { groupColor } from '../groups';
 
 export interface Filters {
   q: string;
@@ -91,13 +92,19 @@ export function ListView({ states, filters, setFilters, onOpen }: Props) {
       {list.map((p) => {
         const s = states[p.id];
         return (
-          <button key={p.id} className={`row ${s.visit !== 'pending' ? 'row-done' : ''}`} onClick={() => onOpen(p.id)}>
+          <button
+            key={p.id}
+            className={`row ${s.visit !== 'pending' ? 'row-done' : ''}`}
+            style={{ borderLeftColor: groupColor(p.mapGroup) }}
+            onClick={() => onOpen(p.id)}
+          >
             <PriorityBadge p={p} />
             <span className="row-main">
               <span className="row-title">{p.company}</span>
               <span className="muted small">
                 #{p.id} · {p.category}
               </span>
+              <GroupTag group={p.mapGroup} short />
               <StatusPills s={s} />
             </span>
             <span className="row-loc">

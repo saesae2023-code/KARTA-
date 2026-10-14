@@ -1,90 +1,118 @@
-import { useMemo, useState } from 'react';
-import { POINTS } from '../data';
-import { boothsInHall, buildRoute } from '../logic';
+import { groupColor } from '../groups';
+import { transitions, type Plan, type RouteMode } from '../route';
 import type { PointState } from '../types';
-import { PriorityBadge, StatusPills } from './common';
+import { areaOf, splitHall } from '../venue';
+import { GroupTag, PriorityBadge } from './common';
+import { RouteModeSwitch } from './RouteModeSwitch';
 
 interface Props {
+  plan: Plan;
   states: Record<number, PointState>;
   current: string | null;
+  mode: RouteMode;
+  onMode: (m: RouteMode) => void;
   onOpen: (id: number) => void;
   onPickHall: () => void;
+  onShowMap: (hall: string) => void;
 }
 
-export function RouteView({ states, current, onOpen, onPickHall }: Props) {
-  const [onlyA, setOnlyA] = useState(false);
-  const [showDone, setShowDone] = useState(false);
+export function areaLabel(hall: string): string {
+  return areaOf(splitHall(hall).building)?.label ?? 'Area ?';
+}
 
-  const route = useMemo(() => {
-    const pts = POINTS.filter(
-      (p) => (showDone || states[p.id].visit === 'pending') && (!onlyA || p.priority === 'A'),
-    );
-    return buildRoute(pts, current);
-  }, [states, current, onlyA, showDone]);
-
-  const stops = route.filter((r) => r.primary.size > 0);
+export function RouteView({ plan, states, current, mode, onMode, onOpen, onPickHall, onShowMap }: Props) {
+  const { stops, steps } = plan;
+  const first = stops[0];
+  const here = first && first.hall === current ? first : undefined;
+  const nextStop = here ? stops[1] : first;
+  const cur = steps[0];
+  const nxt = steps[1];
+  let n = 0;
 
   return (
     <div className="route">
-      <div className="route-head">
-        <p className="muted small">
-          Точки сгруппированы по Hall. Порядок павильонов — от текущего Hall к ближайшему по номеру (координат стендов в
-          базе нет, поэтому порядок Booth внутри Hall — A→B, затем по номеру стенда).
-        </p>
-        <div className="toggles">
-          <button className={`toggle ${onlyA ? 'on' : ''}`} onClick={() => setOnlyA(!onlyA)}>
-            Только A
+      <RouteModeSwitch mode={mode} onChange={onMode} />
+
+      <div className="route-now">
+        <button className="rn-cell rn-hall" onClick={onPickHall}>
+          <span className="rn-label">Текущий Hall</span>
+          <span className="rn-big">{current ?? '—'}</span>
+          <span className="rn-sub">{current ? `${here ? here.points.length : 0} ост. здесь` : 'выбрать'}</span>
+        </button>
+        <button className="rn-cell" onClick={() => nextStop && onShowMap(nextStop.hall)} disabled={!nextStop}>
+          <span className="rn-label">Следующий Hall</span>
+          <span className="rn-big">{nextStop?.hall ?? '—'}</span>
+          <span className="rn-sub">{nextStop ? `${nextStop.points.length} точ. · ${areaLabel(nextStop.hall)}` : 'нет'}</span>
+        </button>
+        {cur && (
+          <button className="rn-cell rn-wide" style={{ borderLeftColor: groupColor(cur.point.mapGroup) }} onClick={() => onOpen(cur.point.id)}>
+            <span className="rn-label">Текущая точка</span>
+            <span className="rn-point">
+              <b>{cur.hall} → {cur.booths.join('; ')}</b> {cur.point.company}
+            </span>
           </button>
-          <button className={`toggle ${showDone ? 'on' : ''}`} onClick={() => setShowDone(!showDone)}>
-            Показать отработанные
+        )}
+        {nxt && (
+          <button className="rn-cell rn-wide" style={{ borderLeftColor: groupColor(nxt.point.mapGroup) }} onClick={() => onOpen(nxt.point.id)}>
+            <span className="rn-label">Следующая точка</span>
+            <span className="rn-point">
+              <b>{nxt.hall} → {nxt.booths.join('; ')}</b> {nxt.point.company}
+            </span>
           </button>
-          <button className="toggle" onClick={onPickHall}>
-            Старт: {current ?? 'выбрать Hall'}
-          </button>
-        </div>
-        <div className="route-summary">
-          <b>{stops.length}</b> павильонов · <b>{stops.reduce((n, r) => n + r.primary.size, 0)}</b> точек ·{' '}
-          <b>{Math.max(0, stops.length - (current && stops[0]?.hall === current ? 1 : 0))}</b> переходов
-        </div>
+        )}
       </div>
 
-      {route.length === 0 && <div className="empty">Нет точек для маршрута.</div>}
+      <div className="route-summary">
+        <b>{steps.length}</b> точек · <b>{stops.length}</b> Hall · <b>{transitions(stops, current)}</b> переходов
+        <p className="muted small">
+          Сначала закрываем текущий Hall, затем идём в ближайший по схеме комплекса. Внутри Hall — по порядку стендов. Привязка
+          только к Hall: координат стендов нет.
+        </p>
+      </div>
 
-      <ol className="stops">
-        {route.map((stop) => {
-          const isPrimaryEmpty = stop.primary.size === 0;
-          return (
-            <li key={stop.hall} className={`stop ${stop.hall === current ? 'stop-current' : ''} ${isPrimaryEmpty ? 'stop-secondary' : ''}`}>
-              <div className="stop-head">
-                <span className="stop-hall">Hall {stop.hall}</span>
-                <span className="muted small">
-                  {stop.primary.size} точ.
-                  {stop.points.length > stop.primary.size && ` + ${stop.points.length - stop.primary.size} доп. стенд`}
-                  {stop.hall === current && ' · вы здесь'}
-                </span>
-              </div>
-              {stop.points.map((p) => (
-                <button
-                  key={p.id}
-                  className={`row ${stop.primary.has(p.id) ? '' : 'row-extra'} ${states[p.id].visit !== 'pending' ? 'row-done' : ''}`}
-                  onClick={() => onOpen(p.id)}
-                >
-                  <PriorityBadge p={p} />
+      {stops.length === 0 && <div className="empty">Нет точек для маршрута.</div>}
+
+      <ol className="chain">
+        {stops.map((stop, i) => (
+          <li key={stop.hall + stop.segment + i} className={`chain-stop ${stop.hall === current ? 'is-current' : ''} ${stop === nextStop ? 'is-next' : ''}`}>
+            <div className="chain-head">
+              <span className="chain-num">{i + 1}</span>
+              <span className="chain-hall">Hall {stop.hall}</span>
+              <span className="muted small">
+                {areaLabel(stop.hall)} · {stop.points.length} точ.
+                {stop.segment === 'B' && ' · этап B'}
+                {stop.hall === current && ' · вы здесь'}
+              </span>
+              <button className="map-btn" onClick={() => onShowMap(stop.hall)} aria-label={`Hall ${stop.hall} на карте`}>
+                🗺
+              </button>
+            </div>
+            {stop.points.map((p) => {
+              n++;
+              const booths = p.booths.filter((b) => b.hall === stop.hall).map((b) => b.label);
+              return (
+                <button key={p.id} className="row chain-row" style={{ borderLeftColor: groupColor(p.mapGroup) }} onClick={() => onOpen(p.id)}>
+                  <span className="step-num">{n}</span>
                   <span className="row-main">
-                    <span className="row-title">{p.company}</span>
-                    <span className="muted small">
-                      {stop.primary.has(p.id) ? p.category : `доп. стенд · основной визит в Hall ${route.find((r) => r.primary.has(p.id))?.hall}`}
+                    <span className="row-title">
+                      <PriorityBadge p={p} /> {p.company}
                     </span>
-                    <StatusPills s={states[p.id]} />
+                    <GroupTag group={p.mapGroup} short />
                   </span>
                   <span className="row-loc">
-                    <b>{boothsInHall(p, stop.hall).join(' ')}</b>
+                    <b>{(booths.length ? booths : [p.booth]).join(' ')}</b>
+                    {states[p.id].followUp && <span className="small">↻</span>}
                   </span>
                 </button>
-              ))}
-            </li>
-          );
-        })}
+              );
+            })}
+            {i < stops.length - 1 && (
+              <div className="chain-arrow">
+                ↓ {stops[i + 1].hall === stop.hall ? 'этап B, тот же Hall' : `в Hall ${stops[i + 1].hall}`}
+              </div>
+            )}
+          </li>
+        ))}
       </ol>
     </div>
   );

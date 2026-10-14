@@ -1,7 +1,7 @@
 import { COLUMNS } from '../data';
 import { emails, isUrl, phoneLinks, wechatId } from '../logic';
 import type { Point, PointState } from '../types';
-import { HallBooth, PriorityBadge, SameBoothNote, StatusActions } from './common';
+import { GroupTag, HallBooth, PriorityBadge, SameBoothNote, StatusActions } from './common';
 
 interface Props {
   p: Point;
@@ -13,6 +13,7 @@ interface Props {
   onToggle: (key: 'price' | 'followUp' | 'contact') => void;
   onReset: () => void;
   onNotes: (notes: string) => void;
+  onShowMap: () => void;
 }
 
 function Linkish({ text }: { text: string }) {
@@ -76,14 +77,14 @@ export function Contacts({ p }: { p: Point }) {
   );
 }
 
-export function PointDetail({ p, s, current, onClose, onVisited, onSkip, onToggle, onReset, onNotes }: Props) {
+export function PointDetail({ p, s, current, onClose, onVisited, onSkip, onToggle, onReset, onNotes, onShowMap }: Props) {
   return (
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet sheet-tall" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={p.company}>
         <div className="sheet-head">
           <div>
             <div className="eyebrow">
-              <PriorityBadge p={p} /> #{p.id} · {p.mapGroup}
+              <PriorityBadge p={p} /> #{p.id}
             </div>
             <h2>{p.company}</h2>
             <div className="muted">{p.category}</div>
@@ -94,6 +95,12 @@ export function PointDetail({ p, s, current, onClose, onVisited, onSkip, onToggl
         </div>
 
         <HallBooth p={p} current={current} />
+        <div className="tag-row">
+          <GroupTag group={p.mapGroup} />
+          <button className="btn-link" onClick={onShowMap}>
+            🗺 Показать на карте
+          </button>
+        </div>
         <SameBoothNote p={p} />
 
         <section className="check-box">

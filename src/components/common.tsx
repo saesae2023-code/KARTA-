@@ -1,9 +1,24 @@
 import type { Point, PointState } from '../types';
 import { boothsInHall, nearestHall } from '../logic';
 import { SAME_BOOTH } from '../data';
+import { groupColor } from '../groups';
 
 export function PriorityBadge({ p }: { p: Point }) {
   return <span className={`prio prio-${p.priority}`}>{p.priority}</span>;
+}
+
+export function GroupTag({ group, short }: { group: string; short?: boolean }) {
+  const c = groupColor(group);
+  return (
+    <span className="group-tag" style={{ color: c, borderColor: c }}>
+      <span className="group-dot" style={{ background: c }} />
+      {short ? group.split(' / ')[0] : group}
+    </span>
+  );
+}
+
+export function GroupDot({ group }: { group: string }) {
+  return <span className="group-dot" style={{ background: groupColor(group) }} title={group} />;
 }
 
 export function StatusPills({ s }: { s: PointState }) {
@@ -19,12 +34,12 @@ export function StatusPills({ s }: { s: PointState }) {
 }
 
 /** The big, most visible Hall → Booth block. */
-export function HallBooth({ p, current, size = 'xl' }: { p: Point; current: string | null; size?: 'xl' | 'md' }) {
-  const hall = nearestHall(p, current);
+export function HallBooth({ p, current, hall: forced, size = 'xl' }: { p: Point; current: string | null; hall?: string; size?: 'xl' | 'md' }) {
+  const hall = forced ?? nearestHall(p, current);
   const booths = boothsInHall(p, hall);
   const others = p.halls.filter((h) => h !== hall);
   return (
-    <div className={`hallbooth hallbooth-${size}`}>
+    <div className={`hallbooth hallbooth-${size}`} style={{ borderLeft: `8px solid ${groupColor(p.mapGroup)}` }}>
       <div className="hb-hall">
         <span className="hb-label">HALL</span>
         <span className="hb-value">{hall}</span>
@@ -34,7 +49,7 @@ export function HallBooth({ p, current, size = 'xl' }: { p: Point; current: stri
         <span className="hb-label">BOOTH</span>
         {booths.map((b) => (
           <span key={b} className="hb-value">
-            {b}
+            {b.replace(/-/g, '\u2011')}
           </span>
         ))}
       </div>

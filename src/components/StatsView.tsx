@@ -4,7 +4,7 @@ import { toCsv } from '../logic';
 import { computeStats } from '../stats';
 import type { Persisted } from '../store';
 import type { PointState } from '../types';
-import { PriorityBadge } from './common';
+import { GroupDot, PriorityBadge } from './common';
 
 interface Props {
   states: Record<number, PointState>;
@@ -70,7 +70,9 @@ export function StatsView({ states, snapshot, onOpen, onImport, onReset }: Props
             const ps = POINTS.filter((p) => p.mapGroup === g);
             return (
               <tr key={g}>
-                <td>{g}</td>
+                <td>
+                  <GroupDot group={g} /> {g}
+                </td>
                 <td>{ps.length}</td>
                 <td>{ps.filter((p) => states[p.id].visit === 'visited').length}</td>
                 <td>{ps.filter((p) => states[p.id].visit === 'pending').length}</td>
@@ -129,7 +131,7 @@ export function StatsView({ states, snapshot, onOpen, onImport, onReset }: Props
             try {
               const parsed = JSON.parse(await f.text()) as Persisted;
               if (!parsed || typeof parsed.states !== 'object') throw new Error('bad');
-              const merged: Persisted = { currentHall: parsed.currentHall ?? null, states: { ...states } };
+              const merged: Persisted = { ...snapshot, currentHall: parsed.currentHall ?? null, states: { ...states } };
               for (const p of POINTS) if (parsed.states[p.id]) merged.states[p.id] = { ...states[p.id], ...parsed.states[p.id] };
               onImport(merged);
               alert('Статусы восстановлены.');

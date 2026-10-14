@@ -1,3 +1,4 @@
+import { hallCost } from './venue';
 import dataset from './data/points.json';
 import type { Point } from './types';
 
@@ -36,13 +37,7 @@ export function compareHalls(a: string, b: string): number {
   return pa.building - pb.building || pa.floor - pb.floor;
 }
 
-/**
- * Rough walking-distance proxy based only on hall numbers (no coordinates are
- * known): different building costs more than different floor.
- */
+/** Walking-cost proxy between halls, based on the schematic complex topology (see venue.ts). */
 export function hallDistance(a: string | null, b: string): number {
-  if (!a) return 0;
-  const pa = parseHall(a);
-  const pb = parseHall(b);
-  return Math.abs(pa.building - pb.building) * 10 + Math.abs(pa.floor - pb.floor);
+  return hallCost(a, b);
 }
