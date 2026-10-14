@@ -403,4 +403,15 @@ main { padding: 12px 16px; }
 .sheet-hall { font-size: 2rem; }
 .sheet-list { margin-top: 6px; }
 .chip-extra .chip-bg { fill: var(--surface-2); stroke: var(--b); stroke-dasharray: 3 3; }
-.chip-extra .chip-count { fill: var(--muted); font-size: 11px; }
+.chip-extra .chip-count { fill: var(--muted); font-size: 9px; }
+.promenade { fill: var(--gold); opacity: 0.35; }
+.promenade-label { font-size: 9px; font-weight: 800; fill: var(--text); letter-spacing: 0.06em; }
+.corridor { fill: var(--gold); opacity: 0.5; }
+.corridor-label { font-size: 9px; font-weight: 800; fill: var(--muted); }
+.crossing { stroke: var(--muted); stroke-width: 3; stroke-dasharray: 2 5; stroke-linecap: round; }
+.crossing-label { font-size: 10px; font-weight: 700; fill: var(--muted); }
+.venue-notes { list-style: none; padding: 0; margin: 0 0 12px; font-size: 0.85rem; }
+.venue-notes li { padding: 6px 0; border-bottom: 1px solid var(--border); }
+.venue-notes .basis { font-weight: 800; font-size: 0.72rem; padding: 1px 6px; border-radius: 6px; margin-right: 4px; white-space: nowrap; }
+.venue-notes .official .basis { background: var(--ok-soft); color: var(--ok); }
+.venue-notes .approx .basis { background: var(--follow-soft); color: var(--follow); }

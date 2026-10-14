@@ -3,7 +3,7 @@ import { ALL_HALLS, POINTS, compareHalls } from '../data';
 import { GROUP_LEGEND, groupColor } from '../groups';
 import type { Plan } from '../route';
 import type { Point, PointState } from '../types';
-import { AREAS, BUILDING_POS, splitHall } from '../venue';
+import { AB_JUNCTION_X, AREAS, BUILDING_POS, VENUE_NOTES, splitHall } from '../venue';
 
 interface Props {
   plan: Plan;
@@ -92,17 +92,26 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
 
   // Route polyline: current hall → stop 1 → stop 2 …
   const pathHalls = [...(current && ALL_HALLS.includes(current) ? [current] : []), ...plan.stops.map((s) => s.hall)];
-  const pts = pathHalls
+  // Moves between the north row and Area C go through the road crossing, not straight across the map.
+  const crossTop = `${PAD + AB_JUNCTION_X * U + BW / 2},${Y0 + BH - 6}`;
+  const crossBottom = `${buildingBox(15).x + BW / 2},${Y1 - 30}`;
+  const pts: string[] = [];
+  pathHalls
     .filter((h, i) => h !== pathHalls[i - 1])
-    .map((h) => {
+    .forEach((h, i, arr) => {
       const c = chipBox(h);
-      return `${c.x + c.w / 2},${c.y + c.h / 2}`;
+      if (i > 0) {
+        const r0 = BUILDING_POS[splitHall(arr[i - 1]).building]?.row;
+        const r1 = BUILDING_POS[splitHall(h).building]?.row;
+        if (r0 !== undefined && r1 !== undefined && r0 !== r1) pts.push(...(r0 === 0 ? [crossTop, crossBottom] : [crossBottom, crossTop]));
+      }
+      pts.push(`${c.x + c.w / 2},${c.y + c.h / 2}`);
     });
 
   return (
     <div className="map">
       <div className="map-toolbar">
-        <span className="small muted">Схема комплекса, не в масштабе · точки привязаны к Hall</span>
+        <span className="small muted">Схема по официальному layout, не в масштабе · точки привязаны к Hall</span>
         <button className="toggle" onClick={() => setFit(!fit)}>
           {fit ? '🔍 Крупно' : '⤢ Весь комплекс'}
         </button>
@@ -130,8 +139,26 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
             );
           })}
           <rect x={PAD} y={Y0 + BH + 18} width={W - PAD * 2} height={24} className="road" />
-          <text x={W / 2} y={Y0 + BH + 35} className="road-label" textAnchor="middle">
-            Xingang Dong Rd · переход между зонами A/B и C
+          <text x={PAD + 12} y={Y0 + BH + 35} className="road-label">
+            Xingang Dong Rd
+          </text>
+
+          {/* Pearl River Promenade: east–west through Areas A and B (official) */}
+          <rect x={buildingBox(1).x} y={Y0 + BH - 12} width={buildingBox(13).x + BW - buildingBox(1).x} height={12} rx={6} className="promenade" />
+          <text x={buildingBox(4).x} y={Y0 + BH - 2.5} className="promenade-label">
+            Pearl River Promenade
+          </text>
+
+          {/* Connecting Corridor D ↔ A (official) */}
+          <rect x={buildingBox(20).x + BW} y={Y0 + 48} width={buildingBox(1).x - buildingBox(20).x - BW} height={16} className="corridor" />
+          <text x={(buildingBox(20).x + BW + buildingBox(1).x) / 2} y={Y0 + 44} textAnchor="middle" className="corridor-label">
+            Corridor
+          </text>
+
+          {/* Xingang Dong Rd crossing (position approximate) */}
+          <line x1={PAD + AB_JUNCTION_X * U + BW / 2} y1={Y0 + BH} x2={buildingBox(15).x + BW / 2} y2={Y1 - 30} className="crossing" />
+          <text x={PAD + AB_JUNCTION_X * U + BW / 2 + 8} y={Y0 + BH + 58} className="crossing-label">
+            ≈ переход A/B ↔ C
           </text>
 
           {AREAS.flatMap((a) =>
@@ -229,10 +256,14 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
           );
         })}
       </div>
-      <p className="muted small">
-        Источник схемы: открытые описания комплекса (Area A — Hall 1–8, B — 9–13 к северу от Xingang Dong Rd, C — 14–16 к югу,
-        D — 17–20 к западу от A). Порядок корпусов внутри зон — схематичный; сверяйте с официальным планом сессии.
-      </p>
+      <h3>Геометрия комплекса</h3>
+      <ul className="venue-notes">
+        {VENUE_NOTES.map((n) => (
+          <li key={n.text} className={n.basis}>
+            <span className="basis">{n.basis === 'official' ? '✓ official' : '≈ approx'}</span> {n.text}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
