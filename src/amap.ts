@@ -22,7 +22,7 @@ declare global {
 export const AMAP_ENDPOINT = 'https://sg-webapi.opnavi.com/maps';
 export const AMAP_KEY: string = (import.meta.env.VITE_AMAP_KEY ?? '').trim();
 const SECURITY_KEY: string = (import.meta.env.VITE_AMAP_SECURITY_KEY ?? import.meta.env.VITE_AMAP_SECURITY_CODE ?? '').trim();
-export const AMAP_PLUGINS = ['AMap.Walking', 'AMap.PlaceSearch', 'AMap.Scale'];
+export const AMAP_PLUGINS = ['AMap.Walking', 'AMap.PlaceSearch', 'AMap.AutoComplete', 'AMap.Geocoder', 'AMap.Scale'];
 export const MAP_OPTIONS = { zoom: 16, showOversea: true, center: [113.354, 23.103] as [number, number] };
 
 /** Basemap rendering mode (temporary switch while diagnosing the blank basemap). */

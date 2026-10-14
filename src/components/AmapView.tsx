@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AMAP_KEY, createMap, describe, loadAMap, loadRender, mapTiming, saveRender, serviceError, type AMapDiag, type AMapNS, type RenderMode } from '../amap';
 import { net, netSummary, webglSupport } from '../amapDiag';
 import { haversine, metersBetween, wgs84ToGcj02, type LngLat } from '../coords';
-import { HALL_GEO_BY_ID, WALK_M_PER_MIN, type HallGeo } from '../geo';
+import { HALL_GEO, HALL_GEO_BY_ID, WALK_M_PER_MIN, type HallGeo } from '../geo';
 import { groupColor } from '../groups';
 import { COMPLEX_GCJ, HALL_AREA, areaHits, discoverHalls, hallHits, toHallGeo, type PoiCache } from '../poi';
 import type { Plan } from '../route';
@@ -31,6 +31,9 @@ interface Props {
 }
 
 type Status = 'nokey' | 'loading' | 'ready' | 'error';
+
+/** Exhibition halls 1–20 (official layout). */
+const ALL_BUILDINGS = Array.from({ length: 20 }, (_, i) => String(i + 1));
 
 interface Walk {
   key: string;
@@ -124,7 +127,8 @@ export function AmapView(props: Props) {
         map.current.addControl(new AMap.Scale());
         setTimeout(() => map.current?.resize?.(), 300);
         setStatus('ready');
-        if (!pois) runSearch(AMap);
+        // Re-run when there is no result yet or it predates the service probe.
+        if (!pois || !pois.services) runSearch(AMap);
       })
       .catch((e: unknown) => {
         if (destroyed) return;
@@ -227,6 +231,19 @@ export function AmapView(props: Props) {
       else if (walk?.failed)
         layer.push(new AMap.Polyline({ path: [user, target.pos], strokeColor: '#2563eb', strokeWeight: 3, strokeStyle: 'dashed', strokeDasharray: [2, 8], zIndex: 90 }));
     }
+    // Every hall with a confirmed coordinate, also outside the remaining route (grey).
+    const routed = new Set(markerData.flatMap((d) => d.halls.map(nodeOfHall)));
+    for (const b of ALL_BUILDINGS) {
+      if (routed.has(b)) continue;
+      const loc = locate(b + '.1', pois, marks);
+      if (!loc || loc.level !== 'hall') continue;
+      const el = document.createElement('button');
+      el.className = 'geo-marker idle';
+      el.innerHTML = `<b>${b}</b>`;
+      el.title = `Hall ${b} · ${loc.source}`;
+      el.onclick = () => onHall(b + '.1');
+      layer.push(new AMap.Marker({ position: loc.pos, content: el, anchor: 'center', zIndex: 40 }));
+    }
     for (const d of markerData) {
       if (!d.loc) continue;
       const el = document.createElement('button');
@@ -293,6 +310,7 @@ export function AmapView(props: Props) {
       : leg;
 
   const hallsFound = hallHits(pois);
+  const permanent = HALL_GEO.filter((h) => ALL_BUILDINGS.includes(h.hall));
   const areasFound = areaHits(pois);
   const routedBuildings = Array.from(new Set(plan.stops.map((s) => nodeOfHall(s.hall))));
   const marked = new Set(marks.map((m) => m.hall));
@@ -376,8 +394,23 @@ export function AmapView(props: Props) {
         <span><i className="k k-order">1</i> шаг · цвет = товарная группа</span>
       </div>
       <div className="poi-panel small">
-        <b>Координаты Hall</b>
-        <span> · отмечено на месте: {marks.length ? marks.map((m) => m.hall).sort((a, b) => +a - +b).join(', ') : 'нет'}</span>
+        <b>Координаты Hall 1–20</b>
+        <span>
+          {' '}
+          · постоянные (встроены в приложение): {permanent.length}/20
+          {permanent.length < 20 && <span className="muted"> — нет у Hall {ALL_BUILDINGS.filter((b) => !HALL_GEO_BY_ID.has(b)).join(', ')}</span>}
+        </span>
+        {pois?.services && (
+          <span className="svc-list">
+            {pois.services.map((sv) => (
+              <span key={sv.service} className={sv.ok ? 'svc ok' : 'svc no'}>
+                {sv.ok ? '✓' : '✕'} {sv.service}
+                {!sv.ok && `: ${sv.info}`}
+              </span>
+            ))}
+          </span>
+        )}
+        <span> · временно (fallback), отмечено на месте: {marks.length ? marks.map((m) => m.hall).sort((a, b) => +a - +b).join(', ') : 'нет'}</span>
         {searching ? (
           <span> · ищу…</span>
         ) : pois ? (
@@ -390,7 +423,7 @@ export function AmapView(props: Props) {
             {missing.length > 0 && (
               <span className="muted">
                 {' '}
-                · ещё без координат: {missing.join(', ')} — встаньте в Hall и нажмите «📍 Отметить»
+                · без координат на карте сейчас: {missing.join(', ')}
               </span>
             )}
             {pois.errors.length > 0 && <span className="muted"> · ошибки: {pois.errors.slice(0, 2).join('; ')}</span>}
@@ -413,7 +446,7 @@ export function AmapView(props: Props) {
                 void exportFile('hallGeo.json', JSON.stringify(rows, null, 1));
               }}
             >
-              Скачать hallGeo.json
+              Выгрузить hallGeo.json для встраивания
             </button>
           )}
         </span>

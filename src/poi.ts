@@ -25,6 +25,7 @@ export interface PoiCache {
   hits: PoiHit[];
   queries: number;
   errors: string[];
+  services?: ServiceProbe[];
 }
 
 /** Official hall → area mapping (Phase 1 floor map). */
@@ -71,30 +72,109 @@ function lngLatOf(loc: { lng?: number; lat?: number; getLng?: () => number; getL
   return [loc.lng ?? loc.getLng!(), loc.lat ?? loc.getLat!()];
 }
 
+type RawPoi = { name: string; id: string; type?: string; location: unknown };
+export type ServiceName = 'PlaceSearch' | 'AutoComplete' | 'Geocoder' | 'Walking';
+export interface ServiceProbe {
+  service: ServiceName;
+  ok: boolean;
+  info: string;
+}
+
+/** Calls an AMap service with a callback; resolves on timeout too (some errors never call back). */
+function call<T>(run: (cb: (status: string, result: T) => void) => void, ms = 8000): Promise<{ status: string; result: T | string }> {
+  return new Promise((resolve) => {
+    const t = setTimeout(() => resolve({ status: 'timeout', result: 'нет ответа' }), ms);
+    try {
+      run((status, result) => {
+        clearTimeout(t);
+        resolve({ status, result });
+      });
+    } catch (e) {
+      clearTimeout(t);
+      resolve({ status: 'error', result: (e as Error).message });
+    }
+  });
+}
+
+const infoOf = (status: string, result: unknown) =>
+  status === 'complete' ? 'OK' : status === 'no_data' ? 'нет данных' : typeof result === 'string' ? result : String((result as { info?: string })?.info ?? status);
+
+const DENIED = /INSUFFICIENT_PRIVILEGES|INVALID_USER|USERKEY|SERVICE_NOT|NOT_AVAILABLE|DAILY_QUERY|ACCESS_TOO|UNKNOWN_ERROR|timeout|нет ответа/i;
+
+/**
+ * Hall coordinates from whatever AMap service the key is allowed to use:
+ * PlaceSearch first (one probe query — if it is denied the other queries are skipped), then AutoComplete tips
+ * (they carry coordinates), Geocoder for the complex itself, and a Walking probe. Only returned coordinates are kept.
+ */
 export async function discoverHalls(AMap: AMapNS): Promise<PoiCache> {
-  const ps = new AMap.PlaceSearch({ city: '广州', citylimit: true, pageSize: 25, pageIndex: 1, extensions: 'all' });
   const hits = new Map<string, PoiHit>();
   const errors: string[] = [];
-  for (const keyword of KEYWORDS) {
-    const pois = await new Promise<{ name: string; id: string; type?: string; location: unknown }[]>((resolve) =>
-      ps.search(keyword, (status: string, result: { poiList?: { pois?: unknown[] }; info?: string } | string) => {
-        if (status === 'complete' && typeof result === 'object') resolve((result.poiList?.pois ?? []) as never);
-        else {
-          if (status === 'error') errors.push(`${keyword}: ${typeof result === 'string' ? result : result?.info ?? 'error'}`);
-          resolve([]);
-        }
-      }),
-    );
-    for (const p of pois) {
-      if (!p.location || hits.has(p.id)) continue;
-      const gcj = lngLatOf(p.location as never);
-      if (metersBetween(gcj, COMPLEX_GCJ) > MAX_DIST_M) continue;
-      const c = classify(p.name, keyword);
-      if (!c) continue;
-      hits.set(p.id, { ...c, name: p.name, id: p.id, type: p.type ?? '', gcj, wgs: gcj02ToWgs84(gcj), keyword });
+  const services: ServiceProbe[] = [];
+  let queries = 0;
+  const add = (p: RawPoi, keyword: string) => {
+    if (!p.location || typeof p.location === 'string' || hits.has(p.id || p.name)) return;
+    const gcj = lngLatOf(p.location as never);
+    if (!Number.isFinite(gcj[0]) || metersBetween(gcj, COMPLEX_GCJ) > MAX_DIST_M) return;
+    const c = classify(p.name, keyword);
+    if (!c) return;
+    hits.set(p.id || p.name, { ...c, name: p.name, id: p.id || '', type: p.type ?? '', gcj, wgs: gcj02ToWgs84(gcj), keyword });
+  };
+
+  // 1) PlaceSearch
+  const ps = new AMap.PlaceSearch({ city: '广州', citylimit: true, pageSize: 25, pageIndex: 1, extensions: 'all' });
+  const psRun = (k: string) => call<{ poiList?: { pois?: RawPoi[] } }>((cb) => ps.search(k, cb));
+  const probe = await psRun(KEYWORDS[1]);
+  queries++;
+  const psOk = probe.status === 'complete' || probe.status === 'no_data';
+  services.push({ service: 'PlaceSearch', ok: psOk, info: infoOf(probe.status, probe.result) });
+  if (psOk) {
+    if (typeof probe.result === 'object') (probe.result.poiList?.pois ?? []).forEach((p) => add(p, KEYWORDS[1]));
+    for (const k of KEYWORDS.filter((x) => x !== KEYWORDS[1])) {
+      const r = await psRun(k);
+      queries++;
+      if (r.status === 'complete' && typeof r.result === 'object') (r.result.poiList?.pois ?? []).forEach((p) => add(p, k));
+      else if (r.status !== 'no_data') errors.push(`PlaceSearch «${k}»: ${infoOf(r.status, r.result)}`);
     }
   }
-  return { at: new Date().toISOString(), hits: Array.from(hits.values()), queries: KEYWORDS.length, errors };
+
+  // 2) AutoComplete (input tips with coordinates)
+  if (AMap.AutoComplete) {
+    const ac = new AMap.AutoComplete({ city: '广州', citylimit: true });
+    const acRun = (k: string) => call<{ tips?: RawPoi[] }>((cb) => ac.search(k, cb));
+    const r0 = await acRun(KEYWORDS[1]);
+    queries++;
+    const acOk = r0.status === 'complete' || r0.status === 'no_data';
+    services.push({ service: 'AutoComplete', ok: acOk, info: infoOf(r0.status, r0.result) });
+    if (acOk) {
+      if (typeof r0.result === 'object') (r0.result.tips ?? []).forEach((p) => add(p, KEYWORDS[1]));
+      for (const k of KEYWORDS.filter((x) => x !== KEYWORDS[1])) {
+        const r = await acRun(k);
+        queries++;
+        if (r.status === 'complete' && typeof r.result === 'object') (r.result.tips ?? []).forEach((p) => add(p, k));
+        else if (r.status !== 'no_data' && DENIED.test(infoOf(r.status, r.result))) break;
+      }
+    }
+  } else services.push({ service: 'AutoComplete', ok: false, info: 'плагин не загружен' });
+
+  // 3) Geocoder — complex level only (addresses, not halls)
+  if (AMap.Geocoder) {
+    const gc = new AMap.Geocoder({ city: '广州' });
+    const r = await call<{ geocodes?: { location: unknown; formattedAddress?: string }[] }>((cb) => gc.getLocation('中国进出口商品交易会展馆', cb));
+    queries++;
+    services.push({ service: 'Geocoder', ok: r.status === 'complete' || r.status === 'no_data', info: infoOf(r.status, r.result) });
+  } else services.push({ service: 'Geocoder', ok: false, info: 'плагин не загружен' });
+
+  // 4) Walking probe between the two Line 8 stations next to the complex (public coordinates).
+  if (AMap.Walking) {
+    const w = new AMap.Walking({ hideMarkers: true });
+    const a = wgs84ToGcj02([113.35145, 23.10123]);
+    const b = wgs84ToGcj02([113.36117, 23.10104]);
+    const r = await call((cb) => w.search(new AMap.LngLat(a[0], a[1]), new AMap.LngLat(b[0], b[1]), cb));
+    services.push({ service: 'Walking', ok: r.status === 'complete', info: infoOf(r.status, r.result) });
+  }
+
+  for (const sv of services) if (!sv.ok) errors.push(`${sv.service}: ${sv.info}`);
+  return { at: new Date().toISOString(), hits: Array.from(hits.values()), queries, errors, services };
 }
 
 /** One record per hall: the POI whose name names the hall most directly. */
