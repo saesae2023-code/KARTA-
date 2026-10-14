@@ -87,6 +87,7 @@ export const ROW_H: Record<Row, number> = { 0: 0.9, 1: 1.2, 3: 2.0, 5: 2.4 };
 /** Walkways (units). */
 export const Y_NORTH = 1.15; // north service street between outdoor areas and the north halls
 export const Y_PROMENADE = 2.95; // Pearl Promenade (A, B) and the D ↔ A connection west of it
+export const Y_SOUTH = 5.5; // forecourt along Xingang Donglu (south entrances of the hall row)
 export const Y_ROAD_TOP = 5.6;
 export const Y_ROAD_BOTTOM = 6.0; // Xingang Donglu
 export const Y_C = 6.3; // Area C forecourt
@@ -138,7 +139,11 @@ function doors(n: VNode): { door: Pt; street: Pt }[] {
         { door: { x: cx, y: bottom }, street: { x: cx, y: Y_PROMENADE } },
       ];
     case 3:
-      return [{ door: { x: cx, y: top }, street: { x: cx, y: Y_PROMENADE } }];
+      // Halls have open entrances on both the north and south sides (CIEFC).
+      return [
+        { door: { x: cx, y: top }, street: { x: cx, y: Y_PROMENADE } },
+        { door: { x: cx, y: bottom }, street: { x: cx, y: Y_SOUTH } },
+      ];
     case 5:
       return [{ door: { x: cx, y: top }, street: { x: cx, y: Y_C } }];
   }
@@ -169,23 +174,28 @@ function chain(points: Pt[], axis: 'x' | 'y', extraFor?: (a: Pt, b: Pt) => numbe
   const onNorth: Pt[] = [{ x: X_XILU, y: Y_NORTH }, { x: X_MIDDLE, y: Y_NORTH }, { x: X_DONGLU, y: Y_NORTH }];
   const onProm: Pt[] = [{ x: X_XILU, y: Y_PROMENADE }, { x: X_MIDDLE, y: Y_PROMENADE }, { x: X_DONGLU, y: Y_PROMENADE }];
   const onC: Pt[] = [{ x: X_MIDDLE, y: Y_C }];
+  const onSouth: Pt[] = [{ x: X_MIDDLE, y: Y_SOUTH }];
   for (const n of NODES) {
     if (n.kind === 'special') continue;
-    for (const d of doors(n)) {
+    const ds = doors(n);
+    for (const d of ds) {
       addEdge(d.door, d.street);
-      (d.street.y === Y_NORTH ? onNorth : d.street.y === Y_PROMENADE ? onProm : onC).push(d.street);
+      (d.street.y === Y_NORTH ? onNorth : d.street.y === Y_PROMENADE ? onProm : d.street.y === Y_SOUTH ? onSouth : onC).push(d.street);
     }
+    // Walking through a hall from its north to its south entrance.
+    if (ds.length === 2) addEdge(ds[0].door, ds[1].door);
   }
   chain(onNorth, 'x');
   chain(onProm, 'x');
   chain(onC, 'x');
+  chain(onSouth, 'x');
   // North–south links: Zhanchang Xilu side, Middle Platform (down to Area C over Xingang Donglu), Zhanchang Donglu side.
   chain([{ x: X_XILU, y: Y_NORTH }, { x: X_XILU, y: Y_PROMENADE }], 'y');
   chain([{ x: X_DONGLU, y: Y_NORTH }, { x: X_DONGLU, y: Y_PROMENADE }], 'y');
   chain(
-    [{ x: X_MIDDLE, y: Y_NORTH }, { x: X_MIDDLE, y: Y_PROMENADE }, { x: X_MIDDLE, y: Y_C }],
+    [{ x: X_MIDDLE, y: Y_NORTH }, { x: X_MIDDLE, y: Y_PROMENADE }, { x: X_MIDDLE, y: Y_SOUTH }, { x: X_MIDDLE, y: Y_C }],
     'y',
-    (a, b) => (a.y === Y_PROMENADE && b.y === Y_C ? ROAD_CROSSING_EXTRA : 0),
+    (a, b) => (a.y === Y_SOUTH && b.y === Y_C ? ROAD_CROSSING_EXTRA : 0),
   );
 }
 
@@ -253,4 +263,106 @@ export function hallCost(a: string | null, b: string): number {
   const walk = nodeDistance(na, nb);
   if (!Number.isFinite(walk)) return UNKNOWN_COST + Math.abs(pa.building - pb.building);
   return walk + BUILDING_CHANGE + vertical;
+}
+
+// ---- routing from an arbitrary point (projected GPS position) ------------
+
+export type { Pt };
+
+/** Venue bounds used to decide whether a projected position is inside the complex. */
+export const VENUE_BOUNDS = { x0: -1.5, x1: X_MAX + 1.5, y0: -1.5, y1: Y_MAX + 1.5 };
+
+export function inVenue(p: Pt): boolean {
+  return p.x >= VENUE_BOUNDS.x0 && p.x <= VENUE_BOUNDS.x1 && p.y >= VENUE_BOUNDS.y0 && p.y <= VENUE_BOUNDS.y1;
+}
+
+/** Node whose box contains the point (hall-level guess), if any. */
+export function nodeAt(p: Pt, margin = 0.1): VNode | undefined {
+  return NODES.find((n) => {
+    const top = ROW_TOP[n.row];
+    return p.x >= n.x - margin && p.x <= n.x + BOX_W + margin && p.y >= top - margin && p.y <= top + ROW_H[n.row] + margin;
+  });
+}
+
+const EDGE_LIST: [Pt, Pt][] = (() => {
+  const seen = new Set<string>();
+  const out: [Pt, Pt][] = [];
+  for (const [a, list] of ADJ)
+    for (const e of list) {
+      const k = a < e.to ? `${a}|${e.to}` : `${e.to}|${a}`;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      out.push([PTS.get(a)!, PTS.get(e.to)!]);
+    }
+  return out;
+})();
+
+const dist2 = (a: Pt, b: Pt) => Math.hypot(a.x - b.x, a.y - b.y);
+
+/** Perpendicular projections of a point onto every walkway segment. */
+function projections(p: Pt) {
+  return EDGE_LIST.map(([a, b]) => {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len2 = dx * dx + dy * dy || 1e-9;
+    const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2));
+    const q = { x: a.x + t * dx, y: a.y + t * dy };
+    return { a, b, q, off: dist2(p, q) };
+  });
+}
+
+function bestEntry(p: Pt, hall: string) {
+  const id = nodeOfHall(hall);
+  if (!NODE_BY_ID.has(id)) return null;
+  const { dist } = sssp(id);
+  // Only the nearest walkways are candidates: the straight point → walkway hop must stay short
+  // and must not shortcut through buildings.
+  const prs = projections(p);
+  const minOff = Math.min(...prs.map((x) => x.off));
+  let best: { cost: number; q: Pt; via: Pt } | null = null;
+  for (const pr of prs) {
+    if (pr.off > minOff + 0.25) continue;
+    for (const end of [pr.a, pr.b]) {
+      const d = dist.get(key(end));
+      if (d === undefined) continue;
+      const cost = pr.off * 2 + dist2(pr.q, end) + d;
+      if (!best || cost < best.cost) best = { cost, q: pr.q, via: end };
+    }
+  }
+  return best;
+}
+
+const POINT_COST = new Map<string, number>();
+
+/** Walking cost from a point to a hall: to the nearest walkway, then along walkways. 0 if already inside it. */
+export function costFromPoint(p: Pt, hall: string): number {
+  const k = `${p.x.toFixed(2)},${p.y.toFixed(2)}|${hall}`;
+  const hit = POINT_COST.get(k);
+  if (hit !== undefined) return hit;
+  if (POINT_COST.size > 5000) POINT_COST.clear();
+  const inside = nodeAt(p, 0)?.id === nodeOfHall(hall);
+  const e = inside ? null : bestEntry(p, hall);
+  const c = inside ? 0 : e ? e.cost + BUILDING_CHANGE : UNKNOWN_COST;
+  POINT_COST.set(k, c);
+  return c;
+}
+
+/**
+ * Path from a point to a hall door: [point, entry on nearest walkway, …walkways…, door].
+ * The first segment (point → nearest walkway) is a straight approximation.
+ */
+export function walkPathFromPoint(p: Pt, hall: string): Pt[] {
+  if (nodeAt(p, 0)?.id === nodeOfHall(hall)) return [];
+  const e = bestEntry(p, hall);
+  if (!e) return [];
+  const { prev } = sssp(nodeOfHall(hall));
+  const chainPts: Pt[] = [];
+  for (let k: string | undefined = key(e.via); k; k = prev.get(k)) chainPts.push(PTS.get(k)!);
+  return [p, e.q, ...chainPts];
+}
+
+export function pathLength(pts: Pt[]): number {
+  let s = 0;
+  for (let i = 1; i < pts.length; i++) s += dist2(pts[i - 1], pts[i]);
+  return s;
 }

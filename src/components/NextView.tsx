@@ -1,4 +1,6 @@
 import type { Plan, RouteMode } from '../route';
+import type { LegInfo } from './MapView';
+import { LegLine, SuggestBanner } from './LegInfo';
 import type { PointState } from '../types';
 import { GroupTag, HallBooth, PriorityBadge, SameBoothNote, StatusActions } from './common';
 import { RouteModeSwitch } from './RouteModeSwitch';
@@ -15,9 +17,12 @@ interface Props {
   onVisited: (id: number) => void;
   onSkip: (id: number) => void;
   onToggle: (id: number, key: 'price' | 'followUp' | 'contact') => void;
+  leg: LegInfo | null;
+  suggest: { savingM: number } | null;
+  onReplan: () => void;
 }
 
-export function NextView({ plan, states, current, mode, onMode, onPickHall, onOpen, onShowMap, onVisited, onSkip, onToggle }: Props) {
+export function NextView({ plan, states, current, mode, onMode, onPickHall, onOpen, onShowMap, onVisited, onSkip, onToggle, leg, suggest, onReplan }: Props) {
   const step = plan.steps[0];
   if (!step)
     return (
@@ -41,6 +46,7 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
         </button>
       )}
       <RouteModeSwitch mode={mode} onChange={onMode} />
+      {suggest && <SuggestBanner savingM={suggest.savingM} onReplan={onReplan} />}
       <div className="next-card">
         <div className="next-top">
           <span className="eyebrow">
@@ -53,6 +59,7 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
           )}
         </div>
         <HallBooth p={next} current={current} hall={step.hall} />
+        {leg && <LegLine leg={leg} />}
         <button className="company-btn" onClick={() => onOpen(next.id)}>
           <span className="company">{next.company}</span>
           <span className="muted">

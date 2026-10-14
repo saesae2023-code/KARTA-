@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { POINTS } from './data';
-import { planRoute } from './route';
+import { WALK_M_PER_MIN, fitGeoref, hallCenter } from './geo';
+import { lockFromPlan, lockIsStale, planCost, planFromLock, planRoute, type Plan, type Start } from './route';
 import { computeStats } from './stats';
 import { useAppStore } from './store';
 import type { PointState } from './types';
+import { useGps } from './useGps';
+import { inVenue, nodeAt, nodeOfHall, pathLength, walkPath, walkPathFromPoint, type Pt } from './venue';
 import { HallSelector } from './components/HallSelector';
 import { HallSheet } from './components/HallSheet';
-import { MapView } from './components/MapView';
+import { MapView, type GpsView, type LegInfo } from './components/MapView';
 import { ListView, EMPTY_FILTERS, type Filters } from './components/ListView';
 import { NextView } from './components/NextView';
 import { PointDetail } from './components/PointDetail';
@@ -29,6 +32,9 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'stats', label: 'Статистика', icon: '▦' },
 ];
 
+/** GPS fixes worse than this are shown but not used as the route start. */
+const MAX_START_ACC_M = 150;
+
 export default function App() {
   const store = useAppStore();
   const { states, currentHall, routeMode } = store;
@@ -40,7 +46,122 @@ export default function App() {
   const [focusHall, setFocusHall] = useState<string | null>(null);
   const [sheetHall, setSheetHall] = useState<string | null>(null);
 
-  const plan = useMemo(() => planRoute(states, currentHall, routeMode), [states, currentHall, routeMode]);
+  const { lock } = store;
+  const [suggest, setSuggest] = useState<{ savingM: number } | null>(null);
+
+  // ---- GPS + georeference ----
+  useEffect(() => {
+    if (tab === 'map' && !store.gpsOn) store.setGpsOn(true); // permission is requested on first use of the map
+  }, [tab, store.gpsOn, store.setGpsOn]);
+  const gps = useGps(store.gpsOn);
+  const geo = useMemo(() => fitGeoref(store.anchors), [store.anchors]);
+  const gpsVenue: Pt | null = gps.fix ? geo.toVenue(gps.fix.lat, gps.fix.lon) : null;
+  const gpsInside = !!gpsVenue && inVenue(gpsVenue);
+  const gpsStart: Pt | null = gpsInside && gps.fix!.acc <= MAX_START_ACC_M ? gpsVenue : null;
+  const startNow: Start = gpsStart ?? currentHall;
+
+  const latest = useRef({ states, routeMode, startNow });
+  const justReplanned = useRef(false);
+  latest.current = { states, routeMode, startNow };
+
+  // ---- locked route: recomputed only on explicit events ----
+  const replan = useCallback(
+    (opts: { states?: Record<number, PointState>; start?: Start } = {}): Plan => {
+      const st = opts.states ?? latest.current.states;
+      const start = opts.start !== undefined ? opts.start : latest.current.startNow;
+      const p = planRoute(st, start, latest.current.routeMode);
+      store.setLock(lockFromPlan(p, latest.current.routeMode, start));
+      setSuggest(null);
+      justReplanned.current = true;
+      return p;
+    },
+    [store],
+  );
+
+  const stale = lockIsStale(lock, states, routeMode);
+  useEffect(() => {
+    if (stale) replan();
+  }, [stale, replan]);
+  const plan = useMemo(
+    () => (lock && !stale ? planFromLock(lock, states) : planRoute(states, startNow, routeMode)),
+    // startNow only matters for the transient fallback before the lock is written
+    [lock, stale, states, routeMode],
+  );
+
+  // First usable GPS fix: start the route from the real position (once per session).
+  const gpsPlanned = useRef(false);
+  useEffect(() => {
+    if (!gpsStart || gpsPlanned.current) return;
+    gpsPlanned.current = true;
+    if (lock?.start !== 'gps') replan({ start: gpsStart });
+  }, [gpsStart, lock, replan]);
+
+  // Deviation check: suggest (never force) a shorter route, throttled.
+  const lastCheck = useRef<{ t: number; p: Pt } | null>(null);
+  useEffect(() => {
+    if (!gpsStart || !plan.steps.length) return;
+    const now = Date.now();
+    if (justReplanned.current) {
+      // The plan in this commit may predate the new lock: wait for the next real movement.
+      justReplanned.current = false;
+      lastCheck.current = { t: now, p: gpsStart };
+      return;
+    }
+    const lc = lastCheck.current;
+    if (lc && now - lc.t < 20000 && Math.hypot(lc.p.x - gpsStart.x, lc.p.y - gpsStart.y) * geo.mPerUnit < 40) return;
+    lastCheck.current = { t: now, p: gpsStart };
+    const fresh = planRoute(states, gpsStart, routeMode);
+    const cur = planCost(plan, gpsStart);
+    const alt = planCost(fresh, gpsStart);
+    const savingM = (cur - alt) * geo.mPerUnit;
+    setSuggest(alt < cur * 0.95 && savingM > 250 ? { savingM } : null);
+  }, [gpsStart, plan, states, routeMode, geo.mPerUnit]);
+
+  // ---- current leg: GPS (or current hall) → point #1 ----
+  const first = plan.steps[0];
+  const legPath: Pt[] = first ? (gpsStart ? walkPathFromPoint(gpsStart, first.hall) : currentHall ? walkPath(currentHall, first.hall) : []) : [];
+  const legSameHall = !!first && (gpsStart ? nodeAt(gpsStart, 0)?.id === nodeOfHall(first.hall) : currentHall ? nodeOfHall(currentHall) === nodeOfHall(first.hall) : false);
+  const legMeters = pathLength(legPath) * geo.mPerUnit;
+  const legInfo: LegInfo | null = first
+    ? {
+        meters: legMeters,
+        minutes: Math.max(1, Math.round(legMeters / WALK_M_PER_MIN)),
+        sameHall: legSameHall,
+        known: legSameHall || legPath.length > 0,
+        fromGps: !!gpsStart,
+        approx: geo.quality !== 'calibrated',
+      }
+    : null;
+
+  const firstTarget = first ? hallCenter(first.hall) : null;
+  const firstLatLon = firstTarget ? geo.toLatLon(firstTarget) : null;
+  const gpsView: GpsView = {
+    status: gps.status,
+    message: gps.message,
+    fix: gps.fix,
+    venue: gpsVenue,
+    inside: gpsInside,
+    usable: !!gpsStart,
+    quality: geo.quality,
+    mPerUnit: geo.mPerUnit,
+    hallGuess: gpsStart ? nodeAt(gpsStart)?.id ?? null : null,
+    outsideMeters: gpsVenue && !gpsInside ? Math.hypot(gpsVenue.x - 8, gpsVenue.y - 4) * geo.mPerUnit : null,
+    target: firstLatLon,
+  };
+
+  const calibrate = (hall: string) => {
+    const c = hallCenter(hall);
+    if (!c || !gps.fix) return;
+    store.addAnchor({ x: c.x, y: c.y, lat: gps.fix.lat, lon: gps.fix.lon, acc: gps.fix.acc, kind: 'calib', label: `Hall ${hall}`, at: new Date().toISOString() });
+    store.setCurrentHall(hall);
+  };
+
+  const selectHall = (h: string | null) => {
+    store.setCurrentHall(h);
+    setFocusHall(h);
+    if (h) replan({ start: h }); // manual hall choice → re-plan from that hall
+  };
+
   const stats = computeStats(states);
 
   useEffect(() => {
@@ -64,14 +185,21 @@ export default function App() {
     const p = POINTS.find((x) => x.id === id)!;
     const prev = states[id];
     const prevHall = currentHall;
+    const wasFirst = plan.steps[0]?.point.id === id;
     store.update(id, { visit });
+    const nextStates = { ...states, [id]: { ...prev, visit } };
     let hall = currentHall;
     if (visit === 'visited') {
       // The user is physically at this booth now: the hall where the route sent them.
       hall = plan.steps.find((st) => st.point.id === id)?.hall ?? (currentHall && p.halls.includes(currentHall) ? currentHall : p.halls[0]);
       store.setCurrentHall(hall);
     }
-    const n = planRoute({ ...states, [id]: { ...prev, visit } }, hall, routeMode).steps[0];
+    // Visiting point #1 keeps the locked order (#2 becomes next). Out-of-order visits and skips re-plan.
+    const nextPlan =
+      visit === 'visited' && wasFirst && lock
+        ? planFromLock(lock, nextStates)
+        : replan({ states: nextStates, start: visit === 'visited' ? hall : startNow });
+    const n = nextPlan.steps[0];
     setToast({
       text:
         (visit === 'visited' ? `✓ ${p.company} — посещено.` : `${p.company} — пропущено.`) +
@@ -140,6 +268,9 @@ export default function App() {
             current={currentHall}
             onPickHall={() => setHallOpen(true)}
             onOpen={setOpenId}
+            leg={legInfo}
+            suggest={suggest}
+            onReplan={() => replan()}
             onVisited={(id) => finish(id, 'visited')}
             onSkip={(id) => finish(id, 'skipped')}
             onToggle={toggle}
@@ -158,7 +289,26 @@ export default function App() {
             onShowMap={showMap}
           />
         )}
-        {tab === 'map' && <MapView plan={plan} states={states} current={currentHall} focusHall={focusHall} onHall={setSheetHall} />}
+        {tab === 'map' && (
+          <MapView
+            plan={plan}
+            states={states}
+            current={currentHall}
+            focusHall={focusHall}
+            onHall={setSheetHall}
+            gps={gpsView}
+            legPath={legPath}
+            leg={legInfo}
+            suggest={suggest}
+            onReplan={() => replan()}
+            onDismissSuggest={() => setSuggest(null)}
+            onVisited={(id) => finish(id, 'visited')}
+            onOpen={setOpenId}
+            onCalibrate={calibrate}
+            onEnableGps={() => store.setGpsOn(true)}
+            onPickHall={() => setHallOpen(true)}
+          />
+        )}
         {tab === 'stats' && (
           <StatsView states={states} snapshot={store.snapshot} onOpen={setOpenId} onImport={store.replaceAll} onReset={store.reset} />
         )}
@@ -228,17 +378,11 @@ export default function App() {
           current={currentHall}
           onClose={() => setSheetHall(null)}
           onOpen={setOpenId}
-          onSetCurrent={(h) => {
-            store.setCurrentHall(h);
-            setFocusHall(h);
-          }}
+          onSetCurrent={selectHall}
         />
       )}
       {hallOpen && (
-        <HallSelector current={currentHall} states={states} onSelect={(h) => {
-            store.setCurrentHall(h);
-            setFocusHall(h);
-          }} onClose={() => setHallOpen(false)} />
+        <HallSelector current={currentHall} states={states} onSelect={selectHall} onClose={() => setHallOpen(false)} />
       )}
     </div>
   );

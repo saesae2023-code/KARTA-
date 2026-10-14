@@ -131,7 +131,7 @@ export function StatsView({ states, snapshot, onOpen, onImport, onReset }: Props
             try {
               const parsed = JSON.parse(await f.text()) as Persisted;
               if (!parsed || typeof parsed.states !== 'object') throw new Error('bad');
-              const merged: Persisted = { ...snapshot, currentHall: parsed.currentHall ?? null, states: { ...states } };
+              const merged: Persisted = { ...snapshot, currentHall: parsed.currentHall ?? null, lock: null, states: { ...states } };
               for (const p of POINTS) if (parsed.states[p.id]) merged.states[p.id] = { ...states[p.id], ...parsed.states[p.id] };
               onImport(merged);
               alert('Статусы восстановлены.');

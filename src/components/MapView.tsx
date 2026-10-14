@@ -2,7 +2,11 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ALL_HALLS, POINTS, compareHalls } from '../data';
 import { GROUP_LEGEND, groupColor } from '../groups';
 import type { Plan } from '../route';
+import type { GeoQuality } from '../geo';
+import type { GpsFix, GpsStatus } from '../useGps';
 import type { Point, PointState } from '../types';
+import { GroupTag, PriorityBadge } from './common';
+import { LegLine, SuggestBanner } from './LegInfo';
 import {
   AREAS,
   BOX_W,
@@ -19,11 +23,37 @@ import {
   Y_MAX,
   Y_NORTH,
   Y_PROMENADE,
+  Y_SOUTH,
   Y_ROAD_BOTTOM,
   Y_ROAD_TOP,
   nodeOfHall,
   walkPath,
+  type Pt,
 } from '../venue';
+
+export interface LegInfo {
+  meters: number;
+  minutes: number;
+  sameHall: boolean;
+  /** A path (or "same hall") is known — false when there is neither GPS nor a current hall. */
+  known: boolean;
+  fromGps: boolean;
+  approx: boolean;
+}
+
+export interface GpsView {
+  status: GpsStatus;
+  message: string;
+  fix: GpsFix | null;
+  venue: Pt | null;
+  inside: boolean;
+  usable: boolean;
+  quality: GeoQuality;
+  mPerUnit: number;
+  hallGuess: string | null;
+  outsideMeters: number | null;
+  target: { lat: number; lon: number } | null;
+}
 
 interface Props {
   plan: Plan;
@@ -31,7 +61,24 @@ interface Props {
   current: string | null;
   focusHall: string | null;
   onHall: (hall: string) => void;
+  gps: GpsView;
+  legPath: Pt[];
+  leg: LegInfo | null;
+  suggest: { savingM: number } | null;
+  onReplan: () => void;
+  onDismissSuggest: () => void;
+  onVisited: (id: number) => void;
+  onOpen: (id: number) => void;
+  onCalibrate: (hall: string) => void;
+  onEnableGps: () => void;
+  onPickHall: () => void;
 }
+
+const QUALITY_LABEL: Record<GeoQuality, string> = {
+  approx: 'привязка ≈ ±100 м (по метро)',
+  partial: 'привязка уточнена по 1 Hall',
+  calibrated: 'привязка уточнена на месте',
+};
 
 const U = 80; // px per venue unit
 const PAD = 20;
@@ -85,20 +132,35 @@ function legPoints(a: string, b: string): string | null {
   return all.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 }
 
-export function MapView({ plan, states, current, focusHall, onHall }: Props) {
+export function MapView({ plan, states, current, focusHall, onHall, gps, legPath, leg, suggest, onReplan, onDismissSuggest, onVisited, onOpen, onCalibrate, onEnableGps, onPickHall }: Props) {
   const scroller = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(false);
   const [boxW, setBoxW] = useState(360);
+  const [boxH, setBoxH] = useState(360);
+  const [follow, setFollow] = useState(false);
 
   useLayoutEffect(() => {
     const el = scroller.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => setBoxW(el.clientWidth));
+    const ro = new ResizeObserver(() => {
+      setBoxW(el.clientWidth);
+      setBoxH(el.clientHeight);
+    });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  const scale = fit ? boxW / W : 1;
+  // Auto zoom so that "Вы здесь" and point #1 are both visible when the map opens.
+  const userRaw = gps.venue && gps.inside ? { x: px(gps.venue.x), y: py(gps.venue.y) } : null;
+  const firstRaw = plan.stops[0] ? chipBox(plan.stops[0].hall) : null;
+  const pairZoom =
+    userRaw && firstRaw && !focusHall
+      ? Math.max(
+          0.45,
+          Math.min(1, (boxW - 70) / (Math.abs(userRaw.x - (firstRaw.x + firstRaw.w / 2)) + 1), (boxH - 70) / (Math.abs(userRaw.y - (firstRaw.y + firstRaw.h / 2)) + 1)),
+        )
+      : 1;
+  const scale = fit ? boxW / W : pairZoom;
 
   const order = useMemo(() => {
     const m = new Map<string, number[]>();
@@ -115,23 +177,65 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
   const nextHall = plan.stops.find((s) => s.hall !== current)?.hall ?? null;
   const target = focusHall ?? current ?? plan.stops[0]?.hall ?? null;
 
-  useEffect(() => {
+  const centerOn = (x: number, y: number) => {
     const el = scroller.current;
+    if (!el) return;
+    el.scrollTo({ left: Math.max(0, x * scale - el.clientWidth / 2), top: Math.max(0, y * scale - el.clientHeight / 2), behavior: 'smooth' });
+  };
+
+  const userPx = gps.venue && gps.inside ? { x: px(gps.venue.x), y: py(gps.venue.y) } : null;
+
+  // Explicit focus → that hall; otherwise show "Вы здесь" and point #1 together.
+  const firstChipNow = plan.stops[0] ? chipBox(plan.stops[0].hall) : null;
+  const both = !focusHall && userPx && firstChipNow ? { x: (userPx.x + firstChipNow.x + firstChipNow.w / 2) / 2, y: (userPx.y + firstChipNow.y) / 2 } : null;
+  useEffect(() => {
+    if (fit || (follow && userPx)) return;
+    if (both) return centerOn(both.x, both.y);
     const c = target ? chipBox(target) : null;
-    if (!el || !c || fit) return;
-    el.scrollTo({
-      left: Math.max(0, (c.x + c.w / 2) * scale - el.clientWidth / 2),
-      top: Math.max(0, (c.y + c.h / 2) * scale - el.clientHeight / 2),
-      behavior: 'smooth',
-    });
-  }, [target, fit, scale]);
+    if (c) centerOn(c.x + c.w / 2, c.y + c.h / 2);
+  }, [target, fit, scale, !!both, plan.stops[0]?.hall]);
+
+  // Follow mode: keep the user in view while walking.
+  useEffect(() => {
+    if (follow && userPx && !fit) centerOn(userPx.x, userPx.y);
+  }, [follow, userPx?.x, userPx?.y, fit]);
+
+  const locate = () => {
+    if (gps.status === 'off' || gps.status === 'denied' || gps.status === 'error') onEnableGps();
+    if (userPx) {
+      setFit(false);
+      centerOn(userPx.x, userPx.y);
+    }
+  };
 
   const halls = Array.from(new Set([...ALL_HALLS, ...(current ? [current] : [])])).filter((h) => chipBox(h));
 
-  const pathHalls = [...(current && chipBox(current) ? [current] : []), ...plan.stops.map((s) => s.hall)].filter(
-    (h, i, arr) => h !== arr[i - 1],
-  );
-  const legs = pathHalls.slice(1).map((h, i) => legPoints(pathHalls[i], h)).filter((x): x is string => !!x);
+  // Full route between stops (calm), and the active leg: GPS / current hall → stop 1 (prominent).
+  const stopHalls = plan.stops.map((s) => s.hall).filter((h, i, arr) => h !== arr[i - 1]);
+  const legs = stopHalls.slice(1).map((h, i) => legPoints(stopHalls[i], h)).filter((x): x is string => !!x);
+  const firstStop = plan.stops[0];
+  const firstChip = firstStop ? chipBox(firstStop.hall) : null;
+  let activeLeg: string | null = null;
+  let approxLeg: string | null = null;
+  if (firstStop && firstChip) {
+    const end = { x: firstChip.x + firstChip.w / 2, y: firstChip.y + firstChip.h / 2 };
+    if (gps.usable && userPx) {
+      const pts = legPath.map((p) => ({ x: px(p.x), y: py(p.y) }));
+      if (pts.length >= 2) {
+        approxLeg = `${pts[0].x},${pts[0].y} ${pts[1].x},${pts[1].y}`;
+        activeLeg = [...pts.slice(1), end].map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+      } else {
+        approxLeg = `${userPx.x},${userPx.y} ${end.x},${end.y}`;
+      }
+    } else if (current && current !== firstStop.hall) {
+      activeLeg = legPoints(current, firstStop.hall);
+    }
+  }
+  const step1 = plan.steps[0];
+  const badgeColor = (hall: string) => {
+    const st = plan.stops.find((s) => s.hall === hall);
+    return st ? groupColor(st.points[0].mapGroup) : undefined;
+  };
 
   const areaBox = (id: string) => {
     const ns = NODES.filter((n) => n.area === id);
@@ -145,16 +249,62 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
   return (
     <div className="map">
       <div className="map-toolbar">
-        <span className="small muted">Официальный Complex Layout (Phase 1), план · точки привязаны к Hall</span>
+        <button className="toggle locate" onClick={locate}>
+          📍 Моё местоположение
+        </button>
         <button className="toggle" onClick={() => setFit(!fit)}>
           {fit ? '🔍 Крупно' : '⤢ Весь комплекс'}
         </button>
       </div>
+      <GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />
+      {suggest && <SuggestBanner savingM={suggest.savingM} onReplan={onReplan} onDismiss={onDismissSuggest} />}
+      {step1 && (
+        <div className="next-sheet">
+          <div className="ns-top">
+            <span className="ns-num" style={{ background: groupColor(step1.point.mapGroup) }}>1</span>
+            <span className="ns-label">Следующая точка</span>
+            <PriorityBadge p={step1.point} />
+          </div>
+          <div className="ns-where">
+            Hall {step1.hall} · Booth {step1.booths.join('; ')}
+          </div>
+          <div className="ns-row">
+            <button className="ns-company" onClick={() => onOpen(step1.point.id)}>
+              {step1.point.company} ›
+            </button>
+            <GroupTag group={step1.point.mapGroup} short />
+          </div>
+          {leg && <LegLine leg={leg} />}
+          <div className="ns-btns">
+            <button
+              className={`btn ${follow ? 'btn-secondary' : 'btn-start'}`}
+              onClick={() => {
+                const next = !follow;
+                setFollow(next);
+                if (next) {
+                  setFit(false);
+                  if (userPx) centerOn(userPx.x, userPx.y);
+                  else if (firstChip) centerOn(firstChip.x + firstChip.w / 2, firstChip.y + firstChip.h / 2);
+                }
+              }}
+            >
+              {follow ? '■ Остановить' : '▶ Начать маршрут'}
+            </button>
+            <button className="btn btn-visit" onClick={() => onVisited(step1.point.id)}>
+              ✓ Посетила
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="map-scroll" ref={scroller}>
         <svg width={W * scale} height={H * scale} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Схема Canton Fair Complex">
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
               <path d="M0,0 L10,5 L0,10 z" className="route-arrow" />
+            </marker>
+            <marker id="arrow-active" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" className="active-arrow" />
             </marker>
           </defs>
 
@@ -182,6 +332,7 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
 
           {/* walkways */}
           <line x1={px(X_XILU)} y1={py(Y_NORTH)} x2={px(X_DONGLU)} y2={py(Y_NORTH)} className="walkway" />
+          <line x1={px(0.44)} y1={py(Y_SOUTH)} x2={px(15.94)} y2={py(Y_SOUTH)} className="walkway" />
           <line x1={px(X_XILU)} y1={py(Y_NORTH)} x2={px(X_XILU)} y2={py(Y_PROMENADE)} className="walkway" />
           <line x1={px(X_DONGLU)} y1={py(Y_NORTH)} x2={px(X_DONGLU)} y2={py(Y_PROMENADE)} className="walkway" />
           <line x1={px(X_MIDDLE)} y1={py(Y_NORTH)} x2={px(X_MIDDLE)} y2={py(Y_PROMENADE)} className="walkway" />
@@ -221,6 +372,8 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
           {legs.map((pts, i) => (
             <polyline key={i} points={pts} className="route-line" markerEnd="url(#arrow)" />
           ))}
+          {approxLeg && <polyline points={approxLeg} className="active-approx" />}
+          {activeLeg && <polyline points={activeLeg} className="active-leg" markerEnd="url(#arrow-active)" />}
 
           <rect x={px(X_MIDDLE) - 46} y={py(Y_PROMENADE) - 11} width={92} height={22} rx={6} className="platform" />
           <text x={px(X_MIDDLE)} y={py(Y_PROMENADE) + 4} textAnchor="middle" className="platform-label">
@@ -265,7 +418,7 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
                 ))}
                 {nums && (
                   <g>
-                    <circle cx={c.x - 2} cy={c.y + 2} r={9} className="order-dot" />
+                    <circle cx={c.x - 2} cy={c.y + 2} r={10} className="order-dot" style={{ fill: badgeColor(h) }} />
                     <text x={c.x - 2} y={c.y + 6} textAnchor="middle" className="order-num">
                       {nums[0]}
                     </text>
@@ -279,13 +432,25 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
               </g>
             );
           })}
+
+          {userPx && gps.fix && (
+            <g className="user" aria-label="Вы здесь">
+              <circle cx={userPx.x} cy={userPx.y} r={Math.min(400, (gps.fix.acc / gps.mPerUnit) * U)} className="user-acc" />
+              <circle cx={userPx.x} cy={userPx.y} r={9} className="user-dot" />
+              <text x={userPx.x} y={userPx.y - 15} textAnchor="middle" className="user-label">
+                Вы здесь
+              </text>
+            </g>
+          )}
         </svg>
       </div>
 
       <div className="map-keys small">
         <span><i className="k k-current" /> текущий Hall</span>
         <span><i className="k k-next" /> следующий Hall</span>
-        <span><i className="k k-order">1</i> порядок обхода</span>
+        <span><i className="k k-user" /> вы здесь (GPS)</span>
+        <span><i className="k k-active" /> текущий участок</span>
+        <span><i className="k k-order">1</i> порядок обхода · цвет = товарная группа</span>
         <span>число — точек по маршруту</span>
         <span>«доп.» — второй стенд, визит в другом Hall</span>
         <span>этажи x.1–x.4 — один корпус · x.0 — открытая площадка</span>
@@ -308,10 +473,80 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
       </div>
       <p className="muted small">
         Расположение Area и Hall — по официальному Exhibition Section Floor Map 140-й сессии (Phase 1) и Complex Layout.
-        Линии маршрута идут по проходам: Pearl Promenade, Middle Platform, переход через Xingang Donglu. Координат стендов
-        нет — точки привязаны к Hall.
+        Линии маршрута идут по проходам: Pearl Promenade, Middle Platform, переход через Xingang Donglu. Пунктир от синей
+        точки — приблизительный путь до ближайшего прохода. Внутри Hall порядок — по номерам стендов (не GPS): координат
+        стендов нет, точки привязаны к Hall. GPS внутри павильонов может ошибаться на десятки метров.
       </p>
     </div>
   );
 }
 
+
+function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }: Pick<Props, 'gps' | 'current' | 'onCalibrate' | 'onEnableGps' | 'onPickHall'>) {
+  if (gps.status === 'off')
+    return (
+      <div className="gps-panel">
+        <span>GPS выключен.</span>
+        <button className="btn-link" onClick={onEnableGps}>
+          Включить
+        </button>
+      </div>
+    );
+  if (gps.status === 'waiting' && !gps.fix) return <div className="gps-panel">📡 Ищу GPS… разрешите доступ к геопозиции</div>;
+  if (!gps.fix)
+    return (
+      <div className="gps-panel warn">
+        <span>{gps.message || 'GPS недоступен.'} Маршрут строится от выбранного Hall.</span>
+        <button className="btn-link" onClick={onPickHall}>
+          Выбрать Hall
+        </button>
+      </div>
+    );
+  const acc = Math.round(gps.fix.acc);
+  if (!gps.inside) {
+    const t = gps.target;
+    return (
+      <div className="gps-panel warn">
+        <span>
+          Вы вне комплекса: ≈ {gps.outsideMeters ? (gps.outsideMeters / 1000).toFixed(1).replace('.', ',') : '?'} км. Путь по улицам —
+          в навигаторе:
+        </span>
+        {t && (
+          <span className="gps-links">
+            <a className="chip-btn" href={`https://maps.apple.com/?daddr=${t.lat.toFixed(6)},${t.lon.toFixed(6)}&dirflg=w`} target="_blank" rel="noopener noreferrer">
+              Apple Maps
+            </a>
+            <a className="chip-btn" href={`https://uri.amap.com/navigation?to=${t.lon.toFixed(6)},${t.lat.toFixed(6)},Canton%20Fair&mode=walk&coordinate=wgs84&callnative=1`} target="_blank" rel="noopener noreferrer">
+              Amap
+            </a>
+          </span>
+        )}
+      </div>
+    );
+  }
+  return (
+    <div className={`gps-panel ${gps.usable ? 'ok' : 'warn'}`}>
+      <span>
+        🔵 GPS ±{acc} м{gps.hallGuess ? ` · корпус ${gps.hallGuess}?` : ''} · {QUALITY_LABEL[gps.quality]}
+        {!gps.usable && ' · точность низкая, маршрут от выбранного Hall'}
+      </span>
+      {current && acc <= 80 && (
+        <button className="btn-link" onClick={() => onCalibrate(current)}>
+          {gps.hallGuess && gps.hallGuess !== nodeOfHall(current)
+            ? `Я точно в Hall ${current} (GPS показывает корпус ${gps.hallGuess}): уточнить привязку`
+            : `Я в Hall ${current}: уточнить привязку`}
+        </button>
+      )}
+      {current && (
+        <button className="btn-link" onClick={onPickHall}>
+          Другой Hall
+        </button>
+      )}
+      {!current && (
+        <button className="btn-link" onClick={onPickHall}>
+          Уточнить: выбрать Hall
+        </button>
+      )}
+    </div>
+  );
+}
