@@ -7,9 +7,12 @@ import { groupColor } from '../groups';
 import { COMPLEX_GCJ, HALL_AREA, areaHits, discoverHalls, hallHits, toHallGeo, type PoiCache } from '../poi';
 import type { Plan } from '../route';
 import { nodeOfHall } from '../venue';
-import { formatMeters, SuggestBanner } from './LegInfo';
+
 import { hallLabel, type From } from '../labels';
-import { GpsPanel, NextSheet, type GpsView, type LegInfo } from './MapView';
+import { GpsPanel, MapLegend, MapPills, gpsChipLabel, type GpsView, type LegInfo } from './MapView';
+import { MapShell } from './MapShell';
+import type { ReactNode } from 'react';
+import type { PointState } from '../types';
 
 interface Props {
   plan: Plan;
@@ -30,6 +33,8 @@ interface Props {
   onEnableGps: () => void;
   onPickHall: () => void;
   onSchema: () => void;
+  switcher: ReactNode;
+  states: Record<number, PointState>;
 }
 
 type Status = 'nokey' | 'loading' | 'ready' | 'error';
@@ -83,7 +88,7 @@ async function exportFile(name: string, content: string) {
 }
 
 export function AmapView(props: Props) {
-  const { plan, current, gps, leg, suggest, pois, marks, from, onPois, onReplan, onDismissSuggest, onVisited, onOpen, onHall, onCalibrate, onEnableGps, onPickHall, onSchema } = props;
+  const { plan, current, gps, leg, suggest, pois, marks, from, onPois, onReplan, onDismissSuggest, onVisited, onOpen, onHall, onCalibrate, onEnableGps, onPickHall, onSchema, switcher, states } = props;
   const box = useRef<HTMLDivElement>(null);
   const AM = useRef<AMapNS>(null);
   const map = useRef<AMapNS>(null);
@@ -334,68 +339,64 @@ export function AmapView(props: Props) {
       </div>
     );
 
+  const toggleFollow = () => {
+    const next = !follow;
+    setFollow(next);
+    if (next && map.current) {
+      if (user) map.current.setZoomAndCenter(18, user);
+      else if (target) map.current.setZoomAndCenter(17, target.pos);
+    }
+  };
+
   return (
-    <div className="map geo">
-      <div className="map-toolbar">
-        <button className="toggle locate" onClick={locateMe}>
-          📍 Моё местоположение
-        </button>
-        <button className="toggle" onClick={showAll}>
-          ⤢ Весь маршрут
-        </button>
-        <button className="toggle" onClick={showComplex}>
-          🏢 Canton Fair
-        </button>
-      </div>
-      <GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />
-      {farKm > 20 && (
-        <div className="gps-panel warn">
-          Вы в {Math.round(farKm).toLocaleString('ru')} км от Canton Fair — там у AMap может не быть подробной карты (пустая сетка).{' '}
-          <button className="btn-link" onClick={showComplex}>
-            Показать Canton Fair
-          </button>
-        </div>
-      )}
-      {status === 'error' && diag && <AmapDiagPanel d={diag} onSchema={onSchema} />}
-      {walk?.failed && user && (
-        <div className="gps-panel warn">Маршрут приблизительный: AMap.Walking не вернул пешеходный путь ({walk.error}) — пунктир по прямой (≈ {formatMeters(walk.meters)}).</div>
-      )}
-      {target?.level === 'area' && firstStop && (
-        <div className="gps-panel warn">
-          У павильона {nodeOfHall(firstStop.hall)} нет собственной точки в AMap — веду ко входу в Зону {HALL_AREA[nodeOfHall(firstStop.hall)]}, дальше по схеме залов.
-        </div>
-      )}
-      {suggest && <SuggestBanner savingM={suggest.savingM} onReplan={onReplan} onDismiss={onDismissSuggest} />}
-      {plan.steps[0] && (
-        <NextSheet
-          from={from}
-          step={plan.steps[0]}
-          leg={sheetLeg}
-          follow={follow}
-          onOpen={onOpen}
-          onVisited={onVisited}
-          onToggleFollow={() => {
-            const next = !follow;
-            setFollow(next);
-            if (next && map.current) {
-              if (user) map.current.setZoomAndCenter(18, user);
-              else if (target) map.current.setZoomAndCenter(17, target.pos);
-            }
-          }}
+    <MapShell
+      step={plan.steps[0] ?? null}
+      leg={sheetLeg}
+      from={from}
+      switcher={switcher}
+      controls={[
+        { key: 'me', label: '📍', title: 'Моё местоположение', onClick: locateMe },
+        { key: 'complex', label: '🏢', title: 'Весь комплекс', onClick: showComplex },
+        { key: 'route', label: '⤢', title: 'Весь маршрут', onClick: showAll },
+        { key: 'follow', label: '◉', title: 'Следовать за мной', on: follow, onClick: toggleFollow },
+      ]}
+      pills={
+        <MapPills
+          gps={gps}
+          suggest={suggest}
+          onReplan={onReplan}
+          onDismiss={onDismissSuggest}
+          onEnableGps={onEnableGps}
+          extra={
+            <>
+              {status === 'error' && (
+                <div className="pill pill-warn">
+                  <span>AMap не загрузился ({diag?.errcode})</span>
+                  <button onClick={onSchema}>Схема</button>
+                </div>
+              )}
+              {farKm > 20 && (
+                <div className="pill pill-warn">
+                  <span>Вы в {Math.round(farKm).toLocaleString('ru')} км от комплекса</span>
+                  <button onClick={showComplex}>Показать</button>
+                </div>
+              )}
+              {walk?.failed && user && <div className="pill pill-warn"><span>≈ маршрут по прямой (AMap.Walking недоступен)</span></div>}
+              {target?.level === 'area' && firstStop && (
+                <div className="pill pill-warn">
+                  <span>≈ ведём к Зоне {HALL_AREA[nodeOfHall(firstStop.hall)]}: у павильона нет точки AMap</span>
+                </div>
+              )}
+            </>
+          }
         />
-      )}
-      <div className="geo-box">
-        {/* AMap owns this element; React renders nothing inside it. */}
-        <div className="amap-container" ref={box} />
-        {status === 'loading' && <div className="geo-loading">Загружаю карту AMap…</div>}
-      </div>
-      <RenderDiag map={map.current} AMap={AM.current} status={status} render={render} box={box.current} onChange={changeRender} />
-      <div className="map-keys small">
-        <span><i className="k k-user" /> вы здесь (GPS)</span>
-        <span><i className="k k-active" /> пешеходный маршрут AMap</span>
-        <span><i className="k k-rest" /> порядок обхода</span>
-        <span><i className="k k-order">1</i> шаг · цвет = товарная группа</span>
-      </div>
+      }
+      infoLabel={gpsChipLabel(gps)}
+      info={
+        <div className="info-sheet">
+          <GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />
+          {status === 'error' && diag && <AmapDiagPanel d={diag} onSchema={onSchema} />}
+          {walk?.failed && walk.error && <p className="muted small">AMap.Walking: {walk.error}</p>}
       <div className="poi-panel small">
         <b>Координаты павильонов 1–20</b>
         <span>
@@ -454,11 +455,21 @@ export function AmapView(props: Props) {
           )}
         </span>
       </div>
-      <p className="muted small">
-        Карта и пешеходные маршруты — AMap (高德), координаты GPS переводятся WGS-84 → GCJ-02. Порядок обхода считается графом
-        проходов официальной схемы; внутри павильона — по номерам стендов (не GPS).
-      </p>
-    </div>
+          <RenderDiag map={map.current} AMap={AM.current} status={status} render={render} box={box.current} onChange={changeRender} />
+        </div>
+      }
+      legend={<MapLegend states={states} />}
+      follow={follow}
+      onToggleFollow={toggleFollow}
+      onOpen={onOpen}
+      onVisited={onVisited}
+    >
+      <div className="geo-box">
+        {/* AMap owns this element; React renders nothing inside it. */}
+        <div className="amap-container" ref={box} />
+        {status === 'loading' && <div className="geo-loading">Загружаю карту AMap…</div>}
+      </div>
+    </MapShell>
   );
 }
 

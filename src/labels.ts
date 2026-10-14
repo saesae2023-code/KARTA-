@@ -122,3 +122,27 @@ export function directions(from: From, hall: string, booths: string[]): string[]
   if (booths.length) out.push(`Стенд ${boothsLabel(booths)}`);
   return out;
 }
+
+/** One-line navigation strip, e.g. "Выйдите из павильона 15 → Зона B → Павильон 9 → 3 этаж → C37–38". */
+export function compactDirections(from: From, hall: string, booths: string[]): string {
+  const z = zoneOf(hall);
+  const { building, floor } = splitHall(hall);
+  const outdoor = isOutdoor(hall);
+  const fromB = from.hall ? nodeOfHall(from.hall.includes('.') ? from.hall : `${from.hall}.1`) : null;
+  const fromFloor = from.hall && from.hall.includes('.') ? splitHall(from.hall).floor : null;
+  const stand = booths.length ? boothsLabel(booths) : '';
+  const parts: string[] = [];
+  if (fromB && !outdoor && fromB === String(building)) {
+    if (fromFloor !== null && fromFloor !== floor) parts.push(`Вы в павильоне ${building}`, `${floor > fromFloor ? 'наверх' : 'вниз'} на ${floorLabel(floor)}`);
+    else parts.push('Вы на месте');
+  } else {
+    const fromZone = fromB ? zoneOf(`${fromB}.1`) ?? zoneOf(`${fromB}.0`) : from.zone ?? null;
+    if (fromB && !from.outside) parts.push(`Выйдите из ${isOutdoor(from.hall!) ? 'площадки' : 'павильона'} ${fromB}`);
+    else if (from.outside) parts.push('Вход с ул. Синган-Дунлу');
+    if (!fromZone || fromZone !== z) parts.push(zoneLabel(z));
+    parts.push(outdoor ? `Площадка ${building}` : `Павильон ${building}`);
+    if (!outdoor && floor) parts.push(floorLabel(floor));
+  }
+  if (stand) parts.push(stand);
+  return parts.join(' → ');
+}

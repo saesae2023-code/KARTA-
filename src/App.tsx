@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { POINTS } from './data';
 import { AMAP_KEY } from './amap';
 import { WALK_M_PER_MIN, fitGeoref, hallCenter } from './geo';
@@ -75,6 +75,23 @@ export default function App() {
     // Real AMap map by default when a key is configured; the hall schema is the fallback.
     return AMAP_KEY ? 'geo' : 'schema';
   });
+  // Header height → CSS variable, so the map screen can take exactly the remaining viewport.
+  const headRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const head = headRef.current;
+    const tabs = tabsRef.current;
+    if (!head || !tabs) return;
+    const set = () => {
+      document.documentElement.style.setProperty('--head-h', `${head.offsetHeight}px`);
+      document.documentElement.style.setProperty('--tabs-h', `${tabs.offsetHeight}px`);
+    };
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(head);
+    ro.observe(tabs);
+    return () => ro.disconnect();
+  }, []);
   const chooseMap = (k: 'geo' | 'schema') => {
     setMapKind(k);
     try {
@@ -82,7 +99,17 @@ export default function App() {
     } catch {
       /* ignore */
     }
-  };
+  };  const mapSwitch = (
+    <div className="segmented seg-mini" role="tablist" aria-label="Вид карты">
+      <button role="tab" aria-selected={mapKind === 'geo'} className={mapKind === 'geo' ? 'on' : ''} onClick={() => chooseMap('geo')}>
+        Карта
+      </button>
+      <button role="tab" aria-selected={mapKind === 'schema'} className={mapKind === 'schema' ? 'on' : ''} onClick={() => chooseMap('schema')}>
+        Схема
+      </button>
+    </div>
+  );
+
 
   const { lock } = store;
   const [suggest, setSuggest] = useState<{ savingM: number } | null>(null);
@@ -173,7 +200,10 @@ export default function App() {
   // ---- current leg: GPS (or current hall) → point #1 ----
   const first = plan.steps[0];
   const legPath: Pt[] = first ? (gpsStart ? walkPathFromPoint(gpsStart, first.hall) : currentHall ? walkPath(currentHall, first.hall) : []) : [];
-  const legSameHall = !!first && (gpsStart ? nodeAt(gpsStart, 0)?.id === nodeOfHall(first.hall) : currentHall ? nodeOfHall(currentHall) === nodeOfHall(first.hall) : false);
+  // An explicit "Я в павильоне" choice wins over the GPS guess.
+  const legSameHall =
+    !!first &&
+    ((currentHall ? nodeOfHall(currentHall) === nodeOfHall(first.hall) : false) || (gpsStart ? nodeAt(gpsStart, 0)?.id === nodeOfHall(first.hall) : false));
   const legMeters = pathLength(legPath) * geo.mPerUnit;
   const legInfo: LegInfo | null = first
     ? {
@@ -297,8 +327,8 @@ export default function App() {
   const open = openId != null ? POINTS.find((p) => p.id === openId) : undefined;
 
   return (
-    <div className="app">
-      <div className="sticky-head">
+    <div className={`app ${tab === 'map' ? 'app-map' : ''}`}>
+      <div className="sticky-head" ref={headRef}>
       <header className="top">
         <div className="brand">
           <span className="logo">ALTIORA</span>
@@ -310,7 +340,7 @@ export default function App() {
           {currentHall && <span className="small">{currentHall.endsWith('.0') ? 'площадка' : `${currentHall.split('.')[1]} этаж`}</span>}
         </button>
       </header>
-      <div className="statbar">
+      <div className={`statbar ${tab === 'map' ? 'statbar-hidden' : ''}`}>
         <span>
           <b>{stats.visited}</b>/{stats.total} посещено
         </span>
@@ -329,7 +359,7 @@ export default function App() {
       </div>
       </div>
 
-      <main>
+      <main className={tab === 'map' ? 'main-map' : ''}>
         {tab === 'next' && (
           <NextView
             plan={plan}
@@ -362,19 +392,11 @@ export default function App() {
             onShowMap={showMap}
           />
         )}
-        {tab === 'map' && (
-          <div className="segmented map-kind" role="tablist" aria-label="Вид карты">
-            <button role="tab" aria-selected={mapKind === 'geo'} className={mapKind === 'geo' ? 'on' : ''} onClick={() => chooseMap('geo')}>
-              🗺 Карта AMap
-            </button>
-            <button role="tab" aria-selected={mapKind === 'schema'} className={mapKind === 'schema' ? 'on' : ''} onClick={() => chooseMap('schema')}>
-              ▦ Схема залов
-            </button>
-          </div>
-        )}
         {tab === 'map' && mapKind === 'geo' && (
           <Suspense fallback={<div className="gps-panel">Загружаю карту…</div>}>
           <AmapView
+            switcher={mapSwitch}
+            states={states}
             plan={plan}
             current={currentHall}
             gps={gpsView}
@@ -398,6 +420,7 @@ export default function App() {
         )}
         {tab === 'map' && mapKind === 'schema' && (
           <MapView
+            switcher={mapSwitch}
             from={from}
             plan={plan}
             states={states}
@@ -452,7 +475,7 @@ export default function App() {
         </div>
       )}
 
-      <nav className="tabs">
+      <nav className="tabs" ref={tabsRef}>
         {TABS.map((t) => (
           <button key={t.id} className={tab === t.id ? 'active' : ''} onClick={() => {
               setTab(t.id);

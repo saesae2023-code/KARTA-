@@ -1,13 +1,14 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ALL_HALLS, POINTS, compareHalls } from '../data';
 import { GROUP_LEGEND, groupColor } from '../groups';
-import type { Plan, Step } from '../route';
+import type { Plan } from '../route';
 import type { GeoQuality } from '../geo';
 import type { GpsFix, GpsStatus } from '../useGps';
 import type { Point, PointState } from '../types';
-import { Directions, GroupTag, PathLine, PriorityBadge } from './common';
-import { STREETS, boothsLabel, hallLabel, isOutdoor, type From } from '../labels';
-import { LegLine, SuggestBanner } from './LegInfo';
+import { STREETS, hallLabel, isOutdoor, type From } from '../labels';
+import { formatMeters } from './LegInfo';
+import { MapShell } from './MapShell';
+import type { ReactNode } from 'react';
 import {
   AREAS,
   BOX_W,
@@ -76,6 +77,7 @@ interface Props {
   onEnableGps: () => void;
   onPickHall: () => void;
   from: From;
+  switcher: ReactNode;
 }
 
 const QUALITY_LABEL: Record<GeoQuality, string> = {
@@ -137,7 +139,7 @@ function legPoints(a: string, b: string): string | null {
   return all.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 }
 
-export function MapView({ plan, states, current, focusHall, onHall, gps, legPath, leg, suggest, onReplan, onDismissSuggest, onVisited, onOpen, onCalibrate, onEnableGps, onPickHall, from }: Props) {
+export function MapView({ plan, states, current, focusHall, onHall, gps, legPath, leg, suggest, onReplan, onDismissSuggest, onVisited, onOpen, onCalibrate, onEnableGps, onPickHall, from, switcher }: Props) {
   const scroller = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(false);
   const [boxW, setBoxW] = useState(360);
@@ -251,40 +253,39 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
     return { x0, x1, y0, y1 };
   };
 
-  return (
-    <div className="map">
-      <div className="map-toolbar">
-        <button className="toggle locate" onClick={locate}>
-          📍 Моё местоположение
-        </button>
-        <button className="toggle" onClick={() => setFit(!fit)}>
-          {fit ? '🔍 Крупно' : '⤢ Весь комплекс'}
-        </button>
-      </div>
-      <GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />
-      {suggest && <SuggestBanner savingM={suggest.savingM} onReplan={onReplan} onDismiss={onDismissSuggest} />}
-      {step1 && (
-        <NextSheet
-          from={from}
-          step={step1}
-          leg={leg}
-          follow={follow}
-          onOpen={onOpen}
-          onVisited={onVisited}
-          onToggleFollow={() => {
-            const next = !follow;
-            setFollow(next);
-            if (next) {
-              setFit(false);
-              if (userPx) centerOn(userPx.x, userPx.y);
-              else if (firstChip) centerOn(firstChip.x + firstChip.w / 2, firstChip.y + firstChip.h / 2);
-            }
-          }}
-        />
-      )}
+  const toggleFollow = () => {
+    const next = !follow;
+    setFollow(next);
+    if (next) {
+      setFit(false);
+      if (userPx) centerOn(userPx.x, userPx.y);
+      else if (firstChip) centerOn(firstChip.x + firstChip.w / 2, firstChip.y + firstChip.h / 2);
+    }
+  };
 
+  return (
+    <MapShell
+      step={step1 ?? null}
+      leg={leg}
+      from={from}
+      notes={step1 ? states[step1.point.id]?.notes : undefined}
+      switcher={switcher}
+      controls={[
+        { key: 'me', label: '📍', title: 'Моё местоположение', onClick: locate },
+        { key: 'all', label: fit ? '🔍' : '🏢', title: fit ? 'Крупно' : 'Весь комплекс', on: fit, onClick: () => setFit(!fit) },
+        { key: 'follow', label: '◉', title: 'Следовать за мной', on: follow, onClick: toggleFollow },
+      ]}
+      pills={<MapPills gps={gps} suggest={suggest} onReplan={onReplan} onDismiss={onDismissSuggest} onEnableGps={onEnableGps} />}
+      infoLabel={gpsChipLabel(gps)}
+      info={<GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />}
+      legend={<MapLegend states={states} />}
+      follow={follow}
+      onToggleFollow={toggleFollow}
+      onOpen={onOpen}
+      onVisited={onVisited}
+    >
       <div className="map-scroll" ref={scroller}>
-        <svg width={W * scale} height={H * scale} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Схема Canton Fair Complex">
+        <svg className={scale < 0.6 ? 'lod-low' : ''} width={W * scale} height={H * scale} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Схема Canton Fair Complex">
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
               <path d="M0,0 L10,5 L0,10 z" className="route-arrow" />
@@ -318,9 +319,6 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
           <line x1={px(X_XILU)} y1={py(Y_NORTH)} x2={px(X_XILU)} y2={py(Y_PROMENADE)} className="walkway" />
           <line x1={px(X_DONGLU)} y1={py(Y_NORTH)} x2={px(X_DONGLU)} y2={py(Y_PROMENADE)} className="walkway" />
           <line x1={px(X_MIDDLE)} y1={py(Y_NORTH)} x2={px(X_MIDDLE)} y2={py(Y_PROMENADE)} className="walkway" />
-          <StreetLabel x={px(X_XILU) - 4} y={py(Y_NORTH) + 34} s={STREETS.xilu} anchor="end" small />
-          <StreetLabel x={px(X_DONGLU) + 4} y={py(Y_NORTH) + 34} s={STREETS.donglu} small />
-          <StreetLabel x={px(X_MIDDLE) + 6} y={py(Y_NORTH) + 70} s={STREETS.zhonglu} small />
 
           <rect x={px(X_PROMENADE_WEST)} y={py(Y_PROMENADE) - 7} width={px(X_DONGLU) - px(X_PROMENADE_WEST)} height={14} rx={7} className="promenade" />
           <text x={px(6.3)} y={py(Y_PROMENADE) + 3.5} className="promenade-label">
@@ -338,7 +336,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
           {/* Entrances: halls open on the north and south sides (CIEFC); gate numbers are not confirmed, so none are shown. */}
           {ENTRANCES.map((e) => (
             <g key={e.label} className="entrance">
-              <rect x={px(e.x) - 44} y={py(e.y) - 9} width={88} height={18} rx={9} />
+              <rect x={px(e.x) - 34} y={py(e.y) - 9} width={68} height={18} rx={9} />
               <text x={px(e.x)} y={py(e.y) + 4} textAnchor="middle">
                 {e.label}
               </text>
@@ -353,6 +351,11 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
             return (
               <g key={n.id}>
                 <rect x={b.x} y={b.y} width={b.w} height={b.h} rx={8} className={`bld ${used ? 'bld-used' : ''} ${n.kind !== 'hall' ? `bld-${n.kind}` : ''}`} />
+                {n.kind === 'hall' && (
+                  <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 14} textAnchor="middle" className="bld-big">
+                    {n.label}
+                  </text>
+                )}
                 <text x={b.x + b.w / 2} y={b.y + 15} textAnchor="middle" className="bld-num">
                   {n.kind === 'outdoor' ? `Площадка ${n.id.split('.')[0]}` : n.kind === 'special' ? 'Friendship Hall' : `Павильон ${n.label}`}
                 </text>
@@ -439,19 +442,25 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
         </svg>
       </div>
 
+    </MapShell>
+  );
+}
+
+/** Legend ("Обозначения"): map symbols, product groups, data notes. */
+export function MapLegend({ states }: { states: Record<number, PointState> }) {
+  return (
+    <div className="legend-sheet">
       <div className="map-keys small">
+        <span><i className="k k-user" /> вы здесь (GPS)</span>
+        <span><i className="k k-active" /> текущий участок маршрута</span>
+        <span><i className="k k-rest" /> дальше по маршруту</span>
+        <span><i className="k k-order">1</i> номер шага · цвет = товарная группа</span>
         <span><i className="k k-current" /> где вы сейчас</span>
         <span><i className="k k-next" /> следующий павильон</span>
-        <span><i className="k k-door">вход</i> вход (сторона подтверждена, номер ворот — нет)</span>
-        <span><i className="k k-user" /> вы здесь (GPS)</span>
-        <span><i className="k k-active" /> текущий участок</span>
-        <span><i className="k k-order">1</i> порядок обхода · цвет = товарная группа</span>
-        <span>число — точек по маршруту</span>
-        <span>«доп.» — второй стенд компании, визит в другом павильоне</span>
-        <span>внутри павильона — его этажи (мелко — код, напр. 15.2)</span>
+        <span><i className="k k-door">≈ вход</i> вход: сторона подтверждена, точное место и номер ворот — нет</span>
+        <span>число в этаже — точек по маршруту · «доп.» — второй стенд компании</span>
       </div>
-
-      <h3>Легенда товарных групп</h3>
+      <h3>Товарные группы</h3>
       <div className="legend">
         {GROUP_LEGEND.map((g) => {
           const left = POINTS.filter((p) => p.mapGroup === g.group && states[p.id].visit === 'pending').length;
@@ -467,15 +476,40 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
         })}
       </div>
       <p className="muted small">
-        Расположение зон и павильонов — по официальному Exhibition Section Floor Map 140-й сессии (Phase 1) и Complex Layout.
-        Линии маршрута идут по проходам: Pearl Promenade, Middle Platform, переход через Xingang Donglu. Пунктир от синей
-        точки — приблизительный путь до ближайшего прохода. Внутри павильона порядок — по номерам стендов (не GPS): координат
-        стендов нет, точки привязаны к павильонам. GPS внутри павильонов может ошибаться на десятки метров.
+        Расположение зон и павильонов — по официальному Exhibition Section Floor Map 140-й сессии (Phase 1). Маршрут идёт по
+        проходам: Pearl Promenade, Middle Platform, переход через ул. Синган-Дунлу. Внутри павильона — по номерам стендов (не
+        GPS). GPS внутри павильонов может ошибаться на десятки метров.
       </p>
     </div>
   );
 }
 
+export const gpsChipLabel = (gps: GpsView) =>
+  gps.fix ? `GPS ±${Math.round(gps.fix.acc)} м` : gps.status === 'waiting' ? 'GPS…' : 'GPS ⚠';
+
+/** One-line notices over the map. */
+export function MapPills({ gps, suggest, onReplan, onDismiss, onEnableGps, extra }: { gps: GpsView; suggest: { savingM: number } | null; onReplan: () => void; onDismiss: () => void; onEnableGps: () => void; extra?: ReactNode }) {
+  return (
+    <>
+      {suggest && (
+        <div className="pill pill-blue">
+          <span>Короче на ≈ {formatMeters(suggest.savingM)}</span>
+          <button onClick={onReplan}>Перестроить</button>
+          <button onClick={onDismiss} aria-label="Скрыть">
+            ✕
+          </button>
+        </div>
+      )}
+      {(gps.status === 'off' || gps.status === 'denied' || gps.status === 'unavailable') && (
+        <div className="pill pill-warn">
+          <span>{gps.status === 'denied' ? 'GPS запрещён в Safari' : 'GPS выключен'} — маршрут от выбранного павильона</span>
+          {gps.status === 'off' && <button onClick={onEnableGps}>Включить</button>}
+        </div>
+      )}
+      {extra}
+    </>
+  );
+}
 
 export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }: Pick<Props, 'gps' | 'current' | 'onCalibrate' | 'onEnableGps' | 'onPickHall'>) {
   if (gps.status === 'off')
@@ -546,53 +580,14 @@ export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }:
   );
 }
 
-export function NextSheet({ step, leg, follow, onToggleFollow, onOpen, onVisited, from }: {
-  step: Step;
-  from: From;
-  leg: LegInfo | null;
-  follow: boolean;
-  onToggleFollow: () => void;
-  onOpen: (id: number) => void;
-  onVisited: (id: number) => void;
-}) {
-  return (
-    <div className="next-sheet">
-      <div className="ns-top">
-        <span className="ns-num" style={{ background: groupColor(step.point.mapGroup) }}>1</span>
-        <span className="ns-label">Следующая точка</span>
-        <PriorityBadge p={step.point} />
-      </div>
-      <div className="ns-where">{hallLabel(step.hall)}</div>
-      <div className="ns-booth">Стенд {boothsLabel(step.booths)}</div>
-      <div className="ns-row">
-        <button className="ns-company" onClick={() => onOpen(step.point.id)}>
-          {step.point.company} ›
-        </button>
-        <GroupTag group={step.point.mapGroup} short />
-      </div>
-      {leg && <LegLine leg={leg} />}
-      <Directions from={from} hall={step.hall} booths={step.booths} />
-      <PathLine hall={step.hall} booths={step.booths} />
-      <div className="ns-btns">
-        <button className={`btn ${follow ? 'btn-secondary' : 'btn-start'}`} onClick={onToggleFollow}>
-          {follow ? '■ Остановить' : '▶ Начать маршрут'}
-        </button>
-        <button className="btn btn-visit" onClick={() => onVisited(step.point.id)}>
-          ✓ Посетила
-        </button>
-      </div>
-    </div>
-  );
-}
-
 /** Entrance tags placed on the side of each zone where entrances exist (positions along the side are schematic). */
 const ENTRANCES: { x: number; y: number; label: string }[] = [
-  { x: 1.9, y: 5.52, label: 'Вход в Зону D' },
-  { x: 8.6, y: 5.52, label: 'Вход в Зону A' },
-  { x: 14.95, y: 5.52, label: 'Вход в Зону B' },
-  { x: 8.2, y: -0.25, label: 'Вход в Зону A' },
-  { x: 14.6, y: -0.25, label: 'Вход в Зону B' },
-  { x: 12.9, y: 6.3, label: 'Вход в Зону C' },
+  { x: 1.9, y: 5.52, label: '≈ вход D' },
+  { x: 8.6, y: 5.52, label: '≈ вход A' },
+  { x: 14.95, y: 5.52, label: '≈ вход B' },
+  { x: 8.2, y: -0.25, label: '≈ вход A' },
+  { x: 14.6, y: -0.25, label: '≈ вход B' },
+  { x: 12.9, y: 6.3, label: '≈ вход C' },
 ];
 
 function StreetLabel({ x, y, s, anchor = 'start', small, note }: { x: number; y: number; s: { ru: string; en: string; zh: string }; anchor?: 'start' | 'middle' | 'end'; small?: boolean; note?: string }) {
