@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AMAP_KEY, createMap, describe, loadAMap, loadRender, mapTiming, saveRender, serviceError, type AMapDiag, type AMapNS, type RenderMode } from '../amap';
 import { net, netSummary, webglSupport } from '../amapDiag';
 import { haversine, metersBetween, wgs84ToGcj02, type LngLat } from '../coords';
-import { HALL_GEO_BY_ID, WALK_M_PER_MIN } from '../geo';
+import { HALL_GEO_BY_ID, WALK_M_PER_MIN, type HallGeo } from '../geo';
 import { groupColor } from '../groups';
 import { COMPLEX_GCJ, HALL_AREA, areaHits, discoverHalls, hallHits, toHallGeo, type PoiCache } from '../poi';
 import type { Plan } from '../route';
@@ -17,6 +17,7 @@ interface Props {
   leg: LegInfo | null;
   suggest: { savingM: number } | null;
   pois: PoiCache | null;
+  marks: HallGeo[];
   onPois: (c: PoiCache) => void;
   onReplan: () => void;
   onDismissSuggest: () => void;
@@ -42,8 +43,10 @@ interface Walk {
 }
 
 /** Where a hall is on the AMap map (GCJ-02): its own POI, else sourced hallGeo, else only its Area POI. */
-function locate(hall: string, pois: PoiCache | null): { pos: LngLat; level: 'hall' | 'area'; source: string } | null {
+function locate(hall: string, pois: PoiCache | null, marks: HallGeo[] = []): { pos: LngLat; level: 'hall' | 'area'; source: string } | null {
   const b = nodeOfHall(hall);
+  const mk = marks.find((m) => m.hall === b);
+  if (mk) return { pos: wgs84ToGcj02([mk.lng, mk.lat]), level: 'hall', source: mk.source };
   const hp = hallHits(pois).get(b);
   if (hp) return { pos: hp.gcj, level: 'hall', source: `AMap POI «${hp.name}»` };
   const hg = HALL_GEO_BY_ID.get(b);
@@ -64,7 +67,7 @@ function download(name: string, content: string) {
 }
 
 export function AmapView(props: Props) {
-  const { plan, current, gps, leg, suggest, pois, onPois, onReplan, onDismissSuggest, onVisited, onOpen, onHall, onCalibrate, onEnableGps, onPickHall, onSchema } = props;
+  const { plan, current, gps, leg, suggest, pois, marks, onPois, onReplan, onDismissSuggest, onVisited, onOpen, onHall, onCalibrate, onEnableGps, onPickHall, onSchema } = props;
   const box = useRef<HTMLDivElement>(null);
   const AM = useRef<AMapNS>(null);
   const map = useRef<AMapNS>(null);
@@ -87,7 +90,7 @@ export function AmapView(props: Props) {
 
   const user: LngLat | null = gps.fix ? wgs84ToGcj02([gps.fix.lon, gps.fix.lat]) : null;
   const firstStop = plan.stops[0];
-  const target = firstStop ? locate(firstStop.hall, pois) : null;
+  const target = firstStop ? locate(firstStop.hall, pois, marks) : null;
 
   const runSearch = (AMap: AMapNS) => {
     setSearching(true);
@@ -141,6 +144,7 @@ export function AmapView(props: Props) {
   useEffect(() => {
     const AMap = AM.current;
     if (status !== 'ready' || !AMap || !user || !target) return;
+    if (target.level === 'hall' && metersBetween(user, target.pos) < 40) return; // already there
     const key = `${target.pos[0].toFixed(5)},${target.pos[1].toFixed(5)}`;
     if (walk && walk.key === key && metersBetween(walk.origin, user) < 30) return;
     const walking = new AMap.Walking({ hideMarkers: true, autoFitView: false });
@@ -169,7 +173,7 @@ export function AmapView(props: Props) {
     const out: { nums: number[]; halls: string[]; color: string; loc: ReturnType<typeof locate> }[] = [];
     const byArea = new Map<string, (typeof out)[number]>();
     for (const e of byBuilding.values()) {
-      const loc = locate(e.halls[0], pois);
+      const loc = locate(e.halls[0], pois, marks);
       if (loc?.level === 'area') {
         const area = HALL_AREA[nodeOfHall(e.halls[0])];
         const g = byArea.get(area);
@@ -185,7 +189,7 @@ export function AmapView(props: Props) {
     }
     out.forEach((d) => d.nums.sort((x, y) => x - y));
     return out;
-  }, [plan, pois]);
+  }, [plan, pois, marks]);
 
   useEffect(() => {
     const AMap = AM.current;
@@ -206,7 +210,7 @@ export function AmapView(props: Props) {
           zIndex: 50,
         }),
       );
-    if (user && target) {
+    if (user && target && !(target.level === 'hall' && metersBetween(user, target.pos) < 40)) {
       if (walk && !walk.failed && walk.path?.length)
         layer.push(new AMap.Polyline({ path: [user, ...walk.path, target.pos], strokeColor: '#2563eb', strokeWeight: 8, strokeOpacity: 0.95, lineJoin: 'round', lineCap: 'round', zIndex: 90, showDir: true }));
       else if (walk?.failed)
@@ -270,15 +274,18 @@ export function AmapView(props: Props) {
   // Distance from the real position to the complex — far away the map has little or no AMap data.
   const farKm = user ? haversine(user, COMPLEX_GCJ) / 1000 : 0;
 
-  const sheetLeg: LegInfo | null =
-    walk && !walk.failed && user && target
+  const atTarget = !!user && !!target && target.level === 'hall' && metersBetween(user, target.pos) < 40;
+  const sheetLeg: LegInfo | null = atTarget
+    ? { meters: 0, minutes: 0, sameHall: true, known: true, fromGps: true, approx: false }
+    : walk && !walk.failed && user && target
       ? { meters: walk.meters, minutes: Math.max(1, Math.round(walk.seconds / 60) || Math.round(walk.meters / WALK_M_PER_MIN)), sameHall: false, known: true, fromGps: true, approx: target.level === 'area', via: 'amap' }
       : leg;
 
   const hallsFound = hallHits(pois);
   const areasFound = areaHits(pois);
   const routedBuildings = Array.from(new Set(plan.stops.map((s) => nodeOfHall(s.hall))));
-  const missing = routedBuildings.filter((b) => !hallsFound.has(b) && !HALL_GEO_BY_ID.has(b));
+  const marked = new Set(marks.map((m) => m.hall));
+  const missing = routedBuildings.filter((b) => !hallsFound.has(b) && !HALL_GEO_BY_ID.has(b) && !marked.has(b));
 
   if (status === 'nokey')
     return (
@@ -358,20 +365,21 @@ export function AmapView(props: Props) {
         <span><i className="k k-order">1</i> шаг · цвет = товарная группа</span>
       </div>
       <div className="poi-panel small">
-        <b>Координаты Hall из AMap POI</b>
+        <b>Координаты Hall</b>
+        <span> · отмечено на месте: {marks.length ? marks.map((m) => m.hall).sort((a, b) => +a - +b).join(', ') : 'нет'}</span>
         {searching ? (
           <span> · ищу…</span>
         ) : pois ? (
           <>
             <span>
               {' '}
-              · найдено Hall: {hallsFound.size ? Array.from(hallsFound.keys()).sort((a, b) => +a - +b).join(', ') : 'нет'} · зон:{' '}
+              · AMap POI: Hall {hallsFound.size ? Array.from(hallsFound.keys()).sort((a, b) => +a - +b).join(', ') : 'нет'} · зон:{' '}
               {areasFound.size ? Array.from(areasFound.keys()).sort().join(', ') : 'нет'} · запросов {pois.queries}
             </span>
             {missing.length > 0 && (
               <span className="muted">
                 {' '}
-                · нет точки Hall в AMap: {missing.join(', ')} (показаны маркером зоны, если AMap вернул зону; иначе не показаны)
+                · ещё без координат: {missing.join(', ')} — встаньте в Hall и нажмите «📍 Отметить»
               </span>
             )}
             {pois.errors.length > 0 && <span className="muted"> · ошибки: {pois.errors.slice(0, 2).join('; ')}</span>}
@@ -382,8 +390,8 @@ export function AmapView(props: Props) {
           <button className="btn-link" disabled={status !== 'ready' || searching} onClick={() => AM.current && runSearch(AM.current)}>
             Повторить поиск
           </button>
-          {pois && (
-            <button className="btn-link" onClick={() => download('hallGeo.json', JSON.stringify(toHallGeo(pois), null, 1))}>
+          {(pois || marks.length > 0) && (
+            <button className="btn-link" onClick={() => download('hallGeo.json', JSON.stringify([...toHallGeo(pois).filter((h) => !marked.has(h.hall)), ...marks], null, 1))}>
               Скачать hallGeo.json
             </button>
           )}

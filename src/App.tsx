@@ -4,6 +4,8 @@ import { AMAP_KEY } from './amap';
 import { WALK_M_PER_MIN, fitGeoref, hallCenter } from './geo';
 import { haversine } from './coords';
 import { COMPLEX_WGS, loadPoiCache, savePoiCache, toHallGeo, type PoiCache } from './poi';
+import { MAX_MARK_ACC_M, loadMarks, makeMark, saveMarks, upsertMark } from './marks';
+import type { HallGeo } from './geo';
 import { lockFromPlan, lockIsStale, planCost, planFromLock, planRoute, type Plan, type Start } from './route';
 import { computeStats } from './stats';
 import { useAppStore } from './store';
@@ -83,7 +85,14 @@ export default function App() {
     savePoiCache(c);
   };
   // Real hall coordinates found through AMap POI search refine the plan ↔ GPS georeference.
-  const geo = useMemo(() => fitGeoref(store.anchors, toHallGeo(pois)), [store.anchors, pois]);
+  const [marks, setMarks] = useState<HallGeo[]>(loadMarks);
+  // Real hall coordinates: on-site GPS marks win over AMap POIs for the same building.
+  const realHalls = useMemo(() => {
+    const m = new Map<string, HallGeo>(toHallGeo(pois).map((h) => [h.hall, h]));
+    for (const h of marks) m.set(h.hall, h);
+    return Array.from(m.values());
+  }, [pois, marks]);
+  const geo = useMemo(() => fitGeoref(store.anchors, realHalls), [store.anchors, realHalls]);
   const gpsVenue: Pt | null = gps.fix ? geo.toVenue(gps.fix.lat, gps.fix.lon) : null;
   const gpsInside = !!gpsVenue && inVenue(gpsVenue);
   // Route start = real position: inside the complex, or nearby outside it (the first hall is chosen from there).
@@ -181,11 +190,18 @@ export default function App() {
     target: firstLatLon,
   };
 
-  const calibrate = (hall: string) => {
-    const c = hallCenter(hall);
-    if (!c || !gps.fix) return;
-    store.addAnchor({ x: c.x, y: c.y, lat: gps.fix.lat, lon: gps.fix.lon, acc: gps.fix.acc, kind: 'calib', label: `Hall ${hall}`, at: new Date().toISOString() });
+  /** "📍 Отметить: я в Hall X" — the real GPS fix becomes this hall's coordinate (and refines the georeference). */
+  const markHall = (hall: string) => {
+    if (!hallCenter(hall) || !gps.fix) return;
+    if (gps.fix.acc > MAX_MARK_ACC_M) {
+      setToast({ text: `GPS слишком неточный (±${Math.round(gps.fix.acc)} м). Подойдите к окну или выходу и попробуйте снова.` });
+      return;
+    }
+    const next = upsertMark(marks, makeMark(hall, gps.fix));
+    setMarks(next);
+    saveMarks(next);
     store.setCurrentHall(hall);
+    setToast({ text: `📍 Hall ${hall} отмечен на карте (±${Math.round(gps.fix.acc)} м).` });
   };
 
   const selectHall = (h: string | null) => {
@@ -340,13 +356,14 @@ export default function App() {
             leg={legInfo}
             suggest={suggest}
             pois={pois}
+            marks={marks}
             onPois={onPois}
             onReplan={() => replan()}
             onDismissSuggest={() => setSuggest(null)}
             onVisited={(id) => finish(id, 'visited')}
             onOpen={setOpenId}
             onHall={setSheetHall}
-            onCalibrate={calibrate}
+            onCalibrate={markHall}
             onEnableGps={() => store.setGpsOn(true)}
             onPickHall={() => setHallOpen(true)}
             onSchema={() => chooseMap('schema')}
@@ -368,7 +385,7 @@ export default function App() {
             onDismissSuggest={() => setSuggest(null)}
             onVisited={(id) => finish(id, 'visited')}
             onOpen={setOpenId}
-            onCalibrate={calibrate}
+            onCalibrate={markHall}
             onEnableGps={() => store.setGpsOn(true)}
             onPickHall={() => setHallOpen(true)}
           />
@@ -443,6 +460,7 @@ export default function App() {
           onClose={() => setSheetHall(null)}
           onOpen={setOpenId}
           onSetCurrent={selectHall}
+          onMark={gps.fix ? (h) => { markHall(h); setSheetHall(null); } : undefined}
         />
       )}
       {hallOpen && (

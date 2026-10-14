@@ -13,9 +13,11 @@ interface Props {
   onClose: () => void;
   onOpen: (id: number) => void;
   onSetCurrent: (hall: string) => void;
+  /** Record the current GPS fix as this hall's real coordinate. */
+  onMark?: (hall: string) => void;
 }
 
-export function HallSheet({ hall, plan, states, current, onClose, onOpen, onSetCurrent }: Props) {
+export function HallSheet({ hall, plan, states, current, onClose, onOpen, onSetCurrent, onMark }: Props) {
   const pts = pointsInHall(hall).sort(
     (a, b) => Number(states[a.id].visit !== 'pending') - Number(states[b.id].visit !== 'pending') || priorityRank(a) - priorityRank(b) || a.id - b.id,
   );
@@ -41,7 +43,12 @@ export function HallSheet({ hall, plan, states, current, onClose, onOpen, onSetC
         </div>
         {current !== hall && (
           <button className="btn btn-secondary full" onClick={() => onSetCurrent(hall)}>
-            📍 Я в этом Hall
+            Я в этом Hall
+          </button>
+        )}
+        {onMark && (
+          <button className="btn btn-mark full" onClick={() => onMark(hall)}>
+            📍 Отметить: я здесь — сохранить GPS как координату Hall {hall}
           </button>
         )}
         <div className="sheet-list">

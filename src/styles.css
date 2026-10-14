@@ -509,3 +509,4 @@ main { padding: 12px 16px; }
 .render-diag dd { margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; }
 .rd-switch { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 4px; }
 .rd-switch .toggle { padding: 4px 10px; font-size: 0.78rem; }
+.btn-mark { background: #2563eb; color: #fff; border-color: #2563eb; min-height: 40px; padding: 8px 12px; font-size: 0.9rem; width: 100%; }

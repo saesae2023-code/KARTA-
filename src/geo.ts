@@ -10,7 +10,7 @@
 import hallGeoData from './data/hallGeo.json';
 import { NODE_BY_ID, BOX_W, ROW_H, ROW_TOP, nodeOfHall, type Pt } from './venue';
 
-/** Real hall coordinates (WGS-84) — from AMap POI search results exported in the app, or other sourced data. */
+/** Real hall coordinates (WGS-84) — AMap POI search results, GPS marks taken on site, or other sourced data. */
 export interface HallGeo {
   hall: string;
   area: string;
@@ -18,7 +18,7 @@ export interface HallGeo {
   lng: number;
   /** [lng, lat] ring (WGS-84); empty for point sources. */
   polygon: [number, number][];
-  accuracy: 'building_polygon' | 'entrance' | 'centroid';
+  accuracy: 'building_polygon' | 'entrance' | 'centroid' | 'gps_on_site';
   source: string;
 }
 

@@ -513,13 +513,13 @@ export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }:
         🔵 GPS ±{acc} м{gps.hallGuess ? ` · корпус ${gps.hallGuess}?` : ''} · {QUALITY_LABEL[gps.quality]}
         {!gps.usable && ' · точность низкая, маршрут от выбранного Hall'}
       </span>
-      {current && acc <= 80 && (
-        <button className="btn-link" onClick={() => onCalibrate(current)}>
-          {gps.hallGuess && gps.hallGuess !== nodeOfHall(current)
-            ? `Я точно в Hall ${current} (GPS показывает корпус ${gps.hallGuess}): уточнить привязку`
-            : `Я в Hall ${current}: уточнить привязку`}
+      {current && acc <= 60 && (
+        <button className="btn btn-mark" onClick={() => onCalibrate(current)}>
+          📍 Отметить: я в Hall {current}
+          {gps.hallGuess && gps.hallGuess !== nodeOfHall(current) ? ` (GPS показывает корпус ${gps.hallGuess})` : ''}
         </button>
       )}
+      {current && acc > 60 && <span className="muted">Для отметки Hall нужна точность GPS ±60 м</span>}
       {current && (
         <button className="btn-link" onClick={onPickHall}>
           Другой Hall
@@ -527,7 +527,7 @@ export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }:
       )}
       {!current && (
         <button className="btn-link" onClick={onPickHall}>
-          Уточнить: выбрать Hall
+          Выбрать Hall, чтобы отметить его на карте
         </button>
       )}
     </div>
