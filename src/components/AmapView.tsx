@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { AMAP_KEY, loadAMap, type AMapNS } from '../amap';
+import { AMAP_KEY, createMap, describe, loadAMap, serviceError, type AMapDiag, type AMapNS } from '../amap';
 import { metersBetween, wgs84ToGcj02, type LngLat } from '../coords';
 import { HALL_GEO_BY_ID, WALK_M_PER_MIN } from '../geo';
 import { groupColor } from '../groups';
-import { COMPLEX_GCJ, HALL_AREA, areaHits, discoverHalls, hallHits, toHallGeo, type PoiCache } from '../poi';
+import { HALL_AREA, areaHits, discoverHalls, hallHits, toHallGeo, type PoiCache } from '../poi';
 import type { Plan } from '../route';
 import { nodeOfHall } from '../venue';
 import { formatMeters, SuggestBanner } from './LegInfo';
@@ -37,6 +37,7 @@ interface Walk {
   meters: number;
   seconds: number;
   failed: boolean;
+  error?: string;
 }
 
 /** Where a hall is on the AMap map (GCJ-02): its own POI, else sourced hallGeo, else only its Area POI. */
@@ -69,7 +70,8 @@ export function AmapView(props: Props) {
   const routeLayer = useRef<AMapNS[]>([]);
   const userLayer = useRef<{ dot: AMapNS; acc: AMapNS } | null>(null);
   const [status, setStatus] = useState<Status>(AMAP_KEY ? 'loading' : 'nokey');
-  const [error, setError] = useState('');
+  const [diag, setDiag] = useState<AMapDiag | null>(null);
+  const [poiError, setPoiError] = useState('');
   const [searching, setSearching] = useState(false);
   const [walk, setWalk] = useState<Walk | null>(null);
   const [follow, setFollow] = useState(false);
@@ -83,7 +85,7 @@ export function AmapView(props: Props) {
     setSearching(true);
     discoverHalls(AMap)
       .then(onPois)
-      .catch((e) => setError(`Поиск POI: ${e?.message ?? e}`))
+      .catch((e) => setPoiError(serviceError('error', e)))
       .finally(() => setSearching(false));
   };
 
@@ -92,17 +94,21 @@ export function AmapView(props: Props) {
     if (!AMAP_KEY) return;
     let destroyed = false;
     loadAMap()
-      .then((AMap) => {
+      .then(async (AMap) => {
         if (destroyed || !box.current) return;
         AM.current = AMap;
-        map.current = new AMap.Map(box.current, { zoom: 16, center: COMPLEX_GCJ, viewMode: '2D', resizeEnable: true });
+        map.current = await createMap(AMap, box.current);
+        if (destroyed) return;
         map.current.addControl(new AMap.Scale());
         setStatus('ready');
         if (!pois) runSearch(AMap);
       })
-      .catch((e) => {
-        setStatus(e?.message === 'NO_KEY' ? 'nokey' : 'error');
-        setError(String(e?.message ?? e));
+      .catch((e: unknown) => {
+        if (destroyed) return;
+        const d = e && typeof e === 'object' && 'stage' in e ? (e as AMapDiag) : describe(e, 'map');
+        setDiag(d);
+        setStatus(d.errcode === 'NO_KEY' ? 'nokey' : 'error');
+        console.error('[AMap]', d);
       });
     return () => {
       destroyed = true;
@@ -123,7 +129,7 @@ export function AmapView(props: Props) {
     walking.search(new AMap.LngLat(user[0], user[1]), new AMap.LngLat(target.pos[0], target.pos[1]), (st: string, result: AMapNS) => {
       const r = st === 'complete' ? result?.routes?.[0] : null;
       if (!r) {
-        setWalk({ key, origin: user, path: null, meters: metersBetween(user, target.pos), seconds: 0, failed: true });
+        setWalk({ key, origin: user, path: null, meters: metersBetween(user, target.pos), seconds: 0, failed: true, error: st === 'complete' ? 'нет маршрута' : serviceError(st, result) });
         return;
       }
       const path: LngLat[] = (r.steps ?? []).flatMap((s: AMapNS) => (s.path ?? []).map((p: AMapNS) => [p.lng ?? p.getLng(), p.lat ?? p.getLat()] as LngLat));
@@ -254,10 +260,10 @@ export function AmapView(props: Props) {
     return (
       <div className="map">
         <div className="gps-panel warn amap-setup">
-          <b>Нужен ключ AMap (高德) JS API 2.0.</b>
+          <b>Нужен ключ AMap Overseas (JS API 2.0).</b>
           <span>
-            На Vercel → Settings → Environment Variables добавьте <code>VITE_AMAP_KEY</code> (ключ «Web端(JS API)») и{' '}
-            <code>AMAP_SECURITY_CODE</code> (安全密钥), затем Redeploy. Пока показываю схему залов.
+            На Vercel → Settings → Environment Variables добавьте <code>VITE_AMAP_KEY</code> и <code>VITE_AMAP_SECURITY_KEY</code>{' '}
+            (AMap Overseas Platform), затем Redeploy — переменные VITE_ встраиваются при сборке. Пока показываю схему залов.
           </span>
           <button className="btn btn-secondary" onClick={onSchema}>
             Открыть схему залов
@@ -277,16 +283,9 @@ export function AmapView(props: Props) {
         </button>
       </div>
       <GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />
-      {status === 'error' && (
-        <div className="gps-panel warn">
-          AMap не загрузился: {error}. Проверьте ключ, домен в белом списке ключа и AMAP_SECURITY_CODE.{' '}
-          <button className="btn-link" onClick={onSchema}>
-            Схема залов
-          </button>
-        </div>
-      )}
+      {status === 'error' && diag && <AmapDiagPanel d={diag} onSchema={onSchema} />}
       {walk?.failed && user && (
-        <div className="gps-panel warn">Маршрут приблизительный: AMap.Walking не вернул пешеходный путь — пунктир по прямой (≈ {formatMeters(walk.meters)}).</div>
+        <div className="gps-panel warn">Маршрут приблизительный: AMap.Walking не вернул пешеходный путь ({walk.error}) — пунктир по прямой (≈ {formatMeters(walk.meters)}).</div>
       )}
       {target?.level === 'area' && firstStop && (
         <div className="gps-panel warn">
@@ -338,6 +337,7 @@ export function AmapView(props: Props) {
               </span>
             )}
             {pois.errors.length > 0 && <span className="muted"> · ошибки: {pois.errors.slice(0, 2).join('; ')}</span>}
+            {poiError && <span className="muted"> · {poiError}</span>}
           </>
         ) : null}
         <span className="poi-btns">
@@ -355,6 +355,41 @@ export function AmapView(props: Props) {
         Карта и пешеходные маршруты — AMap (高德), координаты GPS переводятся WGS-84 → GCJ-02. Порядок обхода считается графом
         проходов официальной схемы; внутри Hall — по номерам стендов (не GPS).
       </p>
+    </div>
+  );
+}
+
+function AmapDiagPanel({ d, onSchema }: { d: AMapDiag; onSchema: () => void }) {
+  return (
+    <div className="gps-panel warn amap-diag">
+      <b>AMap не загрузился</b>
+      <dl>
+        <dt>errcode</dt>
+        <dd>{d.errcode}</dd>
+        <dt>errmsg</dt>
+        <dd>{d.errmsg}</dd>
+        <dt>errdetail</dt>
+        <dd>{d.errdetail}</dd>
+        <dt>этап</dt>
+        <dd>{d.stage}</dd>
+        <dt>endpoint</dt>
+        <dd>{d.endpoint}</dd>
+        <dt>window.AMap</dt>
+        <dd>{d.hasAMap ? 'есть' : 'нет'}</dd>
+        <dt>ключ / securityJsCode</dt>
+        <dd>
+          {d.keySet ? 'задан' : 'НЕТ'} / {d.securitySet ? 'задан' : 'НЕТ'} · service {d.serviceType}
+        </dd>
+        {d.console.length > 0 && (
+          <>
+            <dt>сообщения AMap</dt>
+            <dd>{d.console.join(' | ')}</dd>
+          </>
+        )}
+      </dl>
+      <button className="btn btn-secondary" onClick={onSchema}>
+        Открыть схему залов
+      </button>
     </div>
   );
 }

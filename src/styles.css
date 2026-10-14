@@ -497,3 +497,7 @@ main { padding: 12px 16px; }
 .poi-btns { display: inline-flex; gap: 12px; }
 .amap-setup { flex-direction: column; align-items: stretch; gap: 8px; font-size: 0.86rem; }
 .amap-setup code { background: var(--surface); padding: 1px 4px; border-radius: 4px; }
+.amap-diag { flex-direction: column; align-items: stretch; gap: 6px; }
+.amap-diag dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; margin: 0; font-size: 0.8rem; }
+.amap-diag dt { font-weight: 800; color: var(--muted); }
+.amap-diag dd { margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, Menlo, monospace; }

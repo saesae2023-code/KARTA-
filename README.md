@@ -52,15 +52,16 @@ AMap PlaceSearch (`src/poi.ts`: 中国进出口商品交易会展馆 / 广交会
 Hall без POI не получает выдуманной точки. Найденное можно выгрузить кнопкой «Скачать hallGeo.json» и
 закоммитить в `src/data/hallGeo.json`. «Схема залов» — запасной вид.
 
-Настройка (ключи не хранятся в коде):
+Настройка — AMap Overseas Platform (ключи не хранятся в коде):
 
-1. console.amap.com → 应用管理 → 创建应用 → 添加 Key → сервис **Web端(JS API)**. Получите Key и 安全密钥.
-2. В настройках ключа добавьте домен `altiora-canton-fair-map.vercel.app` в белый список (域名白名单).
-3. Vercel → Settings → Environment Variables:
-   - `VITE_AMAP_KEY` = Key;
-   - `AMAP_SECURITY_CODE` = 安全密钥 (только на сервере; прокси `/_AMapService` → `api/amap.ts`, как в
-     документации AMap «代理服务器方式»).
-4. Redeploy. Для локальной разработки: `.env.local` с `VITE_AMAP_KEY` и `VITE_AMAP_SECURITY_CODE` (см. `.env.example`).
+- Скрипт: `https://sg-webapi.opnavi.com/maps?v=2.0&key=VITE_AMAP_KEY` (не `webapi.amap.com`).
+  До загрузки: `window._AMapSecurityConfig = { securityJsCode: VITE_AMAP_SECURITY_KEY }`,
+  `window._AMapServiceConfig = { type: 'oversea_sg' }`; карта `{ viewMode: '2D', zoom: 16, showOversea: true }` (`src/amap.ts`).
+- Vercel → Environment Variables (Production): `VITE_AMAP_KEY`, `VITE_AMAP_SECURITY_KEY`, затем **Redeploy** — переменные
+  `VITE_` встраиваются при сборке. `AMAP_SECURITY_CODE` больше не используется.
+- Если в настройках ключа включён whitelist доменов/referrer — добавьте `altiora-canton-fair-map.vercel.app`
+  (для preview-сборок — также их `*.vercel.app` домены).
+- При ошибке карта показывает errcode / errmsg / errdetail, endpoint, наличие `window.AMap` и сообщения AMap из консоли.
 
 ## Запуск
 
