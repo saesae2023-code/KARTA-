@@ -7,6 +7,8 @@
  * Security config is set on window BEFORE the script is requested, as the platform requires.
  */
 
+import { installNetDiag } from './amapDiag';
+
 export type AMapNS = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 declare global {
@@ -21,7 +23,41 @@ export const AMAP_ENDPOINT = 'https://sg-webapi.opnavi.com/maps';
 export const AMAP_KEY: string = (import.meta.env.VITE_AMAP_KEY ?? '').trim();
 const SECURITY_KEY: string = (import.meta.env.VITE_AMAP_SECURITY_KEY ?? import.meta.env.VITE_AMAP_SECURITY_CODE ?? '').trim();
 export const AMAP_PLUGINS = ['AMap.Walking', 'AMap.PlaceSearch', 'AMap.Scale'];
-export const MAP_OPTIONS = { viewMode: '2D', zoom: 16, showOversea: true, center: [113.354, 23.103] as [number, number] };
+export const MAP_OPTIONS = { zoom: 16, showOversea: true, center: [113.354, 23.103] as [number, number] };
+
+/** Basemap rendering mode (temporary switch while diagnosing the blank basemap). */
+export interface RenderMode {
+  viewMode: '2D' | '3D';
+  layer: 'vector' | 'raster' | 'satellite';
+}
+// Official AMap Overseas example uses viewMode '3D'.
+export const DEFAULT_RENDER: RenderMode = { viewMode: '3D', layer: 'vector' };
+const RENDER_KEY = 'altiora-amap-render';
+export function loadRender(): RenderMode {
+  try {
+    const r = JSON.parse(localStorage.getItem(RENDER_KEY) ?? 'null') as RenderMode | null;
+    if (r && (r.viewMode === '2D' || r.viewMode === '3D') && ['vector', 'raster', 'satellite'].includes(r.layer)) return r;
+  } catch {
+    /* ignore */
+  }
+  return DEFAULT_RENDER;
+}
+export function saveRender(r: RenderMode) {
+  try {
+    localStorage.setItem(RENDER_KEY, JSON.stringify(r));
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Explicit base layers for the chosen mode. */
+export function baseLayers(AMap: AMapNS, layer: RenderMode['layer']): AMapNS[] {
+  if (layer === 'raster') return [new AMap.TileLayer()];
+  if (layer === 'satellite') return [new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()];
+  return [typeof AMap.createDefaultLayer === 'function' ? AMap.createDefaultLayer() : new AMap.TileLayer()];
+}
+
+export const mapTiming = { completeAt: 0, createdAt: 0 };
 
 /** Normalised AMap error for the UI — never "[object Object]". */
 export interface AMapDiag {
@@ -105,6 +141,7 @@ export function loadAMap(timeoutMs = 20000): Promise<AMapNS> {
   if (loading) return loading;
   loading = new Promise<AMapNS>((resolve, reject) => {
     // Must be set before the script request.
+    installNetDiag();
     if (SECURITY_KEY) window._AMapSecurityConfig = { securityJsCode: SECURITY_KEY };
     window._AMapServiceConfig = { type: 'oversea_sg' };
     const restore = captureConsole();
@@ -142,12 +179,14 @@ export function loadAMap(timeoutMs = 20000): Promise<AMapNS> {
 }
 
 /** Create the map and wait for its 'complete' event (key / domain errors surface here). */
-export function createMap(AMap: AMapNS, container: HTMLElement, timeoutMs = 15000): Promise<AMapNS> {
+export function createMap(AMap: AMapNS, container: HTMLElement, render: RenderMode = DEFAULT_RENDER, timeoutMs = 15000): Promise<AMapNS> {
   return new Promise((resolve, reject) => {
     const restore = captureConsole();
     let map: AMapNS;
     try {
-      map = new AMap.Map(container, MAP_OPTIONS);
+      mapTiming.createdAt = performance.now();
+      mapTiming.completeAt = 0;
+      map = new AMap.Map(container, { ...MAP_OPTIONS, viewMode: render.viewMode, layers: baseLayers(AMap, render.layer) });
     } catch (e) {
       restore();
       return reject(describe(e, 'map'));
@@ -159,6 +198,9 @@ export function createMap(AMap: AMapNS, container: HTMLElement, timeoutMs = 1500
     map.on('complete', () => {
       clearTimeout(timer);
       restore();
+      mapTiming.completeAt = performance.now();
+      // The container may have been laid out after creation: make AMap re-measure it.
+      map.resize?.();
       resolve(map);
     });
   });

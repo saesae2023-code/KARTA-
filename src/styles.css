@@ -501,3 +501,11 @@ main { padding: 12px 16px; }
 .amap-diag dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; margin: 0; font-size: 0.8rem; }
 .amap-diag dt { font-weight: 800; color: var(--muted); }
 .amap-diag dd { margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, Menlo, monospace; }
+.amap-container { position: absolute; inset: 0; }
+.geo-loading { pointer-events: none; }
+.render-diag { background: var(--surface); border: 1px dashed var(--follow); border-radius: 12px; padding: 6px 10px; margin: 8px 0; }
+.render-diag dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; margin: 6px 0 0; }
+.render-diag dt { font-weight: 800; color: var(--muted); }
+.render-diag dd { margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; }
+.rd-switch { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 4px; }
+.rd-switch .toggle { padding: 4px 10px; font-size: 0.78rem; }

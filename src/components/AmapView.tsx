@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { AMAP_KEY, createMap, describe, loadAMap, serviceError, type AMapDiag, type AMapNS } from '../amap';
+import { AMAP_KEY, createMap, describe, loadAMap, loadRender, mapTiming, saveRender, serviceError, type AMapDiag, type AMapNS, type RenderMode } from '../amap';
+import { net, netSummary, webglSupport } from '../amapDiag';
 import { metersBetween, wgs84ToGcj02, type LngLat } from '../coords';
 import { HALL_GEO_BY_ID, WALK_M_PER_MIN } from '../geo';
 import { groupColor } from '../groups';
@@ -76,6 +77,13 @@ export function AmapView(props: Props) {
   const [walk, setWalk] = useState<Walk | null>(null);
   const [follow, setFollow] = useState(false);
   const fitted = useRef(false);
+  const [render, setRender] = useState<RenderMode>(loadRender);
+  const changeRender = (r: RenderMode) => {
+    saveRender(r);
+    fitted.current = false;
+    setStatus('loading');
+    setRender(r);
+  };
 
   const user: LngLat | null = gps.fix ? wgs84ToGcj02([gps.fix.lon, gps.fix.lat]) : null;
   const firstStop = plan.stops[0];
@@ -97,9 +105,10 @@ export function AmapView(props: Props) {
       .then(async (AMap) => {
         if (destroyed || !box.current) return;
         AM.current = AMap;
-        map.current = await createMap(AMap, box.current);
+        map.current = await createMap(AMap, box.current, render);
         if (destroyed) return;
         map.current.addControl(new AMap.Scale());
+        setTimeout(() => map.current?.resize?.(), 300);
         setStatus('ready');
         if (!pois) runSearch(AMap);
       })
@@ -117,6 +126,15 @@ export function AmapView(props: Props) {
       userLayer.current = null;
       routeLayer.current = [];
     };
+  }, [render]);
+
+  // Keep AMap's canvas in sync with its container size (orientation change, panels opening).
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => map.current?.resize?.());
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
   // ---- AMap.Walking: GPS → next target (real pedestrian polyline) ----
@@ -310,9 +328,12 @@ export function AmapView(props: Props) {
           }}
         />
       )}
-      <div className="geo-box" ref={box}>
+      <div className="geo-box">
+        {/* AMap owns this element; React renders nothing inside it. */}
+        <div className="amap-container" ref={box} />
         {status === 'loading' && <div className="geo-loading">Загружаю карту AMap…</div>}
       </div>
+      <RenderDiag map={map.current} AMap={AM.current} status={status} render={render} box={box.current} onChange={changeRender} />
       <div className="map-keys small">
         <span><i className="k k-user" /> вы здесь (GPS)</span>
         <span><i className="k k-active" /> пешеходный маршрут AMap</span>
@@ -390,6 +411,84 @@ function AmapDiagPanel({ d, onSchema }: { d: AMapDiag; onSchema: () => void }) {
       <button className="btn btn-secondary" onClick={onSchema}>
         Открыть схему залов
       </button>
+    </div>
+  );
+}
+
+/** Temporary basemap diagnostics: layers, canvas, centre/zoom, complete event, AMap network activity. */
+function RenderDiag({ map, AMap, status, render, box, onChange }: { map: AMapNS; AMap: AMapNS; status: Status; render: RenderMode; box: HTMLDivElement | null; onChange: (r: RenderMode) => void }) {
+  const [open, setOpen] = useState(true);
+  const [, tick] = useState(0);
+  useEffect(() => {
+    if (!open) return;
+    const t = setInterval(() => tick((x) => x + 1), 1500);
+    return () => clearInterval(t);
+  }, [open]);
+  let layers = '—';
+  let center = '—';
+  let zoom = '—';
+  try {
+    const ls: AMapNS[] = map?.getLayers?.() ?? [];
+    layers = `${ls.length}: ${ls.map((l) => `${l.CLASS_NAME ?? l.constructor?.name ?? '?'}${l.getOpacity ? ` op ${l.getOpacity()}` : ''}${l.getVisible?.() === false ? ' hidden' : ''}`).join(', ')}`;
+    const c = map?.getCenter?.();
+    if (c) center = `${(c.lng ?? c.getLng()).toFixed(5)}, ${(c.lat ?? c.getLat()).toFixed(5)}`;
+    const z = map?.getZoom?.();
+    if (z !== undefined) zoom = String(Math.round(z * 100) / 100);
+  } catch (e) {
+    layers = `ошибка: ${(e as Error).message}`;
+  }
+  const canvases = box ? Array.from(box.querySelectorAll('canvas')).map((c) => `${c.width}×${c.height} (css ${c.clientWidth}×${c.clientHeight})`) : [];
+  const imgs = box ? box.querySelectorAll('img').length : 0;
+  const cover = (() => {
+    if (!box) return '—';
+    const r = box.getBoundingClientRect();
+    const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) as HTMLElement | null;
+    return el ? `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0] || '-'}` : '—';
+  })();
+  const sum = netSummary();
+  const failures = net.filter((e) => /FAILED|load error|\b[45]\d\d\b/.test(e.status)).slice(-5);
+  const complete = mapTiming.completeAt ? `${Math.round(mapTiming.completeAt - mapTiming.createdAt)} мс после создания` : 'нет';
+  const set = (p: Partial<RenderMode>) => onChange({ ...render, ...p });
+  return (
+    <div className="render-diag small">
+      <button className="btn-link" onClick={() => setOpen(!open)}>
+        🔧 Диагностика подложки {open ? '▾' : '▸'}
+      </button>
+      {open && (
+        <>
+          <div className="rd-switch">
+            <span>Режим:</span>
+            {(['2D', '3D'] as const).map((v) => (
+              <button key={v} className={`toggle ${render.viewMode === v ? 'on' : ''}`} onClick={() => set({ viewMode: v })}>
+                {v}
+              </button>
+            ))}
+            {([['vector', 'Вектор'], ['raster', 'Растр'], ['satellite', 'Спутник']] as const).map(([v, l]) => (
+              <button key={v} className={`toggle ${render.layer === v ? 'on' : ''}`} onClick={() => set({ layer: v })}>
+                {l}
+              </button>
+            ))}
+          </div>
+          <dl>
+            <dt>статус / complete</dt>
+            <dd>{status} / {complete}</dd>
+            <dt>AMap</dt>
+            <dd>{AMap ? `v${AMap.version ?? '?'}` : 'нет'} · {webglSupport()}</dd>
+            <dt>слои</dt>
+            <dd>{layers}</dd>
+            <dt>canvas</dt>
+            <dd>{canvases.length ? canvases.join('; ') : 'нет'} · img: {imgs}</dd>
+            <dt>контейнер</dt>
+            <dd>{box ? `${box.clientWidth}×${box.clientHeight}` : '—'} · сверху: {cover}</dd>
+            <dt>центр / zoom</dt>
+            <dd>{center} / {zoom}</dd>
+            <dt>сеть AMap</dt>
+            <dd>{sum.length ? sum.slice(0, 12).map((r) => `${r.key} ×${r.n} [${r.statuses}]`).join(' | ') : 'запросов не видно (vector-тайлы могут грузиться в Web Worker)'}</dd>
+            <dt>ошибки сети</dt>
+            <dd>{failures.length ? failures.map((f) => `${f.url.slice(0, 90)} → ${f.status}`).join(' | ') : 'нет'}</dd>
+          </dl>
+        </>
+      )}
     </div>
   );
 }
