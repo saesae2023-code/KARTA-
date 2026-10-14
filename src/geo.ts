@@ -10,13 +10,13 @@
 import hallGeoData from './data/hallGeo.json';
 import { NODE_BY_ID, BOX_W, ROW_H, ROW_TOP, nodeOfHall, type Pt } from './venue';
 
-/** Real building geometry per hall (scripts/build_hall_geo.py, from OpenStreetMap). */
+/** Real hall coordinates (WGS-84) — from AMap POI search results exported in the app, or other sourced data. */
 export interface HallGeo {
   hall: string;
   area: string;
   lat: number;
   lng: number;
-  /** [lng, lat] ring. */
+  /** [lng, lat] ring (WGS-84); empty for point sources. */
   polygon: [number, number][];
   accuracy: 'building_polygon' | 'entrance' | 'centroid';
   source: string;
@@ -30,7 +30,7 @@ export interface Anchor {
   y: number;
   lat: number;
   lon: number;
-  kind: 'default' | 'calib' | 'osm';
+  kind: 'default' | 'calib' | 'real';
   label: string;
   acc?: number;
   at?: string;
@@ -60,7 +60,7 @@ const div = (a: C, b: C): C => {
   return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d };
 };
 
-export type GeoQuality = 'approx' | 'partial' | 'calibrated' | 'osm';
+export type GeoQuality = 'approx' | 'partial' | 'calibrated' | 'real';
 
 export interface Georef {
   quality: GeoQuality;
@@ -73,20 +73,24 @@ export interface Georef {
   rmsM: number;
 }
 
-/** Anchors from real building centroids: plan centre of hall N ↔ OSM polygon centroid of hall N. */
-const OSM_ANCHORS: Anchor[] = HALL_GEO.flatMap((h) => {
-  const n = NODE_BY_ID.get(h.hall);
-  if (!n) return [];
-  return [{ x: n.x + BOX_W / 2, y: ROW_TOP[n.row] + ROW_H[n.row] / 2, lat: h.lat, lon: h.lng, kind: 'osm' as const, label: `OSM Hall ${h.hall}` }];
-});
+/** Anchors from real hall coordinates: plan centre of hall N ↔ real position of hall N. */
+export function realAnchors(halls: HallGeo[]): Anchor[] {
+  return halls.flatMap((h) => {
+    const n = NODE_BY_ID.get(h.hall);
+    if (!n) return [];
+    return [{ x: n.x + BOX_W / 2, y: ROW_TOP[n.row] + ROW_H[n.row] / 2, lat: h.lat, lon: h.lng, kind: 'real' as const, label: `Hall ${h.hall}: ${h.source}` }];
+  });
+}
 
 /** Weighted least-squares similarity transform (scale, rotation, shift): EN = a·z + b. */
-export function fitGeoref(calib: Anchor[]): Georef {
+export function fitGeoref(calib: Anchor[], extraReal: HallGeo[] = []): Georef {
   const spread = calib.length >= 2 && Math.max(...calib.map((c) => Math.hypot(c.x - calib[0].x, c.y - calib[0].y))) >= 1.5;
-  const osm = OSM_ANCHORS.length >= 3;
-  // Real building polygons when available; otherwise metro stations (approximate) until calibrated on site.
-  const used = osm ? [...OSM_ANCHORS, ...calib] : spread ? calib : [...DEFAULT_ANCHORS, ...calib];
-  const w = (a: Anchor) => (a.kind === 'calib' ? (osm ? 2 : 10) : 1);
+  const byHall = new Map([...HALL_GEO, ...extraReal].map((h) => [h.hall, h]));
+  const real = realAnchors(Array.from(byHall.values()));
+  const realSpread = real.length >= 3 || (real.length === 2 && Math.hypot(real[0].x - real[1].x, real[0].y - real[1].y) >= 3);
+  // Real hall coordinates when available; otherwise metro stations (approximate) until calibrated on site.
+  const used = realSpread ? [...real, ...calib] : spread ? [...real, ...calib] : [...DEFAULT_ANCHORS, ...real, ...calib];
+  const w = (a: Anchor) => (a.kind === 'calib' ? (realSpread ? 2 : 10) : a.kind === 'real' ? 5 : 1);
   const W = used.reduce((s, a) => s + w(a), 0);
   let zc: C = { re: 0, im: 0 };
   let ec: C = { re: 0, im: 0 };
@@ -114,7 +118,7 @@ export function fitGeoref(calib: Anchor[]): Georef {
   });
   return {
     rmsM: Math.sqrt(res.reduce((x, r) => x + r * r, 0) / Math.max(1, res.length)),
-    quality: osm ? 'osm' : spread ? 'calibrated' : calib.length ? 'partial' : 'approx',
+    quality: realSpread ? 'real' : spread ? 'calibrated' : calib.length || real.length ? 'partial' : 'approx',
     mPerUnit: Math.hypot(a.re, a.im),
     toVenue: (lat, lon) => {
       const z = div(sub(toEN(lat, lon), b), a);

@@ -489,3 +489,11 @@ main { padding: 12px 16px; }
 .geo-marker i { position: absolute; top: -8px; right: -12px; font-style: normal; font-size: 10px; background: var(--navy); color: var(--gold); border-radius: 99px; padding: 1px 4px; }
 .geo-marker span { position: absolute; top: 100%; margin-top: 2px; font-size: 10px; font-weight: 800; color: var(--navy); background: rgba(255,255,255,0.9); border-radius: 4px; padding: 0 3px; white-space: nowrap; }
 .k-rest { width: 22px; height: 0; border-top: 3px dashed var(--gold); border-radius: 0; }
+.amap-user { position: relative; width: 18px; height: 18px; border-radius: 99px; background: #2563eb; border: 3px solid #fff; box-shadow: 0 0 0 1px #2563eb, 0 1px 4px rgba(0,0,0,0.4); }
+.amap-user span { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 4px; white-space: nowrap; font: 900 11px/1 -apple-system, system-ui, sans-serif; color: #2563eb; background: #fff; border-radius: 4px; padding: 2px 4px; }
+.geo-box { position: relative; }
+.geo-loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-weight: 700; }
+.poi-panel { display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: baseline; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; margin: 8px 0; }
+.poi-btns { display: inline-flex; gap: 12px; }
+.amap-setup { flex-direction: column; align-items: stretch; gap: 8px; font-size: 0.86rem; }
+.amap-setup code { background: var(--surface); padding: 1px 4px; border-radius: 4px; }

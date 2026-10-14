@@ -10,7 +10,7 @@
     "import:excel": "python3 scripts/import_excel.py data/Canton_Fair_Phase1_FULL_64_POINTS_MASTER.xlsx src/data/points.json"
   },
   "dependencies": {
-    "maplibre-gl": "^4.7.1",
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

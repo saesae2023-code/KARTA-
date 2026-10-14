@@ -40,7 +40,7 @@ export interface LegInfo {
   fromGps: boolean;
   approx: boolean;
   /** How the distance was obtained. */
-  via?: 'walkways' | 'streets' | 'straight';
+  via?: 'walkways' | 'amap' | 'straight';
 }
 
 export interface GpsView {
@@ -80,7 +80,7 @@ const QUALITY_LABEL: Record<GeoQuality, string> = {
   approx: 'привязка ≈ ±100 м (по метро)',
   partial: 'привязка уточнена по 1 Hall',
   calibrated: 'привязка уточнена на месте',
-  osm: 'привязка по зданиям OpenStreetMap',
+  real: 'привязка по реальным координатам Hall (AMap)',
 };
 
 const U = 80; // px per venue unit

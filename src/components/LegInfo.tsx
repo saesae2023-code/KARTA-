@@ -17,7 +17,7 @@ export function LegLine({ leg }: { leg: LegInfo }) {
       </b>
       <span className="muted small">
         {leg.fromGps ? 'от вашей GPS-позиции' : 'от текущего Hall'}
-        {leg.via === 'streets' ? ' по улицам (OSM)' : leg.via === 'straight' ? ' — по прямой, приблизительно' : ' по проходам комплекса'}
+        {leg.via === 'amap' ? ' — пешеходный маршрут AMap' : leg.via === 'straight' ? ' — по прямой, приблизительно' : ' по проходам комплекса'}
       </span>
     </div>
   );

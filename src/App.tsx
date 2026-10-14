@@ -1,6 +1,8 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { POINTS } from './data';
-import { HALL_GEO, WALK_M_PER_MIN, fitGeoref, hallCenter } from './geo';
+import { AMAP_KEY } from './amap';
+import { WALK_M_PER_MIN, fitGeoref, hallCenter } from './geo';
+import { loadPoiCache, savePoiCache, toHallGeo, type PoiCache } from './poi';
 import { lockFromPlan, lockIsStale, planCost, planFromLock, planRoute, type Plan, type Start } from './route';
 import { computeStats } from './stats';
 import { useAppStore } from './store';
@@ -32,7 +34,7 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'stats', label: 'Статистика', icon: '▦' },
 ];
 
-const GeoMapView = lazy(() => import('./components/GeoMapView').then((m) => ({ default: m.GeoMapView })));
+const AmapView = lazy(() => import('./components/AmapView').then((m) => ({ default: m.AmapView })));
 
 /** GPS fixes worse than this are shown but not used as the route start. */
 const MAX_START_ACC_M = 150;
@@ -54,8 +56,8 @@ export default function App() {
     } catch {
       /* ignore */
     }
-    // Real map by default once OSM hall polygons are bundled; until then the schema keeps markers and route.
-    return HALL_GEO.length ? 'geo' : 'schema';
+    // Real AMap map by default when a key is configured; the hall schema is the fallback.
+    return AMAP_KEY ? 'geo' : 'schema';
   });
   const chooseMap = (k: 'geo' | 'schema') => {
     setMapKind(k);
@@ -74,7 +76,13 @@ export default function App() {
     if (tab === 'map' && !store.gpsOn) store.setGpsOn(true); // permission is requested on first use of the map
   }, [tab, store.gpsOn, store.setGpsOn]);
   const gps = useGps(store.gpsOn);
-  const geo = useMemo(() => fitGeoref(store.anchors), [store.anchors]);
+  const [pois, setPois] = useState<PoiCache | null>(loadPoiCache);
+  const onPois = (c: PoiCache) => {
+    setPois(c);
+    savePoiCache(c);
+  };
+  // Real hall coordinates found through AMap POI search refine the plan ↔ GPS georeference.
+  const geo = useMemo(() => fitGeoref(store.anchors, toHallGeo(pois)), [store.anchors, pois]);
   const gpsVenue: Pt | null = gps.fix ? geo.toVenue(gps.fix.lat, gps.fix.lon) : null;
   const gpsInside = !!gpsVenue && inVenue(gpsVenue);
   // Route start = real position: inside the complex, or nearby outside it (the first hall is chosen from there).
@@ -151,7 +159,7 @@ export default function App() {
         sameHall: legSameHall,
         known: legSameHall || legPath.length > 0,
         fromGps: !!gpsStart,
-        approx: !gpsInside || (geo.quality !== 'calibrated' && geo.quality !== 'osm'),
+        approx: !gpsInside || (geo.quality !== 'calibrated' && geo.quality !== 'real'),
         via: gpsStart && !gpsInside ? 'straight' : 'walkways',
       }
     : null;
@@ -315,7 +323,7 @@ export default function App() {
         {tab === 'map' && (
           <div className="segmented map-kind" role="tablist" aria-label="Вид карты">
             <button role="tab" aria-selected={mapKind === 'geo'} className={mapKind === 'geo' ? 'on' : ''} onClick={() => chooseMap('geo')}>
-              🗺 Карта
+              🗺 Карта AMap
             </button>
             <button role="tab" aria-selected={mapKind === 'schema'} className={mapKind === 'schema' ? 'on' : ''} onClick={() => chooseMap('schema')}>
               ▦ Схема залов
@@ -324,15 +332,14 @@ export default function App() {
         )}
         {tab === 'map' && mapKind === 'geo' && (
           <Suspense fallback={<div className="gps-panel">Загружаю карту…</div>}>
-          <GeoMapView
+          <AmapView
             plan={plan}
-            states={states}
             current={currentHall}
-            georef={geo}
             gps={gpsView}
-            legPath={legPath}
             leg={legInfo}
             suggest={suggest}
+            pois={pois}
+            onPois={onPois}
             onReplan={() => replan()}
             onDismissSuggest={() => setSuggest(null)}
             onVisited={(id) => finish(id, 'visited')}
@@ -341,6 +348,7 @@ export default function App() {
             onCalibrate={calibrate}
             onEnableGps={() => store.setGpsOn(true)}
             onPickHall={() => setHallOpen(true)}
+            onSchema={() => chooseMap('schema')}
           />
           </Suspense>
         )}
