@@ -7,16 +7,16 @@ export function formatMeters(m: number): string {
 /** "340 м · ~5 мин" for the current leg, with the basis of the estimate. */
 export function LegLine({ leg }: { leg: LegInfo }) {
   if (leg.sameHall)
-    return <div className="leg-line here">📍 Вы в этом Hall — идите по порядку стендов</div>;
-  if (!leg.known) return <div className="leg-line muted">Выберите текущий Hall или включите GPS — покажу расстояние</div>;
+    return <div className="leg-line here">📍 Вы в этом павильоне — идите по порядку стендов</div>;
+  if (!leg.known) return <div className="leg-line muted">Нажмите «Я в павильоне» или включите GPS — покажу расстояние</div>;
   return (
     <div className="leg-line">
       <b>
-        {leg.approx ? '≈ ' : ''}
+        🚶 {leg.approx ? '≈ ' : ''}
         {formatMeters(leg.meters)} · ~{leg.minutes} мин
       </b>
       <span className="muted small">
-        {leg.fromGps ? 'от вашей GPS-позиции' : 'от текущего Hall'}
+        {leg.fromGps ? 'от вашей GPS-позиции' : 'от текущего павильона'}
         {leg.via === 'amap' ? ' — пешеходный маршрут AMap' : leg.via === 'straight' ? ' — по прямой, приблизительно' : ' по проходам комплекса'}
       </span>
     </div>

@@ -1,8 +1,8 @@
 import type { Plan } from '../route';
 import type { PointState } from '../types';
 import { GroupTag, PriorityBadge, StatusPills } from './common';
+import { boothLabel, buildingLabel, hallLabel, isOutdoor, zoneLabel, zoneOf } from '../labels';
 import { pointsInHall } from './MapView';
-import { areaLabel } from './RouteView';
 import { priorityRank } from '../logic';
 
 interface Props {
@@ -25,14 +25,15 @@ export function HallSheet({ hall, plan, states, current, onClose, onOpen, onSetC
   const left = pts.filter((p) => states[p.id].visit === 'pending').length;
   return (
     <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={`Hall ${hall}`}>
+      <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={hallLabel(hall)}>
         <div className="sheet-head">
           <div>
             <div className="eyebrow">
-              {areaLabel(hall)}
+              {zoneLabel(zoneOf(hall))}
               {stopNo >= 0 && ` · шаг маршрута ${stopNo + 1}`}
             </div>
-            <h2 className="sheet-hall">Hall {hall}</h2>
+            <h2 className="sheet-hall">{buildingLabel(hall)}</h2>
+            {!isOutdoor(hall) && <div className="sheet-floor">{hall.split('.')[1]} этаж <span className="muted small">· код {hall}</span></div>}
             <div className="muted">
               {left} осталось из {pts.length}
             </div>
@@ -43,12 +44,12 @@ export function HallSheet({ hall, plan, states, current, onClose, onOpen, onSetC
         </div>
         {current !== hall && (
           <button className="btn btn-secondary full" onClick={() => onSetCurrent(hall)}>
-            Я в этом Hall
+            Я в этом павильоне
           </button>
         )}
         {onMark && (
           <button className="btn btn-mark full" onClick={() => onMark(hall)}>
-            📍 Отметить: я здесь — сохранить GPS как координату Hall {hall}
+            📍 Отметить: я здесь — сохранить GPS как координату павильона {hall.split('.')[0]}
           </button>
         )}
         <div className="sheet-list">
@@ -63,7 +64,7 @@ export function HallSheet({ hall, plan, states, current, onClose, onOpen, onSetC
                   <StatusPills s={states[p.id]} />
                 </span>
                 <span className="row-loc">
-                  <b>{(booths.length ? booths : [p.booth]).join(' ')}</b>
+                  <b>стенд {(booths.length ? booths : [p.booth]).map(boothLabel).join(', ')}</b>
                 </span>
               </button>
             );

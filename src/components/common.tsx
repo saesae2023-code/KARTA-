@@ -2,6 +2,8 @@ import type { Point, PointState } from '../types';
 import { boothsInHall, nearestHall } from '../logic';
 import { SAME_BOOTH } from '../data';
 import { groupColor } from '../groups';
+import { boothLabel, boothsLabel, directions, hallLabel, isOutdoor, pathLine, zoneLabel, zoneOf, type From } from '../labels';
+import { splitHall } from '../venue';
 
 export function PriorityBadge({ p }: { p: Point }) {
   return <span className={`prio prio-${p.priority}`}>{p.priority}</span>;
@@ -33,32 +35,57 @@ export function StatusPills({ s }: { s: PointState }) {
   );
 }
 
-/** The big, most visible Hall → Booth block. */
+/** The big, most visible block: Pavilion + floor → Stand (technical code small). */
 export function HallBooth({ p, current, hall: forced, size = 'xl' }: { p: Point; current: string | null; hall?: string; size?: 'xl' | 'md' }) {
   const hall = forced ?? nearestHall(p, current);
   const booths = boothsInHall(p, hall);
   const others = p.halls.filter((h) => h !== hall);
+  const { building, floor } = splitHall(hall);
+  const outdoor = isOutdoor(hall);
   return (
     <div className={`hallbooth hallbooth-${size}`} style={{ borderLeft: `8px solid ${groupColor(p.mapGroup)}` }}>
       <div className="hb-hall">
-        <span className="hb-label">HALL</span>
-        <span className="hb-value">{hall}</span>
+        <span className="hb-label">{outdoor ? 'ОТКРЫТАЯ ПЛОЩАДКА' : 'ПАВИЛЬОН'}</span>
+        <span className="hb-value">{building}</span>
+        {!outdoor && floor > 0 && <span className="hb-floor">{floor} этаж</span>}
       </div>
       <span className="hb-arrow">→</span>
       <div className="hb-booth">
-        <span className="hb-label">BOOTH</span>
+        <span className="hb-label">СТЕНД</span>
         {booths.map((b) => (
           <span key={b} className="hb-value">
-            {b.replace(/-/g, '\u2011')}
+            {boothLabel(b).replace(/-/g, '\u2011')}
           </span>
         ))}
       </div>
+      <div className="hb-tech">
+        {zoneLabel(zoneOf(hall))} · код: {hall} / {booths.join('; ')}
+      </div>
       {others.length > 0 && size === 'xl' && (
         <div className="hb-also">
-          Также стенд в Hall {others.join(', ')}: {p.booths.filter((b) => b.hall !== hall).map((b) => b.label).join('; ')}
+          Также стенд: {others.map((h) => `${hallLabel(h)} — ${boothsLabel(p.booths.filter((b) => b.hall === h).map((b) => b.label))}`).join('; ')}
         </div>
       )}
     </div>
+  );
+}
+
+/** "Зона C → Павильон 15 → 2 этаж → стенд D33". */
+export function PathLine({ hall, booths }: { hall: string; booths: string[] }) {
+  return <div className="path-line">{pathLine(hall, booths)}</div>;
+}
+
+/** "Куда идти" — step-by-step directions to the next point. */
+export function Directions({ from, hall, booths }: { from: From; hall: string; booths: string[] }) {
+  return (
+    <section className="directions">
+      <h3>Куда идти</h3>
+      <ol>
+        {directions(from, hall, booths).map((t, i) => (
+          <li key={i}>{t}</li>
+        ))}
+      </ol>
+    </section>
   );
 }
 

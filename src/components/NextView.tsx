@@ -2,7 +2,8 @@ import type { Plan, RouteMode } from '../route';
 import type { LegInfo } from './MapView';
 import { LegLine, SuggestBanner } from './LegInfo';
 import type { PointState } from '../types';
-import { GroupTag, HallBooth, PriorityBadge, SameBoothNote, StatusActions } from './common';
+import { Directions, GroupTag, HallBooth, PathLine, PriorityBadge, SameBoothNote, StatusActions } from './common';
+import { buildingLabel, boothLabel, hallShort, type From } from '../labels';
 import { RouteModeSwitch } from './RouteModeSwitch';
 
 interface Props {
@@ -20,9 +21,11 @@ interface Props {
   leg: LegInfo | null;
   suggest: { savingM: number } | null;
   onReplan: () => void;
+  /** Where the user is now, for the step-by-step directions. */
+  from: From;
 }
 
-export function NextView({ plan, states, current, mode, onMode, onPickHall, onOpen, onShowMap, onVisited, onSkip, onToggle, leg, suggest, onReplan }: Props) {
+export function NextView({ plan, states, current, mode, onMode, onPickHall, onOpen, onShowMap, onVisited, onSkip, onToggle, leg, suggest, onReplan, from }: Props) {
   const step = plan.steps[0];
   if (!step)
     return (
@@ -42,7 +45,7 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
     <div className="next">
       {!current && (
         <button className="banner" onClick={onPickHall}>
-          📍 Выберите текущий Hall — маршрут начнётся от него
+          📍 Нажмите «Я в павильоне» — маршрут начнётся от него
         </button>
       )}
       <RouteModeSwitch mode={mode} onChange={onMode} />
@@ -50,16 +53,15 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
       <div className="next-card">
         <div className="next-top">
           <span className="eyebrow">
-            Следующая точка · <PriorityBadge p={next} /> Priority {next.priority}
+            Следующая точка · <PriorityBadge p={next} /> приоритет {next.priority}
           </span>
           {current && (
             <span className={`where ${inHall ? 'here' : 'move'}`}>
-              {inHall ? `В этом Hall · ещё ${leftHere}` : `Переход ${current} → ${step.hall}`}
+              {inHall ? `Вы в этом павильоне · ещё ${leftHere}` : `Переход: ${buildingLabel(current).toLowerCase()} → ${buildingLabel(step.hall).toLowerCase()}`}
             </span>
           )}
         </div>
         <HallBooth p={next} current={current} hall={step.hall} />
-        {leg && <LegLine leg={leg} />}
         <button className="company-btn" onClick={() => onOpen(next.id)}>
           <span className="company">{next.company}</span>
           <span className="muted">
@@ -72,6 +74,8 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
             🗺 Показать на карте
           </button>
         </div>
+        {leg && <LegLine leg={leg} />}
+        <Directions from={from} hall={step.hall} booths={step.booths} />
         <SameBoothNote p={next} />
         <section className="check-box">
           <h3>Что получить / проверить</h3>
@@ -85,6 +89,7 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
           onToggle={(k) => onToggle(next.id, k)}
           onReset={() => undefined}
         />
+        <PathLine hall={step.hall} booths={step.booths} />
       </div>
 
       {plan.steps.length > 1 && (
@@ -98,8 +103,8 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
                 <GroupTag group={st.point.mapGroup} short />
               </span>
               <span className="row-loc">
-                <b className={st.hall !== step.hall ? 'hall-change' : ''}>{st.hall}</b>
-                <span className="small">{st.booths[0]}</span>
+                <b className={st.hall !== step.hall ? 'hall-change' : ''}>{hallShort(st.hall)}</b>
+                <span className="small">стенд {boothLabel(st.booths[0] ?? '')}</span>
               </span>
             </button>
           ))}

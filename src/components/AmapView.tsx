@@ -8,6 +8,7 @@ import { COMPLEX_GCJ, HALL_AREA, areaHits, discoverHalls, hallHits, toHallGeo, t
 import type { Plan } from '../route';
 import { nodeOfHall } from '../venue';
 import { formatMeters, SuggestBanner } from './LegInfo';
+import { hallLabel, type From } from '../labels';
 import { GpsPanel, NextSheet, type GpsView, type LegInfo } from './MapView';
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
   suggest: { savingM: number } | null;
   pois: PoiCache | null;
   marks: HallGeo[];
+  from: From;
   onPois: (c: PoiCache) => void;
   onReplan: () => void;
   onDismissSuggest: () => void;
@@ -81,7 +83,7 @@ async function exportFile(name: string, content: string) {
 }
 
 export function AmapView(props: Props) {
-  const { plan, current, gps, leg, suggest, pois, marks, onPois, onReplan, onDismissSuggest, onVisited, onOpen, onHall, onCalibrate, onEnableGps, onPickHall, onSchema } = props;
+  const { plan, current, gps, leg, suggest, pois, marks, from, onPois, onReplan, onDismissSuggest, onVisited, onOpen, onHall, onCalibrate, onEnableGps, onPickHall, onSchema } = props;
   const box = useRef<HTMLDivElement>(null);
   const AM = useRef<AMapNS>(null);
   const map = useRef<AMapNS>(null);
@@ -240,7 +242,7 @@ export function AmapView(props: Props) {
       const el = document.createElement('button');
       el.className = 'geo-marker idle';
       el.innerHTML = `<b>${b}</b>`;
-      el.title = `Hall ${b} · ${loc.source}`;
+      el.title = `Павильон ${b} · ${loc.source}`;
       el.onclick = () => onHall(b + '.1');
       layer.push(new AMap.Marker({ position: loc.pos, content: el, anchor: 'center', zIndex: 40 }));
     }
@@ -249,8 +251,8 @@ export function AmapView(props: Props) {
       const el = document.createElement('button');
       el.className = `geo-marker${d.nums[0] === 1 ? ' first' : ''}${d.loc.level === 'area' ? ' approx' : ''}`;
       el.style.background = d.color;
-      el.innerHTML = `<b>${d.nums[0]}</b>${d.nums.length > 1 ? `<i>+${d.nums.length - 1}</i>` : ''}<span>${d.loc.level === 'area' ? `Area ${HALL_AREA[nodeOfHall(d.halls[0])]} · ${d.halls.length} Hall` : d.halls[0]}</span>`;
-      el.title = `Шаг ${d.nums.join(', ')} · Hall ${d.halls.join(', ')} · ${d.loc.source}`;
+      el.innerHTML = `<b>${d.nums[0]}</b>${d.nums.length > 1 ? `<i>+${d.nums.length - 1}</i>` : ''}<span>${d.loc.level === 'area' ? `Зона ${HALL_AREA[nodeOfHall(d.halls[0])]} · ${d.halls.length} пав.` : `П.${nodeOfHall(d.halls[0])}`}</span>`;
+      el.title = `Шаг ${d.nums.join(', ')} · ${d.halls.map(hallLabel).join(', ')} · ${d.loc.source}`;
       el.onclick = () => onHall(d.halls[0]);
       layer.push(new AMap.Marker({ position: d.loc.pos, content: el, anchor: 'center', zIndex: 120 - Math.min(d.nums[0], 60) }));
     }
@@ -360,12 +362,13 @@ export function AmapView(props: Props) {
       )}
       {target?.level === 'area' && firstStop && (
         <div className="gps-panel warn">
-          У Hall {firstStop.hall} нет собственной точки в AMap — веду к POI зоны {HALL_AREA[nodeOfHall(firstStop.hall)]}, дальше по схеме залов.
+          У павильона {nodeOfHall(firstStop.hall)} нет собственной точки в AMap — веду ко входу в Зону {HALL_AREA[nodeOfHall(firstStop.hall)]}, дальше по схеме залов.
         </div>
       )}
       {suggest && <SuggestBanner savingM={suggest.savingM} onReplan={onReplan} onDismiss={onDismissSuggest} />}
       {plan.steps[0] && (
         <NextSheet
+          from={from}
           step={plan.steps[0]}
           leg={sheetLeg}
           follow={follow}
@@ -394,11 +397,11 @@ export function AmapView(props: Props) {
         <span><i className="k k-order">1</i> шаг · цвет = товарная группа</span>
       </div>
       <div className="poi-panel small">
-        <b>Координаты Hall 1–20</b>
+        <b>Координаты павильонов 1–20</b>
         <span>
           {' '}
           · постоянные (встроены в приложение): {permanent.length}/20
-          {permanent.length < 20 && <span className="muted"> — нет у Hall {ALL_BUILDINGS.filter((b) => !HALL_GEO_BY_ID.has(b)).join(', ')}</span>}
+          {permanent.length < 20 && <span className="muted"> — нет у павильонов {ALL_BUILDINGS.filter((b) => !HALL_GEO_BY_ID.has(b)).join(', ')}</span>}
         </span>
         {pois?.services && (
           <span className="svc-list">
@@ -417,13 +420,13 @@ export function AmapView(props: Props) {
           <>
             <span>
               {' '}
-              · AMap POI: Hall {hallsFound.size ? Array.from(hallsFound.keys()).sort((a, b) => +a - +b).join(', ') : 'нет'} · зон:{' '}
+              · найдено в AMap: павильоны {hallsFound.size ? Array.from(hallsFound.keys()).sort((a, b) => +a - +b).join(', ') : 'нет'} · зон:{' '}
               {areasFound.size ? Array.from(areasFound.keys()).sort().join(', ') : 'нет'} · запросов {pois.queries}
             </span>
             {missing.length > 0 && (
               <span className="muted">
                 {' '}
-                · без координат на карте сейчас: {missing.join(', ')}
+                · без координат на карте сейчас: павильоны {missing.join(', ')}
               </span>
             )}
             {pois.errors.length > 0 && <span className="muted"> · ошибки: {pois.errors.slice(0, 2).join('; ')}</span>}
@@ -440,7 +443,7 @@ export function AmapView(props: Props) {
               onClick={() => {
                 const rows = [...toHallGeo(pois).filter((h) => !marked.has(h.hall)), ...marks];
                 if (!rows.length) {
-                  alert('Пока нечего выгружать: ни один Hall не отмечен на месте и AMap не вернул координат. Встаньте в павильон и нажмите «📍 Отметить».');
+                  alert('Пока нечего выгружать: ни один павильон не отмечен на месте и AMap не вернул координат. Встаньте в павильон и нажмите «📍 Отметить».');
                   return;
                 }
                 void exportFile('hallGeo.json', JSON.stringify(rows, null, 1));
@@ -453,7 +456,7 @@ export function AmapView(props: Props) {
       </div>
       <p className="muted small">
         Карта и пешеходные маршруты — AMap (高德), координаты GPS переводятся WGS-84 → GCJ-02. Порядок обхода считается графом
-        проходов официальной схемы; внутри Hall — по номерам стендов (не GPS).
+        проходов официальной схемы; внутри павильона — по номерам стендов (не GPS).
       </p>
     </div>
   );

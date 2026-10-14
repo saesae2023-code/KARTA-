@@ -5,6 +5,7 @@ import { computeStats } from '../stats';
 import type { Persisted } from '../store';
 import type { PointState } from '../types';
 import { GroupDot, PriorityBadge } from './common';
+import { boothsLabel, hallShort } from '../labels';
 
 interface Props {
   states: Record<number, PointState>;
@@ -96,8 +97,8 @@ export function StatsView({ states, snapshot, onOpen, onImport, onReset }: Props
                 </span>
               </span>
               <span className="row-loc">
-                <b>{p.hall}</b>
-                <span className="small">{p.booth}</span>
+                <b>{hallShort(p.halls[0] ?? p.hall)}</b>
+                <span className="small">стенд {boothsLabel(p.booths.map((b) => b.label))}</span>
               </span>
             </button>
           ))}

@@ -4,6 +4,7 @@ import { matchesQuery, matchesStatus, priorityRank } from '../logic';
 import type { PointState, StatusFilter } from '../types';
 import { GroupTag, PriorityBadge, StatusPills } from './common';
 import { groupColor } from '../groups';
+import { boothsLabel, hallLabel, hallShort } from '../labels';
 
 export interface Filters {
   q: string;
@@ -69,13 +70,13 @@ export function ListView({ states, filters, setFilters, onOpen }: Props) {
         <input
           type="search"
           className="search"
-          placeholder="Поиск: компания, товар, Hall, Booth"
+          placeholder="Поиск: компания, товар, павильон, стенд"
           value={filters.q}
           onChange={(e) => set({ q: e.target.value })}
         />
         <div className="filter-grid">
           <Select label="Приоритет" value={filters.priority} onChange={(v) => set({ priority: v })} options={opts(ALL_PRIORITIES)} />
-          <Select label="Hall" value={filters.hall} onChange={(v) => set({ hall: v })} options={opts(ALL_HALLS)} />
+          <Select label="Павильон" value={filters.hall} onChange={(v) => set({ hall: v })} options={ALL_HALLS.map((h) => ({ value: h, label: hallLabel(h) }))} />
           <Select label="Направление" value={filters.category} onChange={(v) => set({ category: v })} options={opts(ALL_CATEGORIES)} />
           <Select label="Группа" value={filters.group} onChange={(v) => set({ group: v })} options={opts(ALL_GROUPS)} />
           <Select label="Статус" value={filters.status} onChange={(v) => set({ status: v as Filters['status'] })} options={STATUS_OPTIONS} />
@@ -108,8 +109,8 @@ export function ListView({ states, filters, setFilters, onOpen }: Props) {
               <StatusPills s={s} />
             </span>
             <span className="row-loc">
-              <b>{p.hall}</b>
-              <span className="small">{p.booth}</span>
+              <b>{hallShort(p.halls[0] ?? p.hall)}</b>
+              <span className="small">стенд {boothsLabel(p.booths.map((b) => b.label))}</span>
             </span>
           </button>
         );

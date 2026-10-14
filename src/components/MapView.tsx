@@ -5,7 +5,8 @@ import type { Plan, Step } from '../route';
 import type { GeoQuality } from '../geo';
 import type { GpsFix, GpsStatus } from '../useGps';
 import type { Point, PointState } from '../types';
-import { GroupTag, PriorityBadge } from './common';
+import { Directions, GroupTag, PathLine, PriorityBadge } from './common';
+import { STREETS, boothsLabel, hallLabel, isOutdoor, type From } from '../labels';
 import { LegLine, SuggestBanner } from './LegInfo';
 import {
   AREAS,
@@ -74,18 +75,19 @@ interface Props {
   onCalibrate: (hall: string) => void;
   onEnableGps: () => void;
   onPickHall: () => void;
+  from: From;
 }
 
 const QUALITY_LABEL: Record<GeoQuality, string> = {
   approx: 'привязка ≈ ±100 м (по метро)',
-  partial: 'привязка уточнена по 1 Hall',
+  partial: 'привязка уточнена по 1 павильону',
   calibrated: 'привязка уточнена на месте',
-  real: 'привязка по реальным координатам Hall (AMap)',
+  real: 'привязка по реальным координатам павильонов',
 };
 
 const U = 80; // px per venue unit
 const PAD = 20;
-const TOP = 34;
+const TOP = 62;
 const BW = BOX_W * U;
 const CHIP_H = 26;
 const CHIP_STEP = 30;
@@ -135,7 +137,7 @@ function legPoints(a: string, b: string): string | null {
   return all.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 }
 
-export function MapView({ plan, states, current, focusHall, onHall, gps, legPath, leg, suggest, onReplan, onDismissSuggest, onVisited, onOpen, onCalibrate, onEnableGps, onPickHall }: Props) {
+export function MapView({ plan, states, current, focusHall, onHall, gps, legPath, leg, suggest, onReplan, onDismissSuggest, onVisited, onOpen, onCalibrate, onEnableGps, onPickHall, from }: Props) {
   const scroller = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(false);
   const [boxW, setBoxW] = useState(360);
@@ -263,6 +265,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
       {suggest && <SuggestBanner savingM={suggest.savingM} onReplan={onReplan} onDismiss={onDismissSuggest} />}
       {step1 && (
         <NextSheet
+          from={from}
           step={step1}
           leg={leg}
           follow={follow}
@@ -291,9 +294,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
             </marker>
           </defs>
 
-          <text x={W / 2} y={18} textAnchor="middle" className="road-label">
-            Yuejiang Zhonglu · север
-          </text>
+          <StreetLabel x={W / 2} y={16} s={STREETS.yuejiang} anchor="middle" note="север" />
 
           {AREAS.map((a) => {
             const b = areaBox(a.id);
@@ -301,7 +302,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
               <g key={a.id}>
                 <rect x={b.x0} y={b.y0} width={b.x1 - b.x0} height={b.y1 - b.y0} rx={14} className="area-box" />
                 <text x={b.x0 + 10} y={b.y1 - 7} className="area-label">
-                  {a.label} · {a.halls}
+                  {a.label.replace('Area', 'Зона')} · {a.halls.replace('Hall', 'павильоны')}
                 </text>
               </g>
             );
@@ -309,9 +310,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
 
           {/* Xingang Donglu */}
           <rect x={PAD} y={py(Y_ROAD_TOP)} width={W - PAD * 2} height={(Y_ROAD_BOTTOM - Y_ROAD_TOP) * U} className="road" />
-          <text x={px(0.2)} y={py(Y_ROAD_TOP) + 20} className="road-label">
-            Xingang Donglu
-          </text>
+          <StreetLabel x={px(0.2)} y={py(Y_ROAD_TOP) + 13} s={STREETS.xingang} />
 
           {/* walkways */}
           <line x1={px(X_XILU)} y1={py(Y_NORTH)} x2={px(X_DONGLU)} y2={py(Y_NORTH)} className="walkway" />
@@ -319,26 +318,35 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
           <line x1={px(X_XILU)} y1={py(Y_NORTH)} x2={px(X_XILU)} y2={py(Y_PROMENADE)} className="walkway" />
           <line x1={px(X_DONGLU)} y1={py(Y_NORTH)} x2={px(X_DONGLU)} y2={py(Y_PROMENADE)} className="walkway" />
           <line x1={px(X_MIDDLE)} y1={py(Y_NORTH)} x2={px(X_MIDDLE)} y2={py(Y_PROMENADE)} className="walkway" />
-          <text x={px(X_XILU) - 4} y={py(Y_NORTH) + 40} className="lane-label" textAnchor="end">
-            Zhanchang Xilu
-          </text>
-          <text x={px(X_DONGLU) + 4} y={py(Y_NORTH) + 40} className="lane-label">
-            Zhanchang Donglu
-          </text>
+          <StreetLabel x={px(X_XILU) - 4} y={py(Y_NORTH) + 34} s={STREETS.xilu} anchor="end" small />
+          <StreetLabel x={px(X_DONGLU) + 4} y={py(Y_NORTH) + 34} s={STREETS.donglu} small />
+          <StreetLabel x={px(X_MIDDLE) + 6} y={py(Y_NORTH) + 70} s={STREETS.zhonglu} small />
 
           <rect x={px(X_PROMENADE_WEST)} y={py(Y_PROMENADE) - 7} width={px(X_DONGLU) - px(X_PROMENADE_WEST)} height={14} rx={7} className="promenade" />
           <text x={px(6.3)} y={py(Y_PROMENADE) + 3.5} className="promenade-label">
-            Pearl Promenade
+            Pearl Promenade (галерея)
           </text>
           <rect x={px(0.3)} y={py(Y_PROMENADE) - 4} width={px(X_PROMENADE_WEST) - px(0.3)} height={8} rx={4} className="corridor" />
           <text x={px(0.4)} y={py(Y_PROMENADE) - 8} className="corridor-label">
-            D ↔ A
+            переход D ↔ A
           </text>
 
           {/* Middle Platform and the link over Xingang Donglu to Area C */}
           <rect x={px(X_MIDDLE) - 7} y={py(Y_PROMENADE)} width={14} height={py(Y_C) - py(Y_PROMENADE)} rx={5} className="link" />
           <line x1={px(X_MIDDLE)} y1={py(Y_C)} x2={px(13.6 + BOX_W / 2)} y2={py(Y_C)} className="walkway" />
 
+          {/* Entrances: halls open on the north and south sides (CIEFC); gate numbers are not confirmed, so none are shown. */}
+          {ENTRANCES.map((e) => (
+            <g key={e.label} className="entrance">
+              <rect x={px(e.x) - 44} y={py(e.y) - 9} width={88} height={18} rx={9} />
+              <text x={px(e.x)} y={py(e.y) + 4} textAnchor="middle">
+                {e.label}
+              </text>
+            </g>
+          ))}
+          <text x={px(X_MIDDLE) + 10} y={py(Y_ROAD_TOP) + 18} className="crossing-label">
+            переход через ул. Синган-Дунлу
+          </text>
           {NODES.map((n) => {
             const b = nodeBox(n.id);
             const used = LEVELS.has(n.id);
@@ -346,7 +354,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
               <g key={n.id}>
                 <rect x={b.x} y={b.y} width={b.w} height={b.h} rx={8} className={`bld ${used ? 'bld-used' : ''} ${n.kind !== 'hall' ? `bld-${n.kind}` : ''}`} />
                 <text x={b.x + b.w / 2} y={b.y + 15} textAnchor="middle" className="bld-num">
-                  {n.kind === 'outdoor' ? 'open area' : n.label}
+                  {n.kind === 'outdoor' ? `Площадка ${n.id.split('.')[0]}` : n.kind === 'special' ? 'Friendship Hall' : `Павильон ${n.label}`}
                 </text>
               </g>
             );
@@ -387,10 +395,13 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
                 className={`chip ${isCur ? 'chip-current' : ''} ${isNext ? 'chip-next' : ''} ${isFocus ? 'chip-focus' : ''} ${pending.length ? '' : 'chip-done'} ${extraOnly ? 'chip-extra' : ''}`}
                 onClick={() => onHall(h)}
                 role="button"
-                aria-label={`Hall ${h}: ${routed} по маршруту, ${pending.length} из ${all.length} осталось`}
+                aria-label={`${hallLabel(h)}: ${routed} по маршруту, ${pending.length} из ${all.length} осталось`}
               >
                 <rect x={c.x} y={c.y} width={c.w} height={c.h} rx={7} className="chip-bg" />
-                <text x={c.x + 6} y={c.y + 17} className="chip-hall">
+                <text x={c.x + 6} y={c.y + 13} className="chip-hall">
+                  {isOutdoor(h) ? 'улица' : `${h.split('.')[1]} этаж`}
+                </text>
+                <text x={c.x + 6} y={c.y + 22} className="chip-code">
                   {h}
                 </text>
                 <text x={c.x + c.w - 6} y={c.y + 17} textAnchor="end" className="chip-count">
@@ -429,14 +440,15 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
       </div>
 
       <div className="map-keys small">
-        <span><i className="k k-current" /> текущий Hall</span>
-        <span><i className="k k-next" /> следующий Hall</span>
+        <span><i className="k k-current" /> где вы сейчас</span>
+        <span><i className="k k-next" /> следующий павильон</span>
+        <span><i className="k k-door">вход</i> вход (сторона подтверждена, номер ворот — нет)</span>
         <span><i className="k k-user" /> вы здесь (GPS)</span>
         <span><i className="k k-active" /> текущий участок</span>
         <span><i className="k k-order">1</i> порядок обхода · цвет = товарная группа</span>
         <span>число — точек по маршруту</span>
-        <span>«доп.» — второй стенд, визит в другом Hall</span>
-        <span>этажи x.1–x.4 — один корпус · x.0 — открытая площадка</span>
+        <span>«доп.» — второй стенд компании, визит в другом павильоне</span>
+        <span>внутри павильона — его этажи (мелко — код, напр. 15.2)</span>
       </div>
 
       <h3>Легенда товарных групп</h3>
@@ -455,10 +467,10 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
         })}
       </div>
       <p className="muted small">
-        Расположение Area и Hall — по официальному Exhibition Section Floor Map 140-й сессии (Phase 1) и Complex Layout.
+        Расположение зон и павильонов — по официальному Exhibition Section Floor Map 140-й сессии (Phase 1) и Complex Layout.
         Линии маршрута идут по проходам: Pearl Promenade, Middle Platform, переход через Xingang Donglu. Пунктир от синей
-        точки — приблизительный путь до ближайшего прохода. Внутри Hall порядок — по номерам стендов (не GPS): координат
-        стендов нет, точки привязаны к Hall. GPS внутри павильонов может ошибаться на десятки метров.
+        точки — приблизительный путь до ближайшего прохода. Внутри павильона порядок — по номерам стендов (не GPS): координат
+        стендов нет, точки привязаны к павильонам. GPS внутри павильонов может ошибаться на десятки метров.
       </p>
     </div>
   );
@@ -479,7 +491,7 @@ export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }:
   if (!gps.fix)
     return (
       <div className="gps-panel warn">
-        <span>{gps.message || 'GPS недоступен.'} Маршрут строится от выбранного Hall.</span>
+        <span>{gps.message || 'GPS недоступен.'} Маршрут строится от выбранного павильона.</span>
         <button className="btn-link" onClick={onPickHall}>
           Выбрать Hall
         </button>
@@ -510,19 +522,19 @@ export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }:
   return (
     <div className={`gps-panel ${gps.usable ? 'ok' : 'warn'}`}>
       <span>
-        🔵 GPS ±{acc} м{gps.hallGuess ? ` · корпус ${gps.hallGuess}?` : ''} · {QUALITY_LABEL[gps.quality]}
-        {!gps.usable && ' · точность низкая, маршрут от выбранного Hall'}
+        🔵 GPS ±{acc} м{gps.hallGuess ? ` · похоже, павильон ${gps.hallGuess}` : ''} · {QUALITY_LABEL[gps.quality]}
+        {!gps.usable && ' · точность низкая, маршрут от выбранного павильона'}
       </span>
       {current && acc <= 60 && (
         <button className="btn btn-mark" onClick={() => onCalibrate(current)}>
-          📍 Отметить: я в Hall {current}
-          {gps.hallGuess && gps.hallGuess !== nodeOfHall(current) ? ` (GPS показывает корпус ${gps.hallGuess})` : ''}
+          📍 Отметить: я здесь — {hallLabel(current)}
+          {gps.hallGuess && gps.hallGuess !== nodeOfHall(current) ? ` (GPS показывает павильон ${gps.hallGuess})` : ''}
         </button>
       )}
-      {current && acc > 60 && <span className="muted">Для отметки Hall нужна точность GPS ±60 м</span>}
+      {current && acc > 60 && <span className="muted">Для отметки павильона нужна точность GPS ±60 м</span>}
       {current && (
         <button className="btn-link" onClick={onPickHall}>
-          Другой Hall
+          Другой павильон
         </button>
       )}
       {!current && (
@@ -534,8 +546,9 @@ export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }:
   );
 }
 
-export function NextSheet({ step, leg, follow, onToggleFollow, onOpen, onVisited }: {
+export function NextSheet({ step, leg, follow, onToggleFollow, onOpen, onVisited, from }: {
   step: Step;
+  from: From;
   leg: LegInfo | null;
   follow: boolean;
   onToggleFollow: () => void;
@@ -549,9 +562,8 @@ export function NextSheet({ step, leg, follow, onToggleFollow, onOpen, onVisited
         <span className="ns-label">Следующая точка</span>
         <PriorityBadge p={step.point} />
       </div>
-      <div className="ns-where">
-        Hall {step.hall} · Booth {step.booths.join('; ')}
-      </div>
+      <div className="ns-where">{hallLabel(step.hall)}</div>
+      <div className="ns-booth">Стенд {boothsLabel(step.booths)}</div>
       <div className="ns-row">
         <button className="ns-company" onClick={() => onOpen(step.point.id)}>
           {step.point.company} ›
@@ -559,6 +571,8 @@ export function NextSheet({ step, leg, follow, onToggleFollow, onOpen, onVisited
         <GroupTag group={step.point.mapGroup} short />
       </div>
       {leg && <LegLine leg={leg} />}
+      <Directions from={from} hall={step.hall} booths={step.booths} />
+      <PathLine hall={step.hall} booths={step.booths} />
       <div className="ns-btns">
         <button className={`btn ${follow ? 'btn-secondary' : 'btn-start'}`} onClick={onToggleFollow}>
           {follow ? '■ Остановить' : '▶ Начать маршрут'}
@@ -568,5 +582,28 @@ export function NextSheet({ step, leg, follow, onToggleFollow, onOpen, onVisited
         </button>
       </div>
     </div>
+  );
+}
+
+/** Entrance tags placed on the side of each zone where entrances exist (positions along the side are schematic). */
+const ENTRANCES: { x: number; y: number; label: string }[] = [
+  { x: 1.9, y: 5.52, label: 'Вход в Зону D' },
+  { x: 8.6, y: 5.52, label: 'Вход в Зону A' },
+  { x: 14.95, y: 5.52, label: 'Вход в Зону B' },
+  { x: 8.2, y: -0.25, label: 'Вход в Зону A' },
+  { x: 14.6, y: -0.25, label: 'Вход в Зону B' },
+  { x: 12.9, y: 6.3, label: 'Вход в Зону C' },
+];
+
+function StreetLabel({ x, y, s, anchor = 'start', small, note }: { x: number; y: number; s: { ru: string; en: string; zh: string }; anchor?: 'start' | 'middle' | 'end'; small?: boolean; note?: string }) {
+  return (
+    <text x={x} y={y} textAnchor={anchor} className={small ? 'lane-label' : 'road-label'}>
+      <tspan className="street-ru">{s.ru}</tspan>
+      <tspan x={x} dy={small ? 10 : 12} className="street-en">
+        {s.en}
+        {s.zh ? ` · ${s.zh}` : ''}
+        {note ? ` · ${note}` : ''}
+      </tspan>
+    </text>
   );
 }

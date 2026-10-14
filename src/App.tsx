@@ -11,7 +11,8 @@ import { computeStats } from './stats';
 import { useAppStore } from './store';
 import type { PointState } from './types';
 import { useGps } from './useGps';
-import { inVenue, nodeAt, nodeOfHall, pathLength, walkPath, walkPathFromPoint, type Pt } from './venue';
+import { boothLabel, hallLabel, type From, type ZoneId } from './labels';
+import { BOX_W, NODES, ROW_H, ROW_TOP, inVenue, nodeAt, nodeOfHall, pathLength, walkPath, walkPathFromPoint, type Pt } from './venue';
 import { HallSelector } from './components/HallSelector';
 import { HallSheet } from './components/HallSheet';
 import { MapView, type GpsView, type LegInfo } from './components/MapView';
@@ -36,6 +37,18 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'list', label: 'Список', icon: '☰' },
   { id: 'stats', label: 'Статистика', icon: '▦' },
 ];
+
+/** Zone of the nearest building to a plan position (for directions while walking between pavilions). */
+function nearestZone(p: Pt): ZoneId | null {
+  let best: { d: number; z: ZoneId } | null = null;
+  for (const n of NODES) {
+    const cx = n.x + BOX_W / 2;
+    const cy = ROW_TOP[n.row] + ROW_H[n.row] / 2;
+    const d = Math.hypot(cx - p.x, cy - p.y);
+    if (!best || d < best.d) best = { d, z: n.area as ZoneId };
+  }
+  return best?.z ?? null;
+}
 
 const AmapView = lazy(() => import('./components/AmapView').then((m) => ({ default: m.AmapView })));
 
@@ -190,7 +203,17 @@ export default function App() {
     target: firstLatLon,
   };
 
-  /** "📍 Отметить: я в Hall X" — the real GPS fix becomes this hall's coordinate (and refines the georeference). */
+  // Where the user is, for "Куда идти": chosen hall (with floor) wins; else the GPS building; else outside.
+  const gpsBuilding = gpsView.hallGuess;
+  const from: From = gps.fix && !gpsInside && !currentHall
+    ? { hall: null, outside: true }
+    : currentHall
+      ? { hall: currentHall }
+      : gpsBuilding
+        ? { hall: gpsBuilding }
+        : { hall: null, outside: !!gps.fix && !gpsInside, zone: gpsInside && gpsVenue ? nearestZone(gpsVenue) : null };
+
+  /** "📍 Отметить: я в павильоне X" — the real GPS fix becomes this hall's coordinate (and refines the georeference). */
   const markHall = (hall: string) => {
     if (!hallCenter(hall) || !gps.fix) return;
     if (gps.fix.acc > MAX_MARK_ACC_M) {
@@ -201,7 +224,7 @@ export default function App() {
     setMarks(next);
     saveMarks(next);
     store.setCurrentHall(hall);
-    setToast({ text: `📍 Hall ${hall} отмечен на карте (±${Math.round(gps.fix.acc)} м).` });
+    setToast({ text: `📍 ${hallLabel(hall)} отмечен на карте (±${Math.round(gps.fix.acc)} м).` });
   };
 
   const selectHall = (h: string | null) => {
@@ -251,7 +274,7 @@ export default function App() {
     setToast({
       text:
         (visit === 'visited' ? `✓ ${p.company} — посещено.` : `${p.company} — пропущено.`) +
-        (n ? ` Следующая: ${n.point.company}, Hall ${n.hall} → ${n.booths[0]}` : ' Все точки маршрута отработаны.'),
+        (n ? ` Следующая: ${n.point.company} — ${hallLabel(n.hall)}, стенд ${boothLabel(n.booths[0] ?? '')}` : ' Все точки маршрута отработаны.'),
       undo: { id, prev, prevHall },
       nextId: n?.point.id,
     });
@@ -282,8 +305,9 @@ export default function App() {
           <span className="sub">Canton Fair Map · Phase 1</span>
         </div>
         <button className={`hall-chip ${currentHall ? '' : 'unset'}`} onClick={() => setHallOpen(true)}>
-          <span className="small">Я в Hall</span>
-          <b>{currentHall ?? '—'}</b>
+          <span className="small">Я в павильоне</span>
+          <b>{currentHall ? currentHall.split('.')[0] : '—'}</b>
+          {currentHall && <span className="small">{currentHall.endsWith('.0') ? 'площадка' : `${currentHall.split('.')[1]} этаж`}</span>}
         </button>
       </header>
       <div className="statbar">
@@ -319,6 +343,7 @@ export default function App() {
             leg={legInfo}
             suggest={suggest}
             onReplan={() => replan()}
+            from={from}
             onVisited={(id) => finish(id, 'visited')}
             onSkip={(id) => finish(id, 'skipped')}
             onToggle={toggle}
@@ -357,6 +382,7 @@ export default function App() {
             suggest={suggest}
             pois={pois}
             marks={marks}
+            from={from}
             onPois={onPois}
             onReplan={() => replan()}
             onDismissSuggest={() => setSuggest(null)}
@@ -372,6 +398,7 @@ export default function App() {
         )}
         {tab === 'map' && mapKind === 'schema' && (
           <MapView
+            from={from}
             plan={plan}
             states={states}
             current={currentHall}
