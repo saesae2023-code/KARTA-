@@ -1,0 +1,9 @@
+{
+  "name": "ALTIORA Canton Fair Map",
+  "short_name": "ALTIORA Map",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1b2a",
+  "theme_color": "#0d1b2a",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

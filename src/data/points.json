@@ -1,0 +1,3383 @@
+{
+ "sheet": "FULL MASTER LIST",
+ "columns": [
+  "ID / порядок",
+  "Приоритет",
+  "Товарное направление",
+  "Компания / бренд",
+  "Hall",
+  "Booth",
+  "Что представлено",
+  "Почему точка релевантна",
+  "Что получить / проверить",
+  "Телефон / WhatsApp",
+  "WeChat / Email",
+  "Сайт",
+  "Статус верификации",
+  "Источник",
+  "Статус посещения",
+  "Контакт получен",
+  "Итог / заметки",
+  "Группа для будущей карты",
+  "Тип точки"
+ ],
+ "points": [
+  {
+   "id": 1,
+   "priority": "A",
+   "category": "Электромоторы / мотор-компоненты",
+   "company": "Shengzhou Jiangxin Motor Technology",
+   "hall": "3.1",
+   "booth": "3.1Y33-34",
+   "products": "AC/DC motors, micro motors, custom motor engineering",
+   "why": "Получить инженеров по мотору и кастомизации; полезно для приводов, насосов, вентиляции и как контакт в моторной цепочке.",
+   "toCheck": "Спросить BLDC/PMSM, 24/48/72/96V, continuous duty, IP67, water cooling, CAN, custom shaft/housing; запросить инженера и factory visit.",
+   "phone": "Не подтверждён публично",
+   "wechatEmail": "betty@dbjxmotor.com",
+   "website": "https://www.jxmotorfactory.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён сайтом компании",
+   "source": "https://www.jxmotorfactory.com/news/company-news/shengzhou-jiangxin-motor-technology-co-ltd-to-attend-the-140th.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "INNOVATION / OTHER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "3.1Y33-34",
+     "hall": "3.1"
+    }
+   ],
+   "halls": [
+    "3.1"
+   ],
+   "raw": {
+    "ID / порядок": "1",
+    "Приоритет": "A",
+    "Товарное направление": "Электромоторы / мотор-компоненты",
+    "Компания / бренд": "Shengzhou Jiangxin Motor Technology",
+    "Hall": "3.1",
+    "Booth": "3.1Y33-34",
+    "Что представлено": "AC/DC motors, micro motors, custom motor engineering",
+    "Почему точка релевантна": "Получить инженеров по мотору и кастомизации; полезно для приводов, насосов, вентиляции и как контакт в моторной цепочке.",
+    "Что получить / проверить": "Спросить BLDC/PMSM, 24/48/72/96V, continuous duty, IP67, water cooling, CAN, custom shaft/housing; запросить инженера и factory visit.",
+    "Телефон / WhatsApp": "Не подтверждён публично",
+    "WeChat / Email": "betty@dbjxmotor.com",
+    "Сайт": "https://www.jxmotorfactory.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён сайтом компании",
+    "Источник": "https://www.jxmotorfactory.com/news/company-news/shengzhou-jiangxin-motor-technology-co-ltd-to-attend-the-140th.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "INNOVATION / OTHER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 2,
+   "priority": "A",
+   "category": "Моторы / BLDC / servo",
+   "company": "Keli Motor",
+   "hall": "4.2",
+   "booth": "4.2I52-55",
+   "products": "BLDC, servo, stepper, universal motors, pumps/fans",
+   "why": "Сильный инженерный производитель; можно обсуждать моторы/насосы под яхту и электротехнику, даже если готового marine propulsion нет.",
+   "toCheck": "Нужны high-torque BLDC/PMSM; IP67; salt-mist; 24–96V; custom controller; low-noise; marine cooling.",
+   "phone": "Не подтверждён публично",
+   "wechatEmail": "Контакт через сайт",
+   "website": "https://www.kelimicromotor.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.linkedin.com/pulse/source-smarter-140th-canton-fair-motion-thermal-fluid-tina-hu-aui8c",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "INNOVATION / OTHER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "4.2I52-55",
+     "hall": "4.2"
+    }
+   ],
+   "halls": [
+    "4.2"
+   ],
+   "raw": {
+    "ID / порядок": "2",
+    "Приоритет": "A",
+    "Товарное направление": "Моторы / BLDC / servo",
+    "Компания / бренд": "Keli Motor",
+    "Hall": "4.2",
+    "Booth": "4.2I52-55",
+    "Что представлено": "BLDC, servo, stepper, universal motors, pumps/fans",
+    "Почему точка релевантна": "Сильный инженерный производитель; можно обсуждать моторы/насосы под яхту и электротехнику, даже если готового marine propulsion нет.",
+    "Что получить / проверить": "Нужны high-torque BLDC/PMSM; IP67; salt-mist; 24–96V; custom controller; low-noise; marine cooling.",
+    "Телефон / WhatsApp": "Не подтверждён публично",
+    "WeChat / Email": "Контакт через сайт",
+    "Сайт": "https://www.kelimicromotor.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.linkedin.com/pulse/source-smarter-140th-canton-fair-motion-thermal-fluid-tina-hu-aui8c",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "INNOVATION / OTHER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 3,
+   "priority": "A",
+   "category": "Marine hardware / 316SS",
+   "company": "Shandong Aleader Machinery Manufacturing",
+   "hall": "9.1",
+   "booth": "9.1K10",
+   "products": "Marine hardware, investment castings, pump/valve parts, stainless components",
+   "why": "Одна из самых точных точек под яхтенную фурнитуру и OEM: 316/316L, детали по образцу/чертежу.",
+   "toCheck": "Показать latch/hinge/handle/cleat; запросить AISI316L certificate, mirror polish, salt spray, MOQ, tooling, sample, OEM.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через Canton Fair 365 / сайт",
+   "website": "https://www.aleader-china.com/",
+   "verification": "ОФИЦИАЛЬНЫЙ Canton Fair 365",
+   "source": "https://365.cantonfair.org.cn/en-US/shops?id=2060814064",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "9.1K10",
+     "hall": "9.1"
+    }
+   ],
+   "halls": [
+    "9.1"
+   ],
+   "raw": {
+    "ID / порядок": "3",
+    "Приоритет": "A",
+    "Товарное направление": "Marine hardware / 316SS",
+    "Компания / бренд": "Shandong Aleader Machinery Manufacturing",
+    "Hall": "9.1",
+    "Booth": "9.1K10",
+    "Что представлено": "Marine hardware, investment castings, pump/valve parts, stainless components",
+    "Почему точка релевантна": "Одна из самых точных точек под яхтенную фурнитуру и OEM: 316/316L, детали по образцу/чертежу.",
+    "Что получить / проверить": "Показать latch/hinge/handle/cleat; запросить AISI316L certificate, mirror polish, salt spray, MOQ, tooling, sample, OEM.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через Canton Fair 365 / сайт",
+    "Сайт": "https://www.aleader-china.com/",
+    "Статус верификации": "ОФИЦИАЛЬНЫЙ Canton Fair 365",
+    "Источник": "https://365.cantonfair.org.cn/en-US/shops?id=2060814064",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 4,
+   "priority": "A",
+   "category": "Marine interior / boat seats",
+   "company": "Xiamen Easepal Enterprises",
+   "hall": "10.3",
+   "booth": "10.3D43-44",
+   "products": "Boat seats, Bimini tops, boat covers, RV/car covers",
+   "why": "Готовая marine-фабрика: можно получить кресла, тенты и OEM-линейку для яхт/катеров.",
+   "toCheck": "Marine vinyl? UV/salt resistance? foam density? stainless frame? fire-retardant? custom upholstery/logo? MOQ/sample?",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт",
+   "website": "https://www.easepal.com/",
+   "verification": "ТОЧНЫЙ СТЕНД + marine ассортимент подтверждены сайтом",
+   "source": "https://www.easepal.com/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "10.3D43-44",
+     "hall": "10.3"
+    }
+   ],
+   "halls": [
+    "10.3"
+   ],
+   "raw": {
+    "ID / порядок": "4",
+    "Приоритет": "A",
+    "Товарное направление": "Marine interior / boat seats",
+    "Компания / бренд": "Xiamen Easepal Enterprises",
+    "Hall": "10.3",
+    "Booth": "10.3D43-44",
+    "Что представлено": "Boat seats, Bimini tops, boat covers, RV/car covers",
+    "Почему точка релевантна": "Готовая marine-фабрика: можно получить кресла, тенты и OEM-линейку для яхт/катеров.",
+    "Что получить / проверить": "Marine vinyl? UV/salt resistance? foam density? stainless frame? fire-retardant? custom upholstery/logo? MOQ/sample?",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт",
+    "Сайт": "https://www.easepal.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + marine ассортимент подтверждены сайтом",
+    "Источник": "https://www.easepal.com/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 5,
+   "priority": "A",
+   "category": "Outdoor / winter equipment",
+   "company": "DAYE Group + AL-KO",
+   "hall": "11.2",
+   "booth": "11.2G35-38; 11.2H09-12",
+   "products": "Full garden machinery, battery platform, robotic/ride-on machinery",
+   "why": "DAYE выпускает в том числе snow blowers; на стенде можно получить прямой контакт фабрики по зимней технике и battery platform.",
+   "toCheck": "Попросить snow blower / snow thrower catalog; tracked/2-stage; electric start; 18/36/40/80V; low-temp battery; OEM; Russia specs.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через DAYE / AL-KO",
+   "website": "https://www.dayegroup.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён DAYE",
+   "source": "https://cn.linkedin.com/company/dayegroup",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "11.2G35-38",
+     "hall": "11.2"
+    },
+    {
+     "label": "11.2H09-12",
+     "hall": "11.2"
+    }
+   ],
+   "halls": [
+    "11.2"
+   ],
+   "raw": {
+    "ID / порядок": "5",
+    "Приоритет": "A",
+    "Товарное направление": "Outdoor / winter equipment",
+    "Компания / бренд": "DAYE Group + AL-KO",
+    "Hall": "11.2",
+    "Booth": "11.2G35-38; 11.2H09-12",
+    "Что представлено": "Full garden machinery, battery platform, robotic/ride-on machinery",
+    "Почему точка релевантна": "DAYE выпускает в том числе snow blowers; на стенде можно получить прямой контакт фабрики по зимней технике и battery platform.",
+    "Что получить / проверить": "Попросить snow blower / snow thrower catalog; tracked/2-stage; electric start; 18/36/40/80V; low-temp battery; OEM; Russia specs.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через DAYE / AL-KO",
+    "Сайт": "https://www.dayegroup.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён DAYE",
+    "Источник": "https://cn.linkedin.com/company/dayegroup",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 6,
+   "priority": "A",
+   "category": "ATV / UTV",
+   "company": "ODES",
+   "hall": "14.1",
+   "booth": "14.1D33-34; 14.1E09-11",
+   "products": "Off-road powersports lineup",
+   "why": "Конкретная powersports-точка; оценить технику, платформы, экспорт и возможные новые модели.",
+   "toCheck": "ATV/UTV list, engine options, EPS, 4x4, homologation, FOB/EXW, MOQ, spare parts, dealer terms.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт на стенде",
+   "website": "https://odespowersports.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён брендом",
+   "source": "https://www.facebook.com/aodesglobal/posts/one-day-to-gothe-140th-canton-fair-starts-tomorrowcome-visit-odes-at-hall-141-bo/1143245478655743/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "14.1D33-34",
+     "hall": "14.1"
+    },
+    {
+     "label": "14.1E09-11",
+     "hall": "14.1"
+    }
+   ],
+   "halls": [
+    "14.1"
+   ],
+   "raw": {
+    "ID / порядок": "6",
+    "Приоритет": "A",
+    "Товарное направление": "ATV / UTV",
+    "Компания / бренд": "ODES",
+    "Hall": "14.1",
+    "Booth": "14.1D33-34; 14.1E09-11",
+    "Что представлено": "Off-road powersports lineup",
+    "Почему точка релевантна": "Конкретная powersports-точка; оценить технику, платформы, экспорт и возможные новые модели.",
+    "Что получить / проверить": "ATV/UTV list, engine options, EPS, 4x4, homologation, FOB/EXW, MOQ, spare parts, dealer terms.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт на стенде",
+    "Сайт": "https://odespowersports.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён брендом",
+    "Источник": "https://www.facebook.com/aodesglobal/posts/one-day-to-gothe-140th-canton-fair-starts-tomorrowcome-visit-odes-at-hall-141-bo/1143245478655743/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 7,
+   "priority": "A",
+   "category": "ATV / UTV / electric off-road",
+   "company": "HIGHPER",
+   "hall": "14.1",
+   "booth": "14.1B41-42",
+   "products": "Side-by-side UTV, ATV, go-karts, electric dirt bikes",
+   "why": "Прямой производитель off-road техники; live display и OEM/ODM обсуждение на месте.",
+   "toCheck": "Full-size ATV/UTV, electric versions, engine/battery, EPS, 4WD, price, MOQ, certifications, OEM/ODM, spare-parts package.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "sales@highper.com",
+   "website": "https://www.high-per.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён сайтом",
+   "source": "https://www.high-per.com/news/highper-to-showcase-comprehensive-off-road-vehicle-lineup-at-the-140th-canton-fair/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "14.1B41-42",
+     "hall": "14.1"
+    }
+   ],
+   "halls": [
+    "14.1"
+   ],
+   "raw": {
+    "ID / порядок": "7",
+    "Приоритет": "A",
+    "Товарное направление": "ATV / UTV / electric off-road",
+    "Компания / бренд": "HIGHPER",
+    "Hall": "14.1",
+    "Booth": "14.1B41-42",
+    "Что представлено": "Side-by-side UTV, ATV, go-karts, electric dirt bikes",
+    "Почему точка релевантна": "Прямой производитель off-road техники; live display и OEM/ODM обсуждение на месте.",
+    "Что получить / проверить": "Full-size ATV/UTV, electric versions, engine/battery, EPS, 4WD, price, MOQ, certifications, OEM/ODM, spare-parts package.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "sales@highper.com",
+    "Сайт": "https://www.high-per.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён сайтом",
+    "Источник": "https://www.high-per.com/news/highper-to-showcase-comprehensive-off-road-vehicle-lineup-at-the-140th-canton-fair/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 8,
+   "priority": "A",
+   "category": "Lighting / rugged OEM",
+   "company": "Oteshen Lighting",
+   "hall": "14.4",
+   "booth": "14.4G14",
+   "products": "Outdoor waterproof LED, wall/flood/solar, OEM/ODM",
+   "why": "Не marine-бренд, но точная фабрика для кастомного влагозащищённого освещения; можно обсуждать корпуса/оптику под яхту.",
+   "toCheck": "12/24V DC? IP67/IP68? 316SS/aluminum? salt-spray? UV? custom CCT/beam? underwater feasibility? OEM mold?",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через сайт",
+   "website": "https://www.oteshen.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.oteshen.com/canton-fair-2026-oteshen-lighting-booth",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "14.4G14",
+     "hall": "14.4"
+    }
+   ],
+   "halls": [
+    "14.4"
+   ],
+   "raw": {
+    "ID / порядок": "8",
+    "Приоритет": "A",
+    "Товарное направление": "Lighting / rugged OEM",
+    "Компания / бренд": "Oteshen Lighting",
+    "Hall": "14.4",
+    "Booth": "14.4G14",
+    "Что представлено": "Outdoor waterproof LED, wall/flood/solar, OEM/ODM",
+    "Почему точка релевантна": "Не marine-бренд, но точная фабрика для кастомного влагозащищённого освещения; можно обсуждать корпуса/оптику под яхту.",
+    "Что получить / проверить": "12/24V DC? IP67/IP68? 316SS/aluminum? salt-spray? UV? custom CCT/beam? underwater feasibility? OEM mold?",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через сайт",
+    "Сайт": "https://www.oteshen.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.oteshen.com/canton-fair-2026-oteshen-lighting-booth",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 9,
+   "priority": "A",
+   "category": "ATV + power machinery",
+   "company": "Chongqing Diligence / KINGGANG",
+   "hall": "15.2",
+   "booth": "15.2A08-09",
+   "products": "ATVs; отдельные стенды компании также показывают generators/pumps/engines",
+   "why": "Очень удобная точка: один производитель закрывает ATV и силовую технику.",
+   "toCheck": "ATV 4x4/EPS/engine sizes; FOB/EXW; spare parts; OEM. Затем запросить контакт команды генераторов этой же фабрики.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт AEROBS",
+   "website": "https://www.aerobspower.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.aerobspower.com/Meet-Chongqing-Diligence-at-Canton-Fair-2026-Premium-Generators-Water-Pumps-ATVs-on-Display-id02868135.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.2A08-09",
+     "hall": "15.2"
+    }
+   ],
+   "halls": [
+    "15.2"
+   ],
+   "raw": {
+    "ID / порядок": "9",
+    "Приоритет": "A",
+    "Товарное направление": "ATV + power machinery",
+    "Компания / бренд": "Chongqing Diligence / KINGGANG",
+    "Hall": "15.2",
+    "Booth": "15.2A08-09",
+    "Что представлено": "ATVs; отдельные стенды компании также показывают generators/pumps/engines",
+    "Почему точка релевантна": "Очень удобная точка: один производитель закрывает ATV и силовую технику.",
+    "Что получить / проверить": "ATV 4x4/EPS/engine sizes; FOB/EXW; spare parts; OEM. Затем запросить контакт команды генераторов этой же фабрики.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт AEROBS",
+    "Сайт": "https://www.aerobspower.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.aerobspower.com/Meet-Chongqing-Diligence-at-Canton-Fair-2026-Premium-Generators-Water-Pumps-ATVs-on-Display-id02868135.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 10,
+   "priority": "A",
+   "category": "ATV battery / cold-start",
+   "company": "LIYON Battery",
+   "hall": "15.2",
+   "booth": "15.2D14-15",
+   "products": "Motorcycle and ATV AGM batteries",
+   "why": "Полезно для ATV/UTV и холодного климата; даст прямой battery supplier.",
+   "toCheck": "CCA at -18/-30C, vibration, AGM/GEL, OEM brand, MOQ, EAC/CE, warranty, ATV/UTV references.",
+   "phone": "WhatsApp +86 19112031658",
+   "wechatEmail": "WeChat: Ellabatt",
+   "website": "—",
+   "verification": "ТОЧНЫЙ СТЕНД + прямой контакт подтверждены",
+   "source": "https://cn.linkedin.com/in/liyon-moto-battery-176009269",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.2D14-15",
+     "hall": "15.2"
+    }
+   ],
+   "halls": [
+    "15.2"
+   ],
+   "raw": {
+    "ID / порядок": "10",
+    "Приоритет": "A",
+    "Товарное направление": "ATV battery / cold-start",
+    "Компания / бренд": "LIYON Battery",
+    "Hall": "15.2",
+    "Booth": "15.2D14-15",
+    "Что представлено": "Motorcycle and ATV AGM batteries",
+    "Почему точка релевантна": "Полезно для ATV/UTV и холодного климата; даст прямой battery supplier.",
+    "Что получить / проверить": "CCA at -18/-30C, vibration, AGM/GEL, OEM brand, MOQ, EAC/CE, warranty, ATV/UTV references.",
+    "Телефон / WhatsApp": "WhatsApp +86 19112031658",
+    "WeChat / Email": "WeChat: Ellabatt",
+    "Сайт": "—",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + прямой контакт подтверждены",
+    "Источник": "https://cn.linkedin.com/in/liyon-moto-battery-176009269",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 11,
+   "priority": "A",
+   "category": "LiFePO4 / energy storage",
+   "company": "KIJO Group",
+   "hall": "15.2",
+   "booth": "15.2G34-35",
+   "products": "Lithium and energy storage battery solutions",
+   "why": "Прямой крупный аккумуляторный производитель; нужен для яхт, electric ATV/snowmobile и автономной энергетики.",
+   "toCheck": "24/48/72/96V custom pack; BMS CAN; low-temp heating; high discharge; IP67; UN38.3; custom enclosure; OEM MOQ.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через сайт",
+   "website": "https://www.kijo-battery.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.kijo-battery.com/kijo-group-to-participate-in-the-140th-canton-fair-with-advanced-lithium-and-energy-storage-battery-solutions.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "INNOVATION / OTHER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.2G34-35",
+     "hall": "15.2"
+    }
+   ],
+   "halls": [
+    "15.2"
+   ],
+   "raw": {
+    "ID / порядок": "11",
+    "Приоритет": "A",
+    "Товарное направление": "LiFePO4 / energy storage",
+    "Компания / бренд": "KIJO Group",
+    "Hall": "15.2",
+    "Booth": "15.2G34-35",
+    "Что представлено": "Lithium and energy storage battery solutions",
+    "Почему точка релевантна": "Прямой крупный аккумуляторный производитель; нужен для яхт, electric ATV/snowmobile и автономной энергетики.",
+    "Что получить / проверить": "24/48/72/96V custom pack; BMS CAN; low-temp heating; high discharge; IP67; UN38.3; custom enclosure; OEM MOQ.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через сайт",
+    "Сайт": "https://www.kijo-battery.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.kijo-battery.com/kijo-group-to-participate-in-the-140th-canton-fair-with-advanced-lithium-and-energy-storage-battery-solutions.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "INNOVATION / OTHER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 12,
+   "priority": "A",
+   "category": "LiFePO4 / e-mobility",
+   "company": "FEBATT",
+   "hall": "15.2",
+   "booth": "15.2H06",
+   "products": "Lithium battery systems for e-mobility and industrial applications",
+   "why": "Очень полезна под electric propulsion, ATV/UTV/snowmobile: можно обсудить custom high-discharge packs.",
+   "toCheck": "Low-temp discharge; heating; 72/96V; continuous/peak current; CAN; liquid cooling; IP; BMS customization; UN38.3.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через сайт",
+   "website": "https://www.febatt.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.febatt.com/febatt-140th-canton-fair-2026/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "INNOVATION / OTHER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.2H06",
+     "hall": "15.2"
+    }
+   ],
+   "halls": [
+    "15.2"
+   ],
+   "raw": {
+    "ID / порядок": "12",
+    "Приоритет": "A",
+    "Товарное направление": "LiFePO4 / e-mobility",
+    "Компания / бренд": "FEBATT",
+    "Hall": "15.2",
+    "Booth": "15.2H06",
+    "Что представлено": "Lithium battery systems for e-mobility and industrial applications",
+    "Почему точка релевантна": "Очень полезна под electric propulsion, ATV/UTV/snowmobile: можно обсудить custom high-discharge packs.",
+    "Что получить / проверить": "Low-temp discharge; heating; 72/96V; continuous/peak current; CAN; liquid cooling; IP; BMS customization; UN38.3.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через сайт",
+    "Сайт": "https://www.febatt.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.febatt.com/febatt-140th-canton-fair-2026/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "INNOVATION / OTHER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 13,
+   "priority": "A",
+   "category": "Electric ATV",
+   "company": "Shuangye",
+   "hall": "16.2",
+   "booth": "16.2C13",
+   "products": "Q7 4WD Electric ATV and new electric models",
+   "why": "Конкретная электрическая ATV-точка — важна для нового направления и сравнения с бензиновыми ATV.",
+   "toCheck": "4WD architecture, motor kW, battery kWh, low-temp range, charging, controller, homologation, FOB, MOQ, OEM.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через сайт",
+   "website": "https://www.zhsydz.com/",
+   "verification": "ТОЧНЫЙ СТЕНД + Q7 4WD ATV подтверждены",
+   "source": "https://www.zhsydz.com/meet-us-at-the-140th-canton-fair-2026/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "16.2C13",
+     "hall": "16.2"
+    }
+   ],
+   "halls": [
+    "16.2"
+   ],
+   "raw": {
+    "ID / порядок": "13",
+    "Приоритет": "A",
+    "Товарное направление": "Electric ATV",
+    "Компания / бренд": "Shuangye",
+    "Hall": "16.2",
+    "Booth": "16.2C13",
+    "Что представлено": "Q7 4WD Electric ATV and new electric models",
+    "Почему точка релевантна": "Конкретная электрическая ATV-точка — важна для нового направления и сравнения с бензиновыми ATV.",
+    "Что получить / проверить": "4WD architecture, motor kW, battery kWh, low-temp range, charging, controller, homologation, FOB, MOQ, OEM.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через сайт",
+    "Сайт": "https://www.zhsydz.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + Q7 4WD ATV подтверждены",
+    "Источник": "https://www.zhsydz.com/meet-us-at-the-140th-canton-fair-2026/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 14,
+   "priority": "A",
+   "category": "Генераторы / насосы",
+   "company": "Chongqing Diligence / AEROBS",
+   "hall": "17.1",
+   "booth": "17.1I27-28",
+   "products": "Gasoline & diesel generators, water pumps",
+   "why": "Реальная точка по генераторам + насосам; можно обсуждать компактный genset и насосы под onboard/utility.",
+   "toCheck": "5–10kW diesel; water-cooled? soundproof? remote start? 230V/50Hz? pump 12/24V? saltwater materials? OEM?",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт AEROBS",
+   "website": "https://www.aerobspower.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.aerobspower.com/Meet-Chongqing-Diligence-at-Canton-Fair-2026-Premium-Generators-Water-Pumps-ATVs-on-Display-id02868135.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "17.1I27-28",
+     "hall": "17.1"
+    }
+   ],
+   "halls": [
+    "17.1"
+   ],
+   "raw": {
+    "ID / порядок": "14",
+    "Приоритет": "A",
+    "Товарное направление": "Генераторы / насосы",
+    "Компания / бренд": "Chongqing Diligence / AEROBS",
+    "Hall": "17.1",
+    "Booth": "17.1I27-28",
+    "Что представлено": "Gasoline & diesel generators, water pumps",
+    "Почему точка релевантна": "Реальная точка по генераторам + насосам; можно обсуждать компактный genset и насосы под onboard/utility.",
+    "Что получить / проверить": "5–10kW diesel; water-cooled? soundproof? remote start? 230V/50Hz? pump 12/24V? saltwater materials? OEM?",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт AEROBS",
+    "Сайт": "https://www.aerobspower.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.aerobspower.com/Meet-Chongqing-Diligence-at-Canton-Fair-2026-Premium-Generators-Water-Pumps-ATVs-on-Display-id02868135.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 15,
+   "priority": "A",
+   "category": "Генераторы / hybrid power",
+   "company": "Liyu Power",
+   "hall": "17.1",
+   "booth": "17.1F13-15",
+   "products": "Gas genset / green power systems",
+   "why": "Сильная силовая точка; полезна для крупных generator/hybrid проектов и как benchmark.",
+   "toCheck": "Smallest available kW; gas/diesel alternatives; low-noise; hybrid battery integration; remote monitoring; custom enclosure.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через бренд",
+   "website": "—",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://cn.linkedin.com/company/liyu-power",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "17.1F13-15",
+     "hall": "17.1"
+    }
+   ],
+   "halls": [
+    "17.1"
+   ],
+   "raw": {
+    "ID / порядок": "15",
+    "Приоритет": "A",
+    "Товарное направление": "Генераторы / hybrid power",
+    "Компания / бренд": "Liyu Power",
+    "Hall": "17.1",
+    "Booth": "17.1F13-15",
+    "Что представлено": "Gas genset / green power systems",
+    "Почему точка релевантна": "Сильная силовая точка; полезна для крупных generator/hybrid проектов и как benchmark.",
+    "Что получить / проверить": "Smallest available kW; gas/diesel alternatives; low-noise; hybrid battery integration; remote monitoring; custom enclosure.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через бренд",
+    "Сайт": "—",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://cn.linkedin.com/company/liyu-power",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 16,
+   "priority": "A",
+   "category": "Генераторы / hybrid",
+   "company": "AGG Power Group",
+   "hall": "17.1",
+   "booth": "17.1F29-31; 17.1G12-14",
+   "products": "New hybrid generator set series + diesel power",
+   "why": "Одна из самых сильных инновационных точек в энергетике: генератор + battery/hybrid logic.",
+   "toCheck": "Compact hybrid system; load sharing; BESS integration; remote monitoring; smallest genset; marine/custom enclosure capability.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через сайт",
+   "website": "https://www.aggpower.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://cn.linkedin.com/company/agg-power",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "17.1F29-31",
+     "hall": "17.1"
+    },
+    {
+     "label": "17.1G12-14",
+     "hall": "17.1"
+    }
+   ],
+   "halls": [
+    "17.1"
+   ],
+   "raw": {
+    "ID / порядок": "16",
+    "Приоритет": "A",
+    "Товарное направление": "Генераторы / hybrid",
+    "Компания / бренд": "AGG Power Group",
+    "Hall": "17.1",
+    "Booth": "17.1F29-31; 17.1G12-14",
+    "Что представлено": "New hybrid generator set series + diesel power",
+    "Почему точка релевантна": "Одна из самых сильных инновационных точек в энергетике: генератор + battery/hybrid logic.",
+    "Что получить / проверить": "Compact hybrid system; load sharing; BESS integration; remote monitoring; smallest genset; marine/custom enclosure capability.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через сайт",
+    "Сайт": "https://www.aggpower.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://cn.linkedin.com/company/agg-power",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 17,
+   "priority": "A",
+   "category": "Генераторы / custom power",
+   "company": "Hongfu Power",
+   "hall": "17.1",
+   "booth": "17.1B30-32; 17.1C13",
+   "products": "Diesel generator sets and customized power solutions",
+   "why": "Прямой производитель; хорошо подходит для сравнения цен/компоновок с AGG/MPMC.",
+   "toCheck": "5–20kW; water-cooled; soundproof; remote panel; custom cooling/exhaust; alternator/engine brands; OEM.",
+   "phone": "WhatsApp +86 18250168309",
+   "wechatEmail": "vicent@hongfumotor.com",
+   "website": "https://www.hongfumotor.com/",
+   "verification": "ТОЧНЫЙ СТЕНД + прямой контакт подтверждены",
+   "source": "https://cn.linkedin.com/company/hongfu-power",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "17.1B30-32",
+     "hall": "17.1"
+    },
+    {
+     "label": "17.1C13",
+     "hall": "17.1"
+    }
+   ],
+   "halls": [
+    "17.1"
+   ],
+   "raw": {
+    "ID / порядок": "17",
+    "Приоритет": "A",
+    "Товарное направление": "Генераторы / custom power",
+    "Компания / бренд": "Hongfu Power",
+    "Hall": "17.1",
+    "Booth": "17.1B30-32; 17.1C13",
+    "Что представлено": "Diesel generator sets and customized power solutions",
+    "Почему точка релевантна": "Прямой производитель; хорошо подходит для сравнения цен/компоновок с AGG/MPMC.",
+    "Что получить / проверить": "5–20kW; water-cooled; soundproof; remote panel; custom cooling/exhaust; alternator/engine brands; OEM.",
+    "Телефон / WhatsApp": "WhatsApp +86 18250168309",
+    "WeChat / Email": "vicent@hongfumotor.com",
+    "Сайт": "https://www.hongfumotor.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + прямой контакт подтверждены",
+    "Источник": "https://cn.linkedin.com/company/hongfu-power",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 18,
+   "priority": "A",
+   "category": "Генераторы / BESS / hybrid",
+   "company": "MPMC Group — Power",
+   "hall": "17.1",
+   "booth": "17.1J33-35; 17.1K12-14",
+   "products": "Power generation, hybrid solutions",
+   "why": "Сильная точка для комплексной энергетики; инженеры обещаны на стенде.",
+   "toCheck": "Small genset line? hybrid marine/mobile use? BESS coupling? remote monitoring? compact enclosure? OEM integration.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "sales@mpmc-china.com",
+   "website": "https://www.mpmc-group.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://in.linkedin.com/company/mpmcpowertech",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "17.1J33-35",
+     "hall": "17.1"
+    },
+    {
+     "label": "17.1K12-14",
+     "hall": "17.1"
+    }
+   ],
+   "halls": [
+    "17.1"
+   ],
+   "raw": {
+    "ID / порядок": "18",
+    "Приоритет": "A",
+    "Товарное направление": "Генераторы / BESS / hybrid",
+    "Компания / бренд": "MPMC Group — Power",
+    "Hall": "17.1",
+    "Booth": "17.1J33-35; 17.1K12-14",
+    "Что представлено": "Power generation, hybrid solutions",
+    "Почему точка релевантна": "Сильная точка для комплексной энергетики; инженеры обещаны на стенде.",
+    "Что получить / проверить": "Small genset line? hybrid marine/mobile use? BESS coupling? remote monitoring? compact enclosure? OEM integration.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "sales@mpmc-china.com",
+    "Сайт": "https://www.mpmc-group.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://in.linkedin.com/company/mpmcpowertech",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 19,
+   "priority": "B",
+   "category": "Portable power / innovation",
+   "company": "FULLAS",
+   "hall": "17.1",
+   "booth": "17.1I41",
+   "products": "Power equipment, new energy, portable power station, garden machinery",
+   "why": "Инновационная точка: мощные portable stations + power equipment. Потенциально отдельный продукт для сервиса/ATV/яхт.",
+   "toCheck": "230V output, surge, battery chemistry, IP, cold temp, UPS, OEM, generator line, garden/winter products.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через LinkedIn/сайт",
+   "website": "—",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://cn.linkedin.com/company/chongqing-fullas-industry-co-ltd",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "INNOVATION / OTHER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "17.1I41",
+     "hall": "17.1"
+    }
+   ],
+   "halls": [
+    "17.1"
+   ],
+   "raw": {
+    "ID / порядок": "19",
+    "Приоритет": "B",
+    "Товарное направление": "Portable power / innovation",
+    "Компания / бренд": "FULLAS",
+    "Hall": "17.1",
+    "Booth": "17.1I41",
+    "Что представлено": "Power equipment, new energy, portable power station, garden machinery",
+    "Почему точка релевантна": "Инновационная точка: мощные portable stations + power equipment. Потенциально отдельный продукт для сервиса/ATV/яхт.",
+    "Что получить / проверить": "230V output, surge, battery chemistry, IP, cold temp, UPS, OEM, generator line, garden/winter products.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через LinkedIn/сайт",
+    "Сайт": "—",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://cn.linkedin.com/company/chongqing-fullas-industry-co-ltd",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "INNOVATION / OTHER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 20,
+   "priority": "A",
+   "category": "Marine audio / infotainment",
+   "company": "KLYDE",
+   "hall": "19.2",
+   "booth": "19.2D03-04",
+   "products": "IP66/IP67 marine/outdoor multimedia, digital clusters, 12.3-inch displays, CarPlay/Android Auto",
+   "why": "Одна из самых сильных точек под яхтенную электронику и powersports: waterproof + salt-spray + OEM.",
+   "toCheck": "Marine Series catalog; IP67; salt-spray hours; 12/24V; CAN/NMEA2000? sunlight nits; glove touch; custom UI/logo; camera inputs; OEM MOQ.",
+   "phone": "WhatsApp +86 13226816572",
+   "wechatEmail": "Контакт через бренд",
+   "website": "https://szklyde.com/",
+   "verification": "ТОЧНЫЙ СТЕНД + marine ассортимент подтверждены компанией",
+   "source": "https://szklyde.com/2026/09/22/canton-fair-140th-2026/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "19.2D03-04",
+     "hall": "19.2"
+    }
+   ],
+   "halls": [
+    "19.2"
+   ],
+   "raw": {
+    "ID / порядок": "20",
+    "Приоритет": "A",
+    "Товарное направление": "Marine audio / infotainment",
+    "Компания / бренд": "KLYDE",
+    "Hall": "19.2",
+    "Booth": "19.2D03-04",
+    "Что представлено": "IP66/IP67 marine/outdoor multimedia, digital clusters, 12.3-inch displays, CarPlay/Android Auto",
+    "Почему точка релевантна": "Одна из самых сильных точек под яхтенную электронику и powersports: waterproof + salt-spray + OEM.",
+    "Что получить / проверить": "Marine Series catalog; IP67; salt-spray hours; 12/24V; CAN/NMEA2000? sunlight nits; glove touch; custom UI/logo; camera inputs; OEM MOQ.",
+    "Телефон / WhatsApp": "WhatsApp +86 13226816572",
+    "WeChat / Email": "Контакт через бренд",
+    "Сайт": "https://szklyde.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + marine ассортимент подтверждены компанией",
+    "Источник": "https://szklyde.com/2026/09/22/canton-fair-140th-2026/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 21,
+   "priority": "A",
+   "category": "Audio systems",
+   "company": "DSPPA Audio",
+   "hall": "18.2",
+   "booth": "18.2D07-08",
+   "products": "WiFi audio, amplifiers, speakers, home entertainment/audio systems",
+   "why": "Не marine-специалист, но реальная аудио-фабрика; нужна для OEM-компонентов и поиска waterproof line/engineering.",
+   "toCheck": "Outdoor/waterproof speakers; UV/salt resistance; 12/24V amps; compact Class-D; Bluetooth/WiFi; OEM grille/logo; MOQ.",
+   "phone": "+86 20 37166520",
+   "wechatEmail": "export@dsppa.com",
+   "website": "https://www.dsppatech.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.dsppatech.com/dsppa-set-to-make-its-canton-fair-debut-this-october1.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "18.2D07-08",
+     "hall": "18.2"
+    }
+   ],
+   "halls": [
+    "18.2"
+   ],
+   "raw": {
+    "ID / порядок": "21",
+    "Приоритет": "A",
+    "Товарное направление": "Audio systems",
+    "Компания / бренд": "DSPPA Audio",
+    "Hall": "18.2",
+    "Booth": "18.2D07-08",
+    "Что представлено": "WiFi audio, amplifiers, speakers, home entertainment/audio systems",
+    "Почему точка релевантна": "Не marine-специалист, но реальная аудио-фабрика; нужна для OEM-компонентов и поиска waterproof line/engineering.",
+    "Что получить / проверить": "Outdoor/waterproof speakers; UV/salt resistance; 12/24V amps; compact Class-D; Bluetooth/WiFi; OEM grille/logo; MOQ.",
+    "Телефон / WhatsApp": "+86 20 37166520",
+    "WeChat / Email": "export@dsppa.com",
+    "Сайт": "https://www.dsppatech.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.dsppatech.com/dsppa-set-to-make-its-canton-fair-debut-this-october1.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 22,
+   "priority": "A",
+   "category": "Energy storage / BESS",
+   "company": "MPMC Group — New Energy",
+   "hall": "15.2",
+   "booth": "15.2D33-35; 15.2E09-11",
+   "products": "BESS, mobile BESS chargers, hybrid solutions",
+   "why": "Вторая точка MPMC — именно energy storage; полезна для яхтенной батарейной архитектуры и electric powersports.",
+   "toCheck": "48/72/96V? custom low-voltage BESS? mobile charger? CAN/EMS? high-discharge? marine environment? OEM integration.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "sales@mpmc-china.com",
+   "website": "https://www.mpmc-group.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://in.linkedin.com/company/mpmcpowertech",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "INNOVATION / OTHER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.2D33-35",
+     "hall": "15.2"
+    },
+    {
+     "label": "15.2E09-11",
+     "hall": "15.2"
+    }
+   ],
+   "halls": [
+    "15.2"
+   ],
+   "raw": {
+    "ID / порядок": "22",
+    "Приоритет": "A",
+    "Товарное направление": "Energy storage / BESS",
+    "Компания / бренд": "MPMC Group — New Energy",
+    "Hall": "15.2",
+    "Booth": "15.2D33-35; 15.2E09-11",
+    "Что представлено": "BESS, mobile BESS chargers, hybrid solutions",
+    "Почему точка релевантна": "Вторая точка MPMC — именно energy storage; полезна для яхтенной батарейной архитектуры и electric powersports.",
+    "Что получить / проверить": "48/72/96V? custom low-voltage BESS? mobile charger? CAN/EMS? high-discharge? marine environment? OEM integration.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "sales@mpmc-china.com",
+    "Сайт": "https://www.mpmc-group.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://in.linkedin.com/company/mpmcpowertech",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "INNOVATION / OTHER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 23,
+   "priority": "A",
+   "category": "Marine electrical / IP68 connectors",
+   "company": "Zhejiang Gutai Connector Co., Ltd.",
+   "hall": "15.2",
+   "booth": "15.2E37-38",
+   "products": "IP68 cable glands, waterproof connectors, junction boxes, MC4, brass/nylon glands",
+   "why": "Очень точная точка под яхтенную электрику: ввод кабеля, герметизация, junction boxes и waterproof connections.",
+   "toCheck": "Запросить 316L metal glands, IP68 test reports, salt-spray, marine cable diameters, multi-hole glands, custom threads, OEM; взять каталог и samples.",
+   "phone": "WhatsApp +86 13676576672",
+   "wechatEmail": "vincy@gt-connector.com",
+   "website": "—",
+   "verification": "ТОЧНЫЙ СТЕНД + marine application подтверждены производителем",
+   "source": "https://blog.gt-connector.com/blog/Zhejiang-Gutai-Connector-to-Showcase-IP68-Nylon-Cable-Glands-and-Waterproof-Connector-Accessories-at-140th-Canton-Fair-%28Booth-15.2E37-38%29.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.2E37-38",
+     "hall": "15.2"
+    }
+   ],
+   "halls": [
+    "15.2"
+   ],
+   "raw": {
+    "ID / порядок": "23",
+    "Приоритет": "A",
+    "Товарное направление": "Marine electrical / IP68 connectors",
+    "Компания / бренд": "Zhejiang Gutai Connector Co., Ltd.",
+    "Hall": "15.2",
+    "Booth": "15.2E37-38",
+    "Что представлено": "IP68 cable glands, waterproof connectors, junction boxes, MC4, brass/nylon glands",
+    "Почему точка релевантна": "Очень точная точка под яхтенную электрику: ввод кабеля, герметизация, junction boxes и waterproof connections.",
+    "Что получить / проверить": "Запросить 316L metal glands, IP68 test reports, salt-spray, marine cable diameters, multi-hole glands, custom threads, OEM; взять каталог и samples.",
+    "Телефон / WhatsApp": "WhatsApp +86 13676576672",
+    "WeChat / Email": "vincy@gt-connector.com",
+    "Сайт": "—",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + marine application подтверждены производителем",
+    "Источник": "https://blog.gt-connector.com/blog/Zhejiang-Gutai-Connector-to-Showcase-IP68-Nylon-Cable-Glands-and-Waterproof-Connector-Accessories-at-140th-Canton-Fair-%28Booth-15.2E37-38%29.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 24,
+   "priority": "A",
+   "category": "Off-road / automotive lighting",
+   "company": "AURORA / Shenzhen Aurora Technology",
+   "hall": "10.3",
+   "booth": "10.3D23-24",
+   "products": "Professional off-road LED lighting; 2026 new products; OEM/ODM",
+   "why": "Сильная точка под ATV/UTV/снегоходы и потенциально палубное/rugged освещение: IP68/IP69K, high-tech R&D, CAN-интеграция.",
+   "toCheck": "Проверить 12/24V, IP68/IP69K, heated/de-icing lights, CAN control, custom beam, 316/anti-corrosion brackets, OEM/private label.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт",
+   "website": "https://www.szaurora.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.szaurora.com/news/aurora-140th-canton-fair-2026",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "10.3D23-24",
+     "hall": "10.3"
+    }
+   ],
+   "halls": [
+    "10.3"
+   ],
+   "raw": {
+    "ID / порядок": "24",
+    "Приоритет": "A",
+    "Товарное направление": "Off-road / automotive lighting",
+    "Компания / бренд": "AURORA / Shenzhen Aurora Technology",
+    "Hall": "10.3",
+    "Booth": "10.3D23-24",
+    "Что представлено": "Professional off-road LED lighting; 2026 new products; OEM/ODM",
+    "Почему точка релевантна": "Сильная точка под ATV/UTV/снегоходы и потенциально палубное/rugged освещение: IP68/IP69K, high-tech R&D, CAN-интеграция.",
+    "Что получить / проверить": "Проверить 12/24V, IP68/IP69K, heated/de-icing lights, CAN control, custom beam, 316/anti-corrosion brackets, OEM/private label.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт",
+    "Сайт": "https://www.szaurora.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.szaurora.com/news/aurora-140th-canton-fair-2026",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 25,
+   "priority": "A",
+   "category": "Electric utility vehicles",
+   "company": "HDK Electric Vehicle",
+   "hall": "15.1",
+   "booth": "15.1F23-24; 15.1G21-22",
+   "products": "Electric golf carts, utility vehicles, fleet vehicles",
+   "why": "Не легковой автомобиль, но коммерчески интересная EV-платформа: resorts, logistics, utility. Может стать отдельным направлением ALTIORA.",
+   "toCheck": "Utility configurations, payload, lithium pack, controller, 4x4 options, road homologation, FOB, MOQ, distributor terms, spare parts.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через сайт",
+   "website": "https://en.hdkexpress.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён производителем",
+   "source": "https://en.hdkexpress.com/news/meet-hdk-electric-vehicle-at-the-140th-canton-fair-2026/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.1F23-24",
+     "hall": "15.1"
+    },
+    {
+     "label": "15.1G21-22",
+     "hall": "15.1"
+    }
+   ],
+   "halls": [
+    "15.1"
+   ],
+   "raw": {
+    "ID / порядок": "25",
+    "Приоритет": "A",
+    "Товарное направление": "Electric utility vehicles",
+    "Компания / бренд": "HDK Electric Vehicle",
+    "Hall": "15.1",
+    "Booth": "15.1F23-24; 15.1G21-22",
+    "Что представлено": "Electric golf carts, utility vehicles, fleet vehicles",
+    "Почему точка релевантна": "Не легковой автомобиль, но коммерчески интересная EV-платформа: resorts, logistics, utility. Может стать отдельным направлением ALTIORA.",
+    "Что получить / проверить": "Utility configurations, payload, lithium pack, controller, 4x4 options, road homologation, FOB, MOQ, distributor terms, spare parts.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через сайт",
+    "Сайт": "https://en.hdkexpress.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён производителем",
+    "Источник": "https://en.hdkexpress.com/news/meet-hdk-electric-vehicle-at-the-140th-canton-fair-2026/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 26,
+   "priority": "B",
+   "category": "Automotive tools / aftermarket",
+   "company": "VIKTEC / Ningbo Dicong Machinery",
+   "hall": "9.2",
+   "booth": "9.2I09-10",
+   "products": "Automotive specialty tools; OEM/ODM; private label",
+   "why": "Полезная коммерческая точка вокруг авто-направления: инструменты для сервиса и aftermarket с OEM/private label.",
+   "toCheck": "Запросить top sellers for Russia/CIS, MOQ, private label, warranty, packaging, FOB; интересуют tools for VW/Geely/Toyota/European cars.",
+   "phone": "WhatsApp +86 18966383552",
+   "wechatEmail": "inquiry@viktec.com",
+   "website": "https://www.viktec.com/",
+   "verification": "ТОЧНЫЙ СТЕНД + контакт подтверждены производителем",
+   "source": "https://www.viktec.com/meet-viktec-at-the-140th-canton-fair-2026-booth-92-i0910",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "9.2I09-10",
+     "hall": "9.2"
+    }
+   ],
+   "halls": [
+    "9.2"
+   ],
+   "raw": {
+    "ID / порядок": "26",
+    "Приоритет": "B",
+    "Товарное направление": "Automotive tools / aftermarket",
+    "Компания / бренд": "VIKTEC / Ningbo Dicong Machinery",
+    "Hall": "9.2",
+    "Booth": "9.2I09-10",
+    "Что представлено": "Automotive specialty tools; OEM/ODM; private label",
+    "Почему точка релевантна": "Полезная коммерческая точка вокруг авто-направления: инструменты для сервиса и aftermarket с OEM/private label.",
+    "Что получить / проверить": "Запросить top sellers for Russia/CIS, MOQ, private label, warranty, packaging, FOB; интересуют tools for VW/Geely/Toyota/European cars.",
+    "Телефон / WhatsApp": "WhatsApp +86 18966383552",
+    "WeChat / Email": "inquiry@viktec.com",
+    "Сайт": "https://www.viktec.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + контакт подтверждены производителем",
+    "Источник": "https://www.viktec.com/meet-viktec-at-the-140th-canton-fair-2026-booth-92-i0910",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 27,
+   "priority": "A",
+   "category": "Auto / EV accessories",
+   "company": "WANPU",
+   "hall": "9.2 + 8.1",
+   "booth": "9.2A21-22; 9.2B03-04; EV 8.1E17-18",
+   "products": "Jump starters, battery testers, compressors, car vacuums, EV chargers",
+   "why": "Готовая экспортная линейка с сертификацией и OEM. Может быстро продаваться вместе с автомобилями и техникой.",
+   "toCheck": "Получить fair price, MOQ, EV charger specs, CE/FCC/RoHS/UN38.3, OEM packaging, samples; сравнить 12V/24V heavy-duty units.",
+   "phone": "Уточнить через сайт",
+   "wechatEmail": "Через форму / export team",
+   "website": "https://wanpup.com/",
+   "verification": "ТОЧНЫЕ СТЕНДЫ + OEM условия подтверждены компанией",
+   "source": "https://wanpup.com/canton-fair",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "9.2A21-22",
+     "hall": "9.2"
+    },
+    {
+     "label": "9.2B03-04",
+     "hall": "9.2"
+    },
+    {
+     "label": "EV 8.1E17-18",
+     "hall": "8.1"
+    }
+   ],
+   "halls": [
+    "9.2",
+    "8.1"
+   ],
+   "raw": {
+    "ID / порядок": "27",
+    "Приоритет": "A",
+    "Товарное направление": "Auto / EV accessories",
+    "Компания / бренд": "WANPU",
+    "Hall": "9.2 + 8.1",
+    "Booth": "9.2A21-22; 9.2B03-04; EV 8.1E17-18",
+    "Что представлено": "Jump starters, battery testers, compressors, car vacuums, EV chargers",
+    "Почему точка релевантна": "Готовая экспортная линейка с сертификацией и OEM. Может быстро продаваться вместе с автомобилями и техникой.",
+    "Что получить / проверить": "Получить fair price, MOQ, EV charger specs, CE/FCC/RoHS/UN38.3, OEM packaging, samples; сравнить 12V/24V heavy-duty units.",
+    "Телефон / WhatsApp": "Уточнить через сайт",
+    "WeChat / Email": "Через форму / export team",
+    "Сайт": "https://wanpup.com/",
+    "Статус верификации": "ТОЧНЫЕ СТЕНДЫ + OEM условия подтверждены компанией",
+    "Источник": "https://wanpup.com/canton-fair",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 28,
+   "priority": "B",
+   "category": "Automotive protection / high-margin accessory",
+   "company": "GWF FILM",
+   "hall": "9.3",
+   "booth": "9.3C37-38",
+   "products": "PPF, automotive window film, color TPU PPF",
+   "why": "Не основной список, но хороший высокомаржинальный сопутствующий товар к автомобилям: PPF/плёнка под импортируемые машины.",
+   "toCheck": "Self-healing TPU, thickness, yellowing warranty, hydrophobic coating, UV/IR specs, private label, rolls MOQ, installer support.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через сайт",
+   "website": "https://www.gwfppf.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён производителем",
+   "source": "https://www.gwfppf.com/news/meet-gwf-film-at-the-140th-canton-fair-2026-409138.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "9.3C37-38",
+     "hall": "9.3"
+    }
+   ],
+   "halls": [
+    "9.3"
+   ],
+   "raw": {
+    "ID / порядок": "28",
+    "Приоритет": "B",
+    "Товарное направление": "Automotive protection / high-margin accessory",
+    "Компания / бренд": "GWF FILM",
+    "Hall": "9.3",
+    "Booth": "9.3C37-38",
+    "Что представлено": "PPF, automotive window film, color TPU PPF",
+    "Почему точка релевантна": "Не основной список, но хороший высокомаржинальный сопутствующий товар к автомобилям: PPF/плёнка под импортируемые машины.",
+    "Что получить / проверить": "Self-healing TPU, thickness, yellowing warranty, hydrophobic coating, UV/IR specs, private label, rolls MOQ, installer support.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через сайт",
+    "Сайт": "https://www.gwfppf.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён производителем",
+    "Источник": "https://www.gwfppf.com/news/meet-gwf-film-at-the-140th-canton-fair-2026-409138.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 29,
+   "priority": "B",
+   "category": "Lighting OEM",
+   "company": "Hefei Brother Lighting",
+   "hall": "15.4",
+   "booth": "15.4G38",
+   "products": "LED panels, linear lights, bulbs; OEM/ODM",
+   "why": "Дополнительная OEM-фабрика по освещению для сравнения себестоимости и кастомизации. Не marine готовое, но полезна как engineering supplier.",
+   "toCheck": "Сразу спрашивать только outdoor/DC/custom: 12/24V, IP67, compact cabin fixtures, custom housing/PCB, OEM MOQ; если нет — быстро закрыть.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт",
+   "website": "https://www.bcllighting.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён производителем",
+   "source": "https://www.bcllighting.com/meet-us-at-the-140th-canton-fair-hefei-brother-lighting/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.4G38",
+     "hall": "15.4"
+    }
+   ],
+   "halls": [
+    "15.4"
+   ],
+   "raw": {
+    "ID / порядок": "29",
+    "Приоритет": "B",
+    "Товарное направление": "Lighting OEM",
+    "Компания / бренд": "Hefei Brother Lighting",
+    "Hall": "15.4",
+    "Booth": "15.4G38",
+    "Что представлено": "LED panels, linear lights, bulbs; OEM/ODM",
+    "Почему точка релевантна": "Дополнительная OEM-фабрика по освещению для сравнения себестоимости и кастомизации. Не marine готовое, но полезна как engineering supplier.",
+    "Что получить / проверить": "Сразу спрашивать только outdoor/DC/custom: 12/24V, IP67, compact cabin fixtures, custom housing/PCB, OEM MOQ; если нет — быстро закрыть.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт",
+    "Сайт": "https://www.bcllighting.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён производителем",
+    "Источник": "https://www.bcllighting.com/meet-us-at-the-140th-canton-fair-hefei-brother-lighting/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 30,
+   "priority": "B",
+   "category": "Lighting OEM",
+   "company": "Enshine Lighting",
+   "hall": "15.4",
+   "booth": "15.4A19-20",
+   "products": "LED batten, panel, downlight, high bay; OEM/ODM manufacturing",
+   "why": "Сравнительная точка по OEM освещению. Важна только если готовы кастомизировать 12/24V waterproof fixtures под яхту/технику.",
+   "toCheck": "Проверить IP67/68 outdoor capability, DC drivers, compact recessed lights, private molds, salt spray, MOQ.",
+   "phone": "Phone/WeChat +86 18250894094",
+   "wechatEmail": "sales contact via site",
+   "website": "https://www.enshinelighting.com/",
+   "verification": "ТОЧНЫЙ СТЕНД + OEM подтверждены компанией",
+   "source": "https://www.enshinelighting.com/news-news140th-canton-fair-2026-led-lighting",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.4A19-20",
+     "hall": "15.4"
+    }
+   ],
+   "halls": [
+    "15.4"
+   ],
+   "raw": {
+    "ID / порядок": "30",
+    "Приоритет": "B",
+    "Товарное направление": "Lighting OEM",
+    "Компания / бренд": "Enshine Lighting",
+    "Hall": "15.4",
+    "Booth": "15.4A19-20",
+    "Что представлено": "LED batten, panel, downlight, high bay; OEM/ODM manufacturing",
+    "Почему точка релевантна": "Сравнительная точка по OEM освещению. Важна только если готовы кастомизировать 12/24V waterproof fixtures под яхту/технику.",
+    "Что получить / проверить": "Проверить IP67/68 outdoor capability, DC drivers, compact recessed lights, private molds, salt spray, MOQ.",
+    "Телефон / WhatsApp": "Phone/WeChat +86 18250894094",
+    "WeChat / Email": "sales contact via site",
+    "Сайт": "https://www.enshinelighting.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + OEM подтверждены компанией",
+    "Источник": "https://www.enshinelighting.com/news-news140th-canton-fair-2026-led-lighting",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 31,
+   "priority": "B",
+   "category": "Lighting / smart control",
+   "company": "XHLUX",
+   "hall": "15.4",
+   "booth": "15.4G06",
+   "products": "Commercial LED, smart lighting, OEM/ODM",
+   "why": "Точка для smart-lighting/driver/controls. Может дать электронную часть для кастомных cabin/deck решений.",
+   "toCheck": "Спросить 12/24V DC driver, smart control, dimming, IP67 custom fixtures, OEM electronics, compact marine-interior formats.",
+   "phone": "WhatsApp +86 18123743795",
+   "wechatEmail": "sales@xhlux.com",
+   "website": "https://www.xhlux.com/",
+   "verification": "ТОЧНЫЙ СТЕНД + контакт подтверждены производителем",
+   "source": "https://www.xhlux.com/news/meet-xhlux-at-the-140th-canton-fair-2026/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.4G06",
+     "hall": "15.4"
+    }
+   ],
+   "halls": [
+    "15.4"
+   ],
+   "raw": {
+    "ID / порядок": "31",
+    "Приоритет": "B",
+    "Товарное направление": "Lighting / smart control",
+    "Компания / бренд": "XHLUX",
+    "Hall": "15.4",
+    "Booth": "15.4G06",
+    "Что представлено": "Commercial LED, smart lighting, OEM/ODM",
+    "Почему точка релевантна": "Точка для smart-lighting/driver/controls. Может дать электронную часть для кастомных cabin/deck решений.",
+    "Что получить / проверить": "Спросить 12/24V DC driver, smart control, dimming, IP67 custom fixtures, OEM electronics, compact marine-interior formats.",
+    "Телефон / WhatsApp": "WhatsApp +86 18123743795",
+    "WeChat / Email": "sales@xhlux.com",
+    "Сайт": "https://www.xhlux.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД + контакт подтверждены производителем",
+    "Источник": "https://www.xhlux.com/news/meet-xhlux-at-the-140th-canton-fair-2026/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 32,
+   "priority": "B",
+   "category": "Industrial control / automation",
+   "company": "ODOT Automation",
+   "hall": "20.1",
+   "booth": "20.1G04",
+   "products": "PLC, remote I/O, IP67 I/O, HMI+PLC all-in-one control platform",
+   "why": "Инновационная точка для smart-yacht / automation / remote equipment. Особенно интересен IP67 I/O и интеграция датчиков/исполнительных механизмов.",
+   "toCheck": "IP67 remote I/O, CAN/Modbus/Ethernet protocols, 24V DC, vibration, remote monitoring, custom panel integration; запросить engineer contact.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Контакт через ODOT",
+   "website": "https://www.odotautomation.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён публичным приглашением",
+   "source": "https://fr.linkedin.com/in/amat-christian-841b1927",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "20.1G04",
+     "hall": "20.1"
+    }
+   ],
+   "halls": [
+    "20.1"
+   ],
+   "raw": {
+    "ID / порядок": "32",
+    "Приоритет": "B",
+    "Товарное направление": "Industrial control / automation",
+    "Компания / бренд": "ODOT Automation",
+    "Hall": "20.1",
+    "Booth": "20.1G04",
+    "Что представлено": "PLC, remote I/O, IP67 I/O, HMI+PLC all-in-one control platform",
+    "Почему точка релевантна": "Инновационная точка для smart-yacht / automation / remote equipment. Особенно интересен IP67 I/O и интеграция датчиков/исполнительных механизмов.",
+    "Что получить / проверить": "IP67 remote I/O, CAN/Modbus/Ethernet protocols, 24V DC, vibration, remote monitoring, custom panel integration; запросить engineer contact.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Контакт через ODOT",
+    "Сайт": "https://www.odotautomation.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён публичным приглашением",
+    "Источник": "https://fr.linkedin.com/in/amat-christian-841b1927",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 33,
+   "priority": "B",
+   "category": "Automotive lighting / smart off-road",
+   "company": "Gonengo Hexagon Lighting",
+   "hall": "16.4",
+   "booth": "16.4B17",
+   "products": "Garage/workshop LED systems, patented lighting products",
+   "why": "Не marine, но коммерчески интересная сопутствующая точка для авто-бизнеса, showroom/детейлинг/сервисов.",
+   "toCheck": "Wholesale/OEM, patents/certifications, modular systems, installation kit, margin/distributor terms.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт",
+   "website": "https://www.hexagonledlighting.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+   "source": "https://www.hexagonledlighting.com/join-hexagon-garage-lights-at-the-2026-140th-canton-fair/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "16.4B17",
+     "hall": "16.4"
+    }
+   ],
+   "halls": [
+    "16.4"
+   ],
+   "raw": {
+    "ID / порядок": "33",
+    "Приоритет": "B",
+    "Товарное направление": "Automotive lighting / smart off-road",
+    "Компания / бренд": "Gonengo Hexagon Lighting",
+    "Hall": "16.4",
+    "Booth": "16.4B17",
+    "Что представлено": "Garage/workshop LED systems, patented lighting products",
+    "Почему точка релевантна": "Не marine, но коммерчески интересная сопутствующая точка для авто-бизнеса, showroom/детейлинг/сервисов.",
+    "Что получить / проверить": "Wholesale/OEM, patents/certifications, modular systems, installation kit, margin/distributor terms.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт",
+    "Сайт": "https://www.hexagonledlighting.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён компанией",
+    "Источник": "https://www.hexagonledlighting.com/join-hexagon-garage-lights-at-the-2026-140th-canton-fair/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 34,
+   "priority": "B",
+   "category": "Auto body / workshop equipment",
+   "company": "SD LONGXIANG",
+   "hall": "8.0",
+   "booth": "8.0F13",
+   "products": "Full-glass automotive spray booths, prep stations, industrial coating systems",
+   "why": "Интересно как отдельное B2B-направление вокруг автомобилей и сервисов; крупный чек и промышленная маржа.",
+   "toCheck": "FOB, installation, CE/EAC, heating source, airflow, filters, container loading, commissioning, Russian-language support, distributor terms.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт",
+   "website": "https://www.cnspraybooth.com/",
+   "verification": "ТОЧНЫЙ СТЕНД подтверждён производителем",
+   "source": "https://www.cnspraybooth.com/sd-longxiang-to-showcase-next-generation-full-glass-spray-booths-at-the-140th-canton-fair-booth-no-80f13",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "8.0F13",
+     "hall": "8.0"
+    }
+   ],
+   "halls": [
+    "8.0"
+   ],
+   "raw": {
+    "ID / порядок": "34",
+    "Приоритет": "B",
+    "Товарное направление": "Auto body / workshop equipment",
+    "Компания / бренд": "SD LONGXIANG",
+    "Hall": "8.0",
+    "Booth": "8.0F13",
+    "Что представлено": "Full-glass automotive spray booths, prep stations, industrial coating systems",
+    "Почему точка релевантна": "Интересно как отдельное B2B-направление вокруг автомобилей и сервисов; крупный чек и промышленная маржа.",
+    "Что получить / проверить": "FOB, installation, CE/EAC, heating source, airflow, filters, container loading, commissioning, Russian-language support, distributor terms.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт",
+    "Сайт": "https://www.cnspraybooth.com/",
+    "Статус верификации": "ТОЧНЫЙ СТЕНД подтверждён производителем",
+    "Источник": "https://www.cnspraybooth.com/sd-longxiang-to-showcase-next-generation-full-glass-spray-booths-at-the-140th-canton-fair-booth-no-80f13",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 35,
+   "priority": "A",
+   "category": "Marine electronics / fishfinder R&D",
+   "company": "Guangdong Boatman Electronics",
+   "hall": "17.2",
+   "booth": "17.2E02",
+   "products": "Fish finders, wireless/RC boat electronics, outdoor electronics R&D",
+   "why": "Реальная boat-electronics фабрика с собственной R&D. Нужна для fishfinder/sonar, waterproof displays, wireless control и выхода на профильную marine electronics supply chain.",
+   "toCheck": "Запросить fishfinder/sonar catalog; transducer frequencies; display brightness; IP rating; 12/24V; NMEA/CAN capability; OEM firmware/UI; waterproof connectors; marine references.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через Canton Fair 365 / сайт",
+   "website": "https://www.boatmanboat.com/",
+   "verification": "ОФИЦИАЛЬНЫЙ Canton Fair 365",
+   "source": "https://365.cantonfair.org.cn/en-US/shops?id=2331649898",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "17.2E02",
+     "hall": "17.2"
+    }
+   ],
+   "halls": [
+    "17.2"
+   ],
+   "raw": {
+    "ID / порядок": "35",
+    "Приоритет": "A",
+    "Товарное направление": "Marine electronics / fishfinder R&D",
+    "Компания / бренд": "Guangdong Boatman Electronics",
+    "Hall": "17.2",
+    "Booth": "17.2E02",
+    "Что представлено": "Fish finders, wireless/RC boat electronics, outdoor electronics R&D",
+    "Почему точка релевантна": "Реальная boat-electronics фабрика с собственной R&D. Нужна для fishfinder/sonar, waterproof displays, wireless control и выхода на профильную marine electronics supply chain.",
+    "Что получить / проверить": "Запросить fishfinder/sonar catalog; transducer frequencies; display brightness; IP rating; 12/24V; NMEA/CAN capability; OEM firmware/UI; waterproof connectors; marine references.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через Canton Fair 365 / сайт",
+    "Сайт": "https://www.boatmanboat.com/",
+    "Статус верификации": "ОФИЦИАЛЬНЫЙ Canton Fair 365",
+    "Источник": "https://365.cantonfair.org.cn/en-US/shops?id=2331649898",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 36,
+   "priority": "A",
+   "category": "Marine solar / flexible PV",
+   "company": "Sungold Solar Co., Ltd. (Shenzhen)",
+   "hall": "14.2",
+   "booth": "14.2G44",
+   "products": "Semi-flexible and foldable solar modules",
+   "why": "Одна из самых точных точек под яхтенную солнечную систему: гибкие панели реально подходят по форм-фактору для крыши/палубы.",
+   "toCheck": "Запросить marine use cases; ETFE/TPT surface; salt-mist; UV; bend radius; walkable/non-walkable; junction-box IP; custom dimensions; 24/48V MPPT pairing; warranty.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через Canton Fair 365 / сайт",
+   "website": "https://www.sungoldsolar.com/",
+   "verification": "ОФИЦИАЛЬНЫЙ Canton Fair 365",
+   "source": "https://365.cantonfair.org.cn/en-US/shops?id=1021788283",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "14.2G44",
+     "hall": "14.2"
+    }
+   ],
+   "halls": [
+    "14.2"
+   ],
+   "raw": {
+    "ID / порядок": "36",
+    "Приоритет": "A",
+    "Товарное направление": "Marine solar / flexible PV",
+    "Компания / бренд": "Sungold Solar Co., Ltd. (Shenzhen)",
+    "Hall": "14.2",
+    "Booth": "14.2G44",
+    "Что представлено": "Semi-flexible and foldable solar modules",
+    "Почему точка релевантна": "Одна из самых точных точек под яхтенную солнечную систему: гибкие панели реально подходят по форм-фактору для крыши/палубы.",
+    "Что получить / проверить": "Запросить marine use cases; ETFE/TPT surface; salt-mist; UV; bend radius; walkable/non-walkable; junction-box IP; custom dimensions; 24/48V MPPT pairing; warranty.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через Canton Fair 365 / сайт",
+    "Сайт": "https://www.sungoldsolar.com/",
+    "Статус верификации": "ОФИЦИАЛЬНЫЙ Canton Fair 365",
+    "Источник": "https://365.cantonfair.org.cn/en-US/shops?id=1021788283",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 37,
+   "priority": "A",
+   "category": "Marine inverter / charger",
+   "company": "Beijing Multifit Electrical Technology",
+   "hall": "14.2",
+   "booth": "14.2C01-02; 14.2B43-44",
+   "products": "Pure sine inverters, inverter/chargers, controllers, batteries, hybrid power systems",
+   "why": "Точка для построения onboard AC/DC architecture: shore power → charger → battery → inverter.",
+   "toCheck": "230V/50Hz; 24/48V battery input; pure sine; charger current; UPS transfer time; CAN/RS485; remote panel; galvanic isolation?; surge; tropicalization; salt-air coating; custom marine enclosure.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через Canton Fair 365 / сайт",
+   "website": "https://www.multifitpower.com/",
+   "verification": "ОФИЦИАЛЬНЫЙ Canton Fair 365",
+   "source": "https://365.cantonfair.org.cn/en-US/shops?id=1051781851",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "14.2C01-02",
+     "hall": "14.2"
+    },
+    {
+     "label": "14.2B43-44",
+     "hall": "14.2"
+    }
+   ],
+   "halls": [
+    "14.2"
+   ],
+   "raw": {
+    "ID / порядок": "37",
+    "Приоритет": "A",
+    "Товарное направление": "Marine inverter / charger",
+    "Компания / бренд": "Beijing Multifit Electrical Technology",
+    "Hall": "14.2",
+    "Booth": "14.2C01-02; 14.2B43-44",
+    "Что представлено": "Pure sine inverters, inverter/chargers, controllers, batteries, hybrid power systems",
+    "Почему точка релевантна": "Точка для построения onboard AC/DC architecture: shore power → charger → battery → inverter.",
+    "Что получить / проверить": "230V/50Hz; 24/48V battery input; pure sine; charger current; UPS transfer time; CAN/RS485; remote panel; galvanic isolation?; surge; tropicalization; salt-air coating; custom marine enclosure.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через Canton Fair 365 / сайт",
+    "Сайт": "https://www.multifitpower.com/",
+    "Статус верификации": "ОФИЦИАЛЬНЫЙ Canton Fair 365",
+    "Источник": "https://365.cantonfair.org.cn/en-US/shops?id=1051781851",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 38,
+   "priority": "A",
+   "category": "Marine / stainless fasteners",
+   "company": "FASTO Industrial",
+   "hall": "9.1",
+   "booth": "9.1J15-16",
+   "products": "SS304/316/316L fasteners, bimetal screws, bolts, nuts, rivets, washers",
+   "why": "Сильная точка для морского крепежа: A4/316L, широкий BOM, OEM и материалная спецификация.",
+   "toCheck": "Запросить A4-80/316L, PREN/material cert, passivation, salt spray, stainless mandrel rivets, MOQ, OEM drawings.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "info@fastoscrews.com",
+   "website": "https://www.fastoscrews.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://www.fastoscrews.com/news/which-fastener-booth-should-you-vet-at-the-140th-canton-fair/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "9.1J15-16",
+     "hall": "9.1"
+    }
+   ],
+   "halls": [
+    "9.1"
+   ],
+   "raw": {
+    "ID / порядок": "38",
+    "Приоритет": "A",
+    "Товарное направление": "Marine / stainless fasteners",
+    "Компания / бренд": "FASTO Industrial",
+    "Hall": "9.1",
+    "Booth": "9.1J15-16",
+    "Что представлено": "SS304/316/316L fasteners, bimetal screws, bolts, nuts, rivets, washers",
+    "Почему точка релевантна": "Сильная точка для морского крепежа: A4/316L, широкий BOM, OEM и материалная спецификация.",
+    "Что получить / проверить": "Запросить A4-80/316L, PREN/material cert, passivation, salt spray, stainless mandrel rivets, MOQ, OEM drawings.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "info@fastoscrews.com",
+    "Сайт": "https://www.fastoscrews.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://www.fastoscrews.com/news/which-fastener-booth-should-you-vet-at-the-140th-canton-fair/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 39,
+   "priority": "A",
+   "category": "Marine / rigging & fasteners",
+   "company": "Ningbo Weifeng Fastener",
+   "hall": "9.1",
+   "booth": "9.1I27-28",
+   "products": "A2/A4 stainless fasteners, rigging hardware, anchors, OEM drawing parts",
+   "why": "Дополняет Aleader/FASTO: крепёж и rigging hardware для яхт, deck и сервисных задач.",
+   "toCheck": "A4-80 / 316L, rigging WLL, material cert, corrosion test, custom drawing, small batch/MOQ.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт",
+   "website": "https://www.wf-fastener.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://www.wf-fastener.com/Exhibitions-attended-ic3246166.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "9.1I27-28",
+     "hall": "9.1"
+    }
+   ],
+   "halls": [
+    "9.1"
+   ],
+   "raw": {
+    "ID / порядок": "39",
+    "Приоритет": "A",
+    "Товарное направление": "Marine / rigging & fasteners",
+    "Компания / бренд": "Ningbo Weifeng Fastener",
+    "Hall": "9.1",
+    "Booth": "9.1I27-28",
+    "Что представлено": "A2/A4 stainless fasteners, rigging hardware, anchors, OEM drawing parts",
+    "Почему точка релевантна": "Дополняет Aleader/FASTO: крепёж и rigging hardware для яхт, deck и сервисных задач.",
+    "Что получить / проверить": "A4-80 / 316L, rigging WLL, material cert, corrosion test, custom drawing, small batch/MOQ.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт",
+    "Сайт": "https://www.wf-fastener.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://www.wf-fastener.com/Exhibitions-attended-ic3246166.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 40,
+   "priority": "A",
+   "category": "Marine pumps / drainage",
+   "company": "SLAPK / APK Pump",
+   "hall": "6.1",
+   "booth": "6.1F06",
+   "products": "Submersible and drainage pumps",
+   "why": "Конкретная насосная точка для сравнения с Ruirong/MASTRA; полезна по drainage/wastewater.",
+   "toCheck": "12/24V варианты? continuous duty; corrosion-resistant wetted parts; seals; flow/head; OEM; компактные модели.",
+   "phone": "+86 13733193504",
+   "wechatEmail": "enquiry03@apkpump.com",
+   "website": "https://www.submersible-waterpump.com/",
+   "verification": "Точный стенд + контакт подтверждены",
+   "source": "https://www.waterpump-manufacturer.com/news/explore-pump-applications-with-slapk-at-canton-fair-2026-404608.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "6.1F06",
+     "hall": "6.1"
+    }
+   ],
+   "halls": [
+    "6.1"
+   ],
+   "raw": {
+    "ID / порядок": "40",
+    "Приоритет": "A",
+    "Товарное направление": "Marine pumps / drainage",
+    "Компания / бренд": "SLAPK / APK Pump",
+    "Hall": "6.1",
+    "Booth": "6.1F06",
+    "Что представлено": "Submersible and drainage pumps",
+    "Почему точка релевантна": "Конкретная насосная точка для сравнения с Ruirong/MASTRA; полезна по drainage/wastewater.",
+    "Что получить / проверить": "12/24V варианты? continuous duty; corrosion-resistant wetted parts; seals; flow/head; OEM; компактные модели.",
+    "Телефон / WhatsApp": "+86 13733193504",
+    "WeChat / Email": "enquiry03@apkpump.com",
+    "Сайт": "https://www.submersible-waterpump.com/",
+    "Статус верификации": "Точный стенд + контакт подтверждены",
+    "Источник": "https://www.waterpump-manufacturer.com/news/explore-pump-applications-with-slapk-at-canton-fair-2026-404608.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 41,
+   "priority": "B",
+   "category": "Pump / solar water systems",
+   "company": "DIFFUL",
+   "hall": "7.1 + 15.2",
+   "booth": "7.1B23-24; 15.2I41",
+   "products": "Solar pumps, off-grid pump systems, controllers",
+   "why": "Смежная инженерная точка по DC/solar pumping и controllers; полезна для onboard auxiliary systems и автономных решений.",
+   "toCheck": "DC pump curves, 24/48V, brushless motor, controller, IP, salt-water adaptation, OEM.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт",
+   "website": "https://www.diffulpump.com/",
+   "verification": "Точные стенды подтверждены компанией",
+   "source": "https://www.diffulpump.com/newid1742061/NEWS-ON-EXHIBITION.htm",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "7.1B23-24",
+     "hall": "7.1"
+    },
+    {
+     "label": "15.2I41",
+     "hall": "15.2"
+    }
+   ],
+   "halls": [
+    "7.1",
+    "15.2"
+   ],
+   "raw": {
+    "ID / порядок": "41",
+    "Приоритет": "B",
+    "Товарное направление": "Pump / solar water systems",
+    "Компания / бренд": "DIFFUL",
+    "Hall": "7.1 + 15.2",
+    "Booth": "7.1B23-24; 15.2I41",
+    "Что представлено": "Solar pumps, off-grid pump systems, controllers",
+    "Почему точка релевантна": "Смежная инженерная точка по DC/solar pumping и controllers; полезна для onboard auxiliary systems и автономных решений.",
+    "Что получить / проверить": "DC pump curves, 24/48V, brushless motor, controller, IP, salt-water adaptation, OEM.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт",
+    "Сайт": "https://www.diffulpump.com/",
+    "Статус верификации": "Точные стенды подтверждены компанией",
+    "Источник": "https://www.diffulpump.com/newid1742061/NEWS-ON-EXHIBITION.htm",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 42,
+   "priority": "A",
+   "category": "Marine electrical / circuit protection",
+   "company": "GACIA Electrical",
+   "hall": "15.3",
+   "booth": "15.3B26-28; 15.3C08-10",
+   "products": "MCB, RCCB, RCBO, MCCB and LV electrical protection",
+   "why": "Нужна для бортовой защиты цепей, если готова дать DC-rated / vibration/moisture-adapted изделия.",
+   "toCheck": "DC ratings 12/24/48V; breaking capacity; vibration; panel mounting; moisture; CE/TÜV; custom distribution box; OEM.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://www.gacia.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://cn.linkedin.com/company/gacia",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.3B26-28",
+     "hall": "15.3"
+    },
+    {
+     "label": "15.3C08-10",
+     "hall": "15.3"
+    }
+   ],
+   "halls": [
+    "15.3"
+   ],
+   "raw": {
+    "ID / порядок": "42",
+    "Приоритет": "A",
+    "Товарное направление": "Marine electrical / circuit protection",
+    "Компания / бренд": "GACIA Electrical",
+    "Hall": "15.3",
+    "Booth": "15.3B26-28; 15.3C08-10",
+    "Что представлено": "MCB, RCCB, RCBO, MCCB and LV electrical protection",
+    "Почему точка релевантна": "Нужна для бортовой защиты цепей, если готова дать DC-rated / vibration/moisture-adapted изделия.",
+    "Что получить / проверить": "DC ratings 12/24/48V; breaking capacity; vibration; panel mounting; moisture; CE/TÜV; custom distribution box; OEM.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://www.gacia.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://cn.linkedin.com/company/gacia",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 43,
+   "priority": "A",
+   "category": "Marine electrical / distribution",
+   "company": "Shanghai DADA Electric",
+   "hall": "15.3",
+   "booth": "15.3C18-20; 15.3D20-22",
+   "products": "Circuit breakers and electrical protection devices",
+   "why": "Вторая сильная точка для сравнения защиты и OEM distribution equipment.",
+   "toCheck": "DC MCB/MCCB, 2P, breaking capacity, CE/IEC, moisture/vibration, OEM panel components.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через компанию",
+   "website": "—",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://do.linkedin.com/company/shanghai-dada-electric-co-ltd",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.3C18-20",
+     "hall": "15.3"
+    },
+    {
+     "label": "15.3D20-22",
+     "hall": "15.3"
+    }
+   ],
+   "halls": [
+    "15.3"
+   ],
+   "raw": {
+    "ID / порядок": "43",
+    "Приоритет": "A",
+    "Товарное направление": "Marine electrical / distribution",
+    "Компания / бренд": "Shanghai DADA Electric",
+    "Hall": "15.3",
+    "Booth": "15.3C18-20; 15.3D20-22",
+    "Что представлено": "Circuit breakers and electrical protection devices",
+    "Почему точка релевантна": "Вторая сильная точка для сравнения защиты и OEM distribution equipment.",
+    "Что получить / проверить": "DC MCB/MCCB, 2P, breaking capacity, CE/IEC, moisture/vibration, OEM panel components.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через компанию",
+    "Сайт": "—",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://do.linkedin.com/company/shanghai-dada-electric-co-ltd",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 44,
+   "priority": "A",
+   "category": "Marine electrical / LV + CEE",
+   "company": "EBASEE Electric",
+   "hall": "15.3 + 14.2",
+   "booth": "15.3D38-40; 15.3I03; 14.2B03-04",
+   "products": "MCB/RCCB/RCBO/MCCB, distribution boxes, industrial CEE plugs/sockets, PV/DC protection",
+   "why": "Очень полезна для shore-power и distribution: CEE connectors + protection в одной фабрике.",
+   "toCheck": "CEE 16/32/63A IP67? 230V shore-power; DC breakers; enclosure IP; corrosion resistance; OEM distribution box.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://www.ebasee.com/",
+   "verification": "Точные стенды подтверждены компанией",
+   "source": "https://cn.linkedin.com/company/ebasee-curcuitbreaker-manufacturing",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.3D38-40",
+     "hall": "15.3"
+    },
+    {
+     "label": "15.3I03",
+     "hall": "15.3"
+    },
+    {
+     "label": "14.2B03-04",
+     "hall": "14.2"
+    }
+   ],
+   "halls": [
+    "15.3",
+    "14.2"
+   ],
+   "raw": {
+    "ID / порядок": "44",
+    "Приоритет": "A",
+    "Товарное направление": "Marine electrical / LV + CEE",
+    "Компания / бренд": "EBASEE Electric",
+    "Hall": "15.3 + 14.2",
+    "Booth": "15.3D38-40; 15.3I03; 14.2B03-04",
+    "Что представлено": "MCB/RCCB/RCBO/MCCB, distribution boxes, industrial CEE plugs/sockets, PV/DC protection",
+    "Почему точка релевантна": "Очень полезна для shore-power и distribution: CEE connectors + protection в одной фабрике.",
+    "Что получить / проверить": "CEE 16/32/63A IP67? 230V shore-power; DC breakers; enclosure IP; corrosion resistance; OEM distribution box.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://www.ebasee.com/",
+    "Статус верификации": "Точные стенды подтверждены компанией",
+    "Источник": "https://cn.linkedin.com/company/ebasee-curcuitbreaker-manufacturing",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 45,
+   "priority": "A",
+   "category": "Marine electrical / MCCB protection",
+   "company": "MAXGE Electric",
+   "hall": "15.3 + 14.3",
+   "booth": "15.3C29-30; 15.3D10-11; 14.3F23-25",
+   "products": "MCCB / protection / LV electrical",
+   "why": "Полезна для крупных DC/AC loads яхты и сравнения защитной аппаратуры.",
+   "toCheck": "DC/AC ratings; Icu/Ics; 2P/3P/4P; marine enclosure feasibility; OEM; IEC/CE/TÜV.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "market@maxge.com",
+   "website": "https://www.maxge.com/",
+   "verification": "Точные стенды подтверждены компанией",
+   "source": "https://www.maxge.com/maxge-mccb-options-for-industrial-power-distribution/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.3C29-30",
+     "hall": "15.3"
+    },
+    {
+     "label": "15.3D10-11",
+     "hall": "15.3"
+    },
+    {
+     "label": "14.3F23-25",
+     "hall": "14.3"
+    }
+   ],
+   "halls": [
+    "15.3",
+    "14.3"
+   ],
+   "raw": {
+    "ID / порядок": "45",
+    "Приоритет": "A",
+    "Товарное направление": "Marine electrical / MCCB protection",
+    "Компания / бренд": "MAXGE Electric",
+    "Hall": "15.3 + 14.3",
+    "Booth": "15.3C29-30; 15.3D10-11; 14.3F23-25",
+    "Что представлено": "MCCB / protection / LV electrical",
+    "Почему точка релевантна": "Полезна для крупных DC/AC loads яхты и сравнения защитной аппаратуры.",
+    "Что получить / проверить": "DC/AC ratings; Icu/Ics; 2P/3P/4P; marine enclosure feasibility; OEM; IEC/CE/TÜV.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "market@maxge.com",
+    "Сайт": "https://www.maxge.com/",
+    "Статус верификации": "Точные стенды подтверждены компанией",
+    "Источник": "https://www.maxge.com/maxge-mccb-options-for-industrial-power-distribution/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 46,
+   "priority": "B",
+   "category": "Marine electrical / busbar",
+   "company": "Renyun Hunan Busbar",
+   "hall": "16.3",
+   "booth": "16.3E19",
+   "products": "Busbar power distribution systems",
+   "why": "Интересно для крупных яхт/катеров и custom DC/AC distribution, но нужно проверить компактные низковольтные решения.",
+   "toCheck": "Copper/tinned copper, 12/24/48V custom busbar, enclosure/IP, current ratings, compact marine panel OEM.",
+   "phone": "+86 15116342188",
+   "wechatEmail": "Через бренд",
+   "website": "https://www.rybusway.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://www.linkedin.com/company/renyun",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "16.3E19",
+     "hall": "16.3"
+    }
+   ],
+   "halls": [
+    "16.3"
+   ],
+   "raw": {
+    "ID / порядок": "46",
+    "Приоритет": "B",
+    "Товарное направление": "Marine electrical / busbar",
+    "Компания / бренд": "Renyun Hunan Busbar",
+    "Hall": "16.3",
+    "Booth": "16.3E19",
+    "Что представлено": "Busbar power distribution systems",
+    "Почему точка релевантна": "Интересно для крупных яхт/катеров и custom DC/AC distribution, но нужно проверить компактные низковольтные решения.",
+    "Что получить / проверить": "Copper/tinned copper, 12/24/48V custom busbar, enclosure/IP, current ratings, compact marine panel OEM.",
+    "Телефон / WhatsApp": "+86 15116342188",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://www.rybusway.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://www.linkedin.com/company/renyun",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 47,
+   "priority": "A",
+   "category": "Audio OEM / waterproof development",
+   "company": "MIVOIS / Dongguan SYNST Electronics",
+   "hall": "18.2",
+   "booth": "18.2B04-06",
+   "products": "Bluetooth/smart speakers, LED audio systems, OEM/ODM; salt spray/vibration/high-low temp test capability",
+   "why": "Одна из лучших новых точек для разработки marine-audio private label, потому что у фабрики есть собственные тесты и вертикальная сборка.",
+   "toCheck": "Спросить IP67 speaker development, UV/salt spray, 12/24V amplifier, marine grille, Class-D, DSP, private mold, MOQ.",
+   "phone": "+86 13316654338",
+   "wechatEmail": "mivois@intristing.com",
+   "website": "https://www.mivoiselec.com/",
+   "verification": "Точный стенд + manufacturing/test capability подтверждены",
+   "source": "https://www.mivoiselec.com/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "18.2B04-06",
+     "hall": "18.2"
+    }
+   ],
+   "halls": [
+    "18.2"
+   ],
+   "raw": {
+    "ID / порядок": "47",
+    "Приоритет": "A",
+    "Товарное направление": "Audio OEM / waterproof development",
+    "Компания / бренд": "MIVOIS / Dongguan SYNST Electronics",
+    "Hall": "18.2",
+    "Booth": "18.2B04-06",
+    "Что представлено": "Bluetooth/smart speakers, LED audio systems, OEM/ODM; salt spray/vibration/high-low temp test capability",
+    "Почему точка релевантна": "Одна из лучших новых точек для разработки marine-audio private label, потому что у фабрики есть собственные тесты и вертикальная сборка.",
+    "Что получить / проверить": "Спросить IP67 speaker development, UV/salt spray, 12/24V amplifier, marine grille, Class-D, DSP, private mold, MOQ.",
+    "Телефон / WhatsApp": "+86 13316654338",
+    "WeChat / Email": "mivois@intristing.com",
+    "Сайт": "https://www.mivoiselec.com/",
+    "Статус верификации": "Точный стенд + manufacturing/test capability подтверждены",
+    "Источник": "https://www.mivoiselec.com/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 48,
+   "priority": "B",
+   "category": "Audio OEM / outdoor speaker",
+   "company": "FIFINE",
+   "hall": "18.2",
+   "booth": "18.2G75-78",
+   "products": "Audio equipment, microphones, headsets, mixers and audio products",
+   "why": "Не marine-native, но сильная аудио/R&D точка для поиска OEM-компонентов и supplier network.",
+   "toCheck": "Outdoor/IP-rated audio? amplifier module? OEM acoustic engineering? salt/UV test? private label; запросить профильного инженера.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://fifinemicrophone.com/",
+   "verification": "Точный стенд подтверждён брендом",
+   "source": "https://fifinemicrophone.com/ja-jp/blogs/news/fifine-invitation-at-2026-hong-kong-electronics-fair-140th-canton-fair",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "18.2G75-78",
+     "hall": "18.2"
+    }
+   ],
+   "halls": [
+    "18.2"
+   ],
+   "raw": {
+    "ID / порядок": "48",
+    "Приоритет": "B",
+    "Товарное направление": "Audio OEM / outdoor speaker",
+    "Компания / бренд": "FIFINE",
+    "Hall": "18.2",
+    "Booth": "18.2G75-78",
+    "Что представлено": "Audio equipment, microphones, headsets, mixers and audio products",
+    "Почему точка релевантна": "Не marine-native, но сильная аудио/R&D точка для поиска OEM-компонентов и supplier network.",
+    "Что получить / проверить": "Outdoor/IP-rated audio? amplifier module? OEM acoustic engineering? salt/UV test? private label; запросить профильного инженера.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://fifinemicrophone.com/",
+    "Статус верификации": "Точный стенд подтверждён брендом",
+    "Источник": "https://fifinemicrophone.com/ja-jp/blogs/news/fifine-invitation-at-2026-hong-kong-electronics-fair-140th-canton-fair",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 49,
+   "priority": "A",
+   "category": "Infotainment / audio electronics",
+   "company": "Dongguan Flysonic Electronics",
+   "hall": "18.2",
+   "booth": "18.2F35",
+   "products": "Vehicle infotainment, Android head units, CANBUS integration, custom electronics",
+   "why": "Сильная смежная точка для yacht/ATV head-unit платформ: CAN, UI, wiring, software customization.",
+   "toCheck": "12/24V; CANBUS; custom UI; IP-rated face? camera inputs; DSP; amplifier outputs; OEM/ODM; marine sealing feasibility.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через LinkedIn/company",
+   "website": "—",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://cn.linkedin.com/company/flysonic",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "18.2F35",
+     "hall": "18.2"
+    }
+   ],
+   "halls": [
+    "18.2"
+   ],
+   "raw": {
+    "ID / порядок": "49",
+    "Приоритет": "A",
+    "Товарное направление": "Infotainment / audio electronics",
+    "Компания / бренд": "Dongguan Flysonic Electronics",
+    "Hall": "18.2",
+    "Booth": "18.2F35",
+    "Что представлено": "Vehicle infotainment, Android head units, CANBUS integration, custom electronics",
+    "Почему точка релевантна": "Сильная смежная точка для yacht/ATV head-unit платформ: CAN, UI, wiring, software customization.",
+    "Что получить / проверить": "12/24V; CANBUS; custom UI; IP-rated face? camera inputs; DSP; amplifier outputs; OEM/ODM; marine sealing feasibility.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через LinkedIn/company",
+    "Сайт": "—",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://cn.linkedin.com/company/flysonic",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 50,
+   "priority": "B",
+   "category": "Audio / pro audio",
+   "company": "FIFINE / creator audio",
+   "hall": "18.2",
+   "booth": "18.2G75-78",
+   "products": "Full-scenario audio equipment",
+   "why": "Вторая задача на этой точке — узнать OEM chain по speakers/amps и акустической разработке.",
+   "toCheck": "Factory/OEM partners for waterproof speaker? DSP/amp modules? MOQ/private mold.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://fifinemicrophone.com/",
+   "verification": "Точный стенд подтверждён брендом",
+   "source": "https://fifinemicrophone.com/ja-jp/blogs/news/fifine-invitation-at-2026-hong-kong-electronics-fair-140th-canton-fair",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "18.2G75-78",
+     "hall": "18.2"
+    }
+   ],
+   "halls": [
+    "18.2"
+   ],
+   "raw": {
+    "ID / порядок": "50",
+    "Приоритет": "B",
+    "Товарное направление": "Audio / pro audio",
+    "Компания / бренд": "FIFINE / creator audio",
+    "Hall": "18.2",
+    "Booth": "18.2G75-78",
+    "Что представлено": "Full-scenario audio equipment",
+    "Почему точка релевантна": "Вторая задача на этой точке — узнать OEM chain по speakers/amps и акустической разработке.",
+    "Что получить / проверить": "Factory/OEM partners for waterproof speaker? DSP/amp modules? MOQ/private mold.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://fifinemicrophone.com/",
+    "Статус верификации": "Точный стенд подтверждён брендом",
+    "Источник": "https://fifinemicrophone.com/ja-jp/blogs/news/fifine-invitation-at-2026-hong-kong-electronics-fair-140th-canton-fair",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 51,
+   "priority": "A",
+   "category": "ATV / electric mobility",
+   "company": "YADEA",
+   "hall": "14.1",
+   "booth": "14.1C32-35; 14.1D08-11",
+   "products": "Latest electric two-wheelers, motors, controllers, battery systems",
+   "why": "Не ATV напрямую, но одна из лучших точек по electric drivetrain/battery/controller supplier chain для будущих electric powersports.",
+   "toCheck": "Motor/controller suppliers, battery architecture, CAN, thermal management, factory visit, export/dealer contacts.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через YADEA",
+   "website": "https://www.yadea.com/",
+   "verification": "Точный стенд подтверждён брендом",
+   "source": "https://www.sotwe.com/yadeaglobal",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "14.1C32-35",
+     "hall": "14.1"
+    },
+    {
+     "label": "14.1D08-11",
+     "hall": "14.1"
+    }
+   ],
+   "halls": [
+    "14.1"
+   ],
+   "raw": {
+    "ID / порядок": "51",
+    "Приоритет": "A",
+    "Товарное направление": "ATV / electric mobility",
+    "Компания / бренд": "YADEA",
+    "Hall": "14.1",
+    "Booth": "14.1C32-35; 14.1D08-11",
+    "Что представлено": "Latest electric two-wheelers, motors, controllers, battery systems",
+    "Почему точка релевантна": "Не ATV напрямую, но одна из лучших точек по electric drivetrain/battery/controller supplier chain для будущих electric powersports.",
+    "Что получить / проверить": "Motor/controller suppliers, battery architecture, CAN, thermal management, factory visit, export/dealer contacts.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через YADEA",
+    "Сайт": "https://www.yadea.com/",
+    "Статус верификации": "Точный стенд подтверждён брендом",
+    "Источник": "https://www.sotwe.com/yadeaglobal",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 52,
+   "priority": "B",
+   "category": "Off-road motorcycles / powersports",
+   "company": "NICOT MOTO",
+   "hall": "14.1",
+   "booth": "14.1H25-27",
+   "products": "Source-factory off-road motorcycles / dirt bikes",
+   "why": "Полезна для расширения powersports и поиска engine/suspension/brake supplier chain.",
+   "toCheck": "OEM/ODM, engine suppliers, suspension, brakes, plastics, FOB, spare parts, dealer terms.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "—",
+   "verification": "Точный стенд подтверждён приглашением",
+   "source": "https://www.autoyas.com/CN/Unknown/458979647905241/NICOT-MOTO",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "14.1H25-27",
+     "hall": "14.1"
+    }
+   ],
+   "halls": [
+    "14.1"
+   ],
+   "raw": {
+    "ID / порядок": "52",
+    "Приоритет": "B",
+    "Товарное направление": "Off-road motorcycles / powersports",
+    "Компания / бренд": "NICOT MOTO",
+    "Hall": "14.1",
+    "Booth": "14.1H25-27",
+    "Что представлено": "Source-factory off-road motorcycles / dirt bikes",
+    "Почему точка релевантна": "Полезна для расширения powersports и поиска engine/suspension/brake supplier chain.",
+    "Что получить / проверить": "OEM/ODM, engine suppliers, suspension, brakes, plastics, FOB, spare parts, dealer terms.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "—",
+    "Статус верификации": "Точный стенд подтверждён приглашением",
+    "Источник": "https://www.autoyas.com/CN/Unknown/458979647905241/NICOT-MOTO",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 53,
+   "priority": "B",
+   "category": "Motorcycles / supplier chain",
+   "company": "KAMAX",
+   "hall": "15.1",
+   "booth": "15.1C14-16",
+   "products": "OEM/ODM motorcycles, homologation, spare-parts and after-sales",
+   "why": "Полезна для supplier chain по моторам, подвеске и off-road; готовый экспортный OEM.",
+   "toCheck": "OEM models, export docs, Euro/EEC, spare parts, factory tour, engine/suspension suppliers.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://www.kamaxgroup.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://www.kamaxgroup.com/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.1C14-16",
+     "hall": "15.1"
+    }
+   ],
+   "halls": [
+    "15.1"
+   ],
+   "raw": {
+    "ID / порядок": "53",
+    "Приоритет": "B",
+    "Товарное направление": "Motorcycles / supplier chain",
+    "Компания / бренд": "KAMAX",
+    "Hall": "15.1",
+    "Booth": "15.1C14-16",
+    "Что представлено": "OEM/ODM motorcycles, homologation, spare-parts and after-sales",
+    "Почему точка релевантна": "Полезна для supplier chain по моторам, подвеске и off-road; готовый экспортный OEM.",
+    "Что получить / проверить": "OEM models, export docs, Euro/EEC, spare parts, factory tour, engine/suspension suppliers.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://www.kamaxgroup.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://www.kamaxgroup.com/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 54,
+   "priority": "B",
+   "category": "Motorcycles / supplier chain",
+   "company": "HAOJIN Motor",
+   "hall": "15.1",
+   "booth": "15.1G34-39; 15.1H06-11",
+   "products": "Motorcycles and new models",
+   "why": "Крупная производственная точка для сравнения платформ, двигателей и экспортных условий.",
+   "toCheck": "Off-road/utility models, engines, spare parts, export markets, OEM, factory contact.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://en.haojin.com.cn/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://rw.linkedin.com/company/haojinmotor",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.1G34-39",
+     "hall": "15.1"
+    },
+    {
+     "label": "15.1H06-11",
+     "hall": "15.1"
+    }
+   ],
+   "halls": [
+    "15.1"
+   ],
+   "raw": {
+    "ID / порядок": "54",
+    "Приоритет": "B",
+    "Товарное направление": "Motorcycles / supplier chain",
+    "Компания / бренд": "HAOJIN Motor",
+    "Hall": "15.1",
+    "Booth": "15.1G34-39; 15.1H06-11",
+    "Что представлено": "Motorcycles and new models",
+    "Почему точка релевантна": "Крупная производственная точка для сравнения платформ, двигателей и экспортных условий.",
+    "Что получить / проверить": "Off-road/utility models, engines, spare parts, export markets, OEM, factory contact.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://en.haojin.com.cn/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://rw.linkedin.com/company/haojinmotor",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 55,
+   "priority": "A",
+   "category": "Snow / garden machinery supplier chain",
+   "company": "LEO Garden",
+   "hall": "10.2",
+   "booth": "10.2G40-41; 10.2H06-07",
+   "products": "Lawn & garden machinery, power-equipment manufacturer",
+   "why": "Конкретная вторая фабрика для snow-equipment sourcing chain после DAYE: спрашивать winter line и snow thrower platforms.",
+   "toCheck": "Snow blower/sweeper current line? engines, battery platform, low-temp specs, OEM, spare parts, Russia/CIS.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через сайт",
+   "website": "https://www.leogardenmachine.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://www.leogardenmachine.com/leo-garden-to-exhibit-at-the-140th-canton-fair-2026",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "10.2G40-41",
+     "hall": "10.2"
+    },
+    {
+     "label": "10.2H06-07",
+     "hall": "10.2"
+    }
+   ],
+   "halls": [
+    "10.2"
+   ],
+   "raw": {
+    "ID / порядок": "55",
+    "Приоритет": "A",
+    "Товарное направление": "Snow / garden machinery supplier chain",
+    "Компания / бренд": "LEO Garden",
+    "Hall": "10.2",
+    "Booth": "10.2G40-41; 10.2H06-07",
+    "Что представлено": "Lawn & garden machinery, power-equipment manufacturer",
+    "Почему точка релевантна": "Конкретная вторая фабрика для snow-equipment sourcing chain после DAYE: спрашивать winter line и snow thrower platforms.",
+    "Что получить / проверить": "Snow blower/sweeper current line? engines, battery platform, low-temp specs, OEM, spare parts, Russia/CIS.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через сайт",
+    "Сайт": "https://www.leogardenmachine.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://www.leogardenmachine.com/leo-garden-to-exhibit-at-the-140th-canton-fair-2026",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 56,
+   "priority": "A",
+   "category": "Автомобили / EV export",
+   "company": "Jonway EV",
+   "hall": "15.1",
+   "booth": "15.1B43-44; 15.1C01-02",
+   "products": "EV models / export-oriented vehicle manufacturer",
+   "why": "Конкретная автомобильная точка с подтверждённым стендом; брать export conditions и модели.",
+   "toCheck": "EXW/FOB; VIN/docs; battery warranty; spare parts; export certification; CIS/Kyrgyzstan experience; lead time.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://www.jonwayev.com/",
+   "verification": "Точный стенд подтверждён брендом",
+   "source": "https://www.jonwayev.com/events",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "15.1B43-44",
+     "hall": "15.1"
+    },
+    {
+     "label": "15.1C01-02",
+     "hall": "15.1"
+    }
+   ],
+   "halls": [
+    "15.1"
+   ],
+   "raw": {
+    "ID / порядок": "56",
+    "Приоритет": "A",
+    "Товарное направление": "Автомобили / EV export",
+    "Компания / бренд": "Jonway EV",
+    "Hall": "15.1",
+    "Booth": "15.1B43-44; 15.1C01-02",
+    "Что представлено": "EV models / export-oriented vehicle manufacturer",
+    "Почему точка релевантна": "Конкретная автомобильная точка с подтверждённым стендом; брать export conditions и модели.",
+    "Что получить / проверить": "EXW/FOB; VIN/docs; battery warranty; spare parts; export certification; CIS/Kyrgyzstan experience; lead time.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://www.jonwayev.com/",
+    "Статус верификации": "Точный стенд подтверждён брендом",
+    "Источник": "https://www.jonwayev.com/events",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 57,
+   "priority": "A",
+   "category": "Автомобили / экспортёр",
+   "company": "DUDU Auto Export",
+   "hall": "8.1",
+   "booth": "8.1E44-47",
+   "products": "Chinese vehicle sourcing/export: BYD, Geely, Changan and multiple brands",
+   "why": "Не фабрика, а важная экспортная точка для сравнения реальных экспортных цен/документов и доступности брендов.",
+   "toCheck": "Stock list; EXW/FOB; China domestic trims; export docs; Kyrgyzstan route; payment; warranty; lead time; wholesale discounts.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через DUDU",
+   "website": "—",
+   "verification": "Точный стенд подтверждён экспортёром",
+   "source": "https://www.autos1000.com/CN/Chongqing/103305352580841/DuDu-electric-cars",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "8.1E44-47",
+     "hall": "8.1"
+    }
+   ],
+   "halls": [
+    "8.1"
+   ],
+   "raw": {
+    "ID / порядок": "57",
+    "Приоритет": "A",
+    "Товарное направление": "Автомобили / экспортёр",
+    "Компания / бренд": "DUDU Auto Export",
+    "Hall": "8.1",
+    "Booth": "8.1E44-47",
+    "Что представлено": "Chinese vehicle sourcing/export: BYD, Geely, Changan and multiple brands",
+    "Почему точка релевантна": "Не фабрика, а важная экспортная точка для сравнения реальных экспортных цен/документов и доступности брендов.",
+    "Что получить / проверить": "Stock list; EXW/FOB; China domestic trims; export docs; Kyrgyzstan route; payment; warranty; lead time; wholesale discounts.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через DUDU",
+    "Сайт": "—",
+    "Статус верификации": "Точный стенд подтверждён экспортёром",
+    "Источник": "https://www.autos1000.com/CN/Chongqing/103305352580841/DuDu-electric-cars",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 58,
+   "priority": "B",
+   "category": "Авто / special vehicles",
+   "company": "Tongya Automobile",
+   "hall": "11.3",
+   "booth": "11.3K17",
+   "products": "Semi-trailers, tankers, special-purpose vehicles",
+   "why": "Не легковые авто, но коммерчески сильная B2B точка: trailers/special vehicles и крупный чек.",
+   "toCheck": "FOB, container/flatbed/tanker options, homologation, custom body, spare parts, CIS export.",
+   "phone": "+86 13791725138",
+   "wechatEmail": "ctac@cnctac.com",
+   "website": "https://www.trailerfactory.cn/",
+   "verification": "Точный стенд + контакт подтверждены",
+   "source": "https://www.trailerfactory.cn/news/news/Tongya-Automobile-will-participate-in-the-140th-Canton-Fair-from-October-15-to-19-the-booth-number-is-11-3K17.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "11.3K17",
+     "hall": "11.3"
+    }
+   ],
+   "halls": [
+    "11.3"
+   ],
+   "raw": {
+    "ID / порядок": "58",
+    "Приоритет": "B",
+    "Товарное направление": "Авто / special vehicles",
+    "Компания / бренд": "Tongya Automobile",
+    "Hall": "11.3",
+    "Booth": "11.3K17",
+    "Что представлено": "Semi-trailers, tankers, special-purpose vehicles",
+    "Почему точка релевантна": "Не легковые авто, но коммерчески сильная B2B точка: trailers/special vehicles и крупный чек.",
+    "Что получить / проверить": "FOB, container/flatbed/tanker options, homologation, custom body, spare parts, CIS export.",
+    "Телефон / WhatsApp": "+86 13791725138",
+    "WeChat / Email": "ctac@cnctac.com",
+    "Сайт": "https://www.trailerfactory.cn/",
+    "Статус верификации": "Точный стенд + контакт подтверждены",
+    "Источник": "https://www.trailerfactory.cn/news/news/Tongya-Automobile-will-participate-in-the-140th-Canton-Fair-from-October-15-to-19-the-booth-number-is-11-3K17.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 59,
+   "priority": "B",
+   "category": "Rugged electronics / innovation",
+   "company": "Ulefone",
+   "hall": "18.2",
+   "booth": "18.2K24",
+   "products": "Rugged devices, thermal imaging, laser ranging, accessories",
+   "why": "Инновационная точка, связанная с экспедициями, яхтами, ATV и сервисными командами; возможен сопутствующий high-margin товар.",
+   "toCheck": "Thermal/laser rugged devices, IP rating, OEM/distributor terms, fleet use, accessories.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://www.ulefone.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://www.ulefone.com/pages/canton-fair",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "INNOVATION / OTHER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "18.2K24",
+     "hall": "18.2"
+    }
+   ],
+   "halls": [
+    "18.2"
+   ],
+   "raw": {
+    "ID / порядок": "59",
+    "Приоритет": "B",
+    "Товарное направление": "Rugged electronics / innovation",
+    "Компания / бренд": "Ulefone",
+    "Hall": "18.2",
+    "Booth": "18.2K24",
+    "Что представлено": "Rugged devices, thermal imaging, laser ranging, accessories",
+    "Почему точка релевантна": "Инновационная точка, связанная с экспедициями, яхтами, ATV и сервисными командами; возможен сопутствующий high-margin товар.",
+    "Что получить / проверить": "Thermal/laser rugged devices, IP rating, OEM/distributor terms, fleet use, accessories.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://www.ulefone.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://www.ulefone.com/pages/canton-fair",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "INNOVATION / OTHER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 60,
+   "priority": "B",
+   "category": "Industrial UAV / innovation",
+   "company": "JOUAV",
+   "hall": "20.2",
+   "booth": "20.2B36",
+   "products": "CW-30E VTOL UAV and autonomous drone-in-a-box",
+   "why": "Связано с инспекцией логистики, яхт, инфраструктуры и B2B; потенциально новое премиальное направление.",
+   "toCheck": "Distributor model, payloads, endurance, autonomous dock, certifications, export restrictions, support.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://www.jouav.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://www.jouav.com/zh/news/140th-canton-fair-2026.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "INNOVATION / OTHER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "20.2B36",
+     "hall": "20.2"
+    }
+   ],
+   "halls": [
+    "20.2"
+   ],
+   "raw": {
+    "ID / порядок": "60",
+    "Приоритет": "B",
+    "Товарное направление": "Industrial UAV / innovation",
+    "Компания / бренд": "JOUAV",
+    "Hall": "20.2",
+    "Booth": "20.2B36",
+    "Что представлено": "CW-30E VTOL UAV and autonomous drone-in-a-box",
+    "Почему точка релевантна": "Связано с инспекцией логистики, яхт, инфраструктуры и B2B; потенциально новое премиальное направление.",
+    "Что получить / проверить": "Distributor model, payloads, endurance, autonomous dock, certifications, export restrictions, support.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://www.jouav.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://www.jouav.com/zh/news/140th-canton-fair-2026.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "INNOVATION / OTHER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 61,
+   "priority": "B",
+   "category": "Special-vehicle lighting / searchlights",
+   "company": "SENKEN Group",
+   "hall": "10.3",
+   "booth": "10.3K17",
+   "products": "Search lights, warning lights, special-vehicle lighting/control",
+   "why": "Не yacht-native, но searchlight/10–30V electronics очень релевантны rugged/utility/marine auxiliary applications.",
+   "toCheck": "Searchlight specs, 12/24V, IP, corrosion, remote control, beam distance, OEM, marine adaptation.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через бренд",
+   "website": "https://www.senken-group.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://cn.linkedin.com/company/senken-group-co-ltd",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "10.3K17",
+     "hall": "10.3"
+    }
+   ],
+   "halls": [
+    "10.3"
+   ],
+   "raw": {
+    "ID / порядок": "61",
+    "Приоритет": "B",
+    "Товарное направление": "Special-vehicle lighting / searchlights",
+    "Компания / бренд": "SENKEN Group",
+    "Hall": "10.3",
+    "Booth": "10.3K17",
+    "Что представлено": "Search lights, warning lights, special-vehicle lighting/control",
+    "Почему точка релевантна": "Не yacht-native, но searchlight/10–30V electronics очень релевантны rugged/utility/marine auxiliary applications.",
+    "Что получить / проверить": "Searchlight specs, 12/24V, IP, corrosion, remote control, beam distance, OEM, marine adaptation.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через бренд",
+    "Сайт": "https://www.senken-group.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://cn.linkedin.com/company/senken-group-co-ltd",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 62,
+   "priority": "B",
+   "category": "Audio OEM / lifestyle speakers",
+   "company": "MIVOIS additional audio",
+   "hall": "18.2",
+   "booth": "18.2B04-06",
+   "products": "Bluetooth/smart speakers with vertical integration",
+   "why": "На той же точке отдельно оценить готовые outdoor/IP speaker platforms как быстрый путь в private-label marine-adjacent audio.",
+   "toCheck": "IPX7/IP67 existing models, private mold, acoustic tuning, salt-spray, vibration, low-temp test, MOQ.",
+   "phone": "+86 13316654338",
+   "wechatEmail": "mivois@intristing.com",
+   "website": "https://www.mivoiselec.com/",
+   "verification": "Точный стенд + тестовая база подтверждены",
+   "source": "https://www.mivoiselec.com/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "YACHT / MARINE",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "18.2B04-06",
+     "hall": "18.2"
+    }
+   ],
+   "halls": [
+    "18.2"
+   ],
+   "raw": {
+    "ID / порядок": "62",
+    "Приоритет": "B",
+    "Товарное направление": "Audio OEM / lifestyle speakers",
+    "Компания / бренд": "MIVOIS additional audio",
+    "Hall": "18.2",
+    "Booth": "18.2B04-06",
+    "Что представлено": "Bluetooth/smart speakers with vertical integration",
+    "Почему точка релевантна": "На той же точке отдельно оценить готовые outdoor/IP speaker platforms как быстрый путь в private-label marine-adjacent audio.",
+    "Что получить / проверить": "IPX7/IP67 existing models, private mold, acoustic tuning, salt-spray, vibration, low-temp test, MOQ.",
+    "Телефон / WhatsApp": "+86 13316654338",
+    "WeChat / Email": "mivois@intristing.com",
+    "Сайт": "https://www.mivoiselec.com/",
+    "Статус верификации": "Точный стенд + тестовая база подтверждены",
+    "Источник": "https://www.mivoiselec.com/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "YACHT / MARINE",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 63,
+   "priority": "A",
+   "category": "Автомобили / экспортёр",
+   "company": "TALENET Auto",
+   "hall": "13.0",
+   "booth": "13.0C40",
+   "products": "Passenger cars, buses, commercial vehicles, used vehicles, trailers, special-purpose vehicles",
+   "why": "Очень полезная конкретная точка под закупку автомобилей: один экспортёр закрывает passenger cars и коммерческий транспорт и прямо приглашает обсуждать sourcing под рынок.",
+   "toCheck": "Запросить список доступных passenger cars; EXW/FOB; бренды; китайские комплектации; документы; экспорт в Кыргызстан/РФ; сроки; оплата; гарантия; оптовые скидки.",
+   "phone": "+86 15303715434",
+   "wechatEmail": "info@talenetauto.com",
+   "website": "https://www.talenetauto.com/",
+   "verification": "Точный стенд подтверждён компанией",
+   "source": "https://www.talenetauto.com/fr/news/257.html",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "AUTO / EV",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "13.0C40",
+     "hall": "13.0"
+    }
+   ],
+   "halls": [
+    "13.0"
+   ],
+   "raw": {
+    "ID / порядок": "63",
+    "Приоритет": "A",
+    "Товарное направление": "Автомобили / экспортёр",
+    "Компания / бренд": "TALENET Auto",
+    "Hall": "13.0",
+    "Booth": "13.0C40",
+    "Что представлено": "Passenger cars, buses, commercial vehicles, used vehicles, trailers, special-purpose vehicles",
+    "Почему точка релевантна": "Очень полезная конкретная точка под закупку автомобилей: один экспортёр закрывает passenger cars и коммерческий транспорт и прямо приглашает обсуждать sourcing под рынок.",
+    "Что получить / проверить": "Запросить список доступных passenger cars; EXW/FOB; бренды; китайские комплектации; документы; экспорт в Кыргызстан/РФ; сроки; оплата; гарантия; оптовые скидки.",
+    "Телефон / WhatsApp": "+86 15303715434",
+    "WeChat / Email": "info@talenetauto.com",
+    "Сайт": "https://www.talenetauto.com/",
+    "Статус верификации": "Точный стенд подтверждён компанией",
+    "Источник": "https://www.talenetauto.com/fr/news/257.html",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "AUTO / EV",
+    "Тип точки": "Подтверждённая точка"
+   }
+  },
+  {
+   "id": 64,
+   "priority": "B",
+   "category": "Winter equipment / snow attachment",
+   "company": "BOB-LIFT",
+   "hall": "12.0 + 4.0",
+   "booth": "12.0B34; 4.0F04",
+   "products": "Tracked mini skid steer; quick-change attachment ecosystem incl. snow blower",
+   "why": "Не замена отдельной snow-blower фабрике, но коммерчески сильная зимняя точка: базовая машина + snow blower attachment + sweeper/auger/fork дают круглогодичную технику.",
+   "toCheck": "Запросить цену машины + snow blower attachment; working width; hydraulic flow; low-temp hydraulics; tracks; spare parts; CE/EAC; OEM; FOB.",
+   "phone": "Уточнить на стенде",
+   "wechatEmail": "Через компанию",
+   "website": "https://bobliftloader.com/",
+   "verification": "Точные стенды подтверждены компанией",
+   "source": "https://bobliftloader.com/news/canton-fair-2026/",
+   "visitStatus": "Не посещено",
+   "contactReceived": "Нет",
+   "notes": "",
+   "mapGroup": "POWERSPORTS / WINTER",
+   "pointType": "Подтверждённая точка",
+   "booths": [
+    {
+     "label": "12.0B34",
+     "hall": "12.0"
+    },
+    {
+     "label": "4.0F04",
+     "hall": "4.0"
+    }
+   ],
+   "halls": [
+    "12.0",
+    "4.0"
+   ],
+   "raw": {
+    "ID / порядок": "64",
+    "Приоритет": "B",
+    "Товарное направление": "Winter equipment / snow attachment",
+    "Компания / бренд": "BOB-LIFT",
+    "Hall": "12.0 + 4.0",
+    "Booth": "12.0B34; 4.0F04",
+    "Что представлено": "Tracked mini skid steer; quick-change attachment ecosystem incl. snow blower",
+    "Почему точка релевантна": "Не замена отдельной snow-blower фабрике, но коммерчески сильная зимняя точка: базовая машина + snow blower attachment + sweeper/auger/fork дают круглогодичную технику.",
+    "Что получить / проверить": "Запросить цену машины + snow blower attachment; working width; hydraulic flow; low-temp hydraulics; tracks; spare parts; CE/EAC; OEM; FOB.",
+    "Телефон / WhatsApp": "Уточнить на стенде",
+    "WeChat / Email": "Через компанию",
+    "Сайт": "https://bobliftloader.com/",
+    "Статус верификации": "Точные стенды подтверждены компанией",
+    "Источник": "https://bobliftloader.com/news/canton-fair-2026/",
+    "Статус посещения": "Не посещено",
+    "Контакт получен": "Нет",
+    "Итог / заметки": "",
+    "Группа для будущей карты": "POWERSPORTS / WINTER",
+    "Тип точки": "Подтверждённая точка"
+   }
+  }
+ ]
+}
