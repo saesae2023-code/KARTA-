@@ -3,7 +3,27 @@ import { ALL_HALLS, POINTS, compareHalls } from '../data';
 import { GROUP_LEGEND, groupColor } from '../groups';
 import type { Plan } from '../route';
 import type { Point, PointState } from '../types';
-import { AB_JUNCTION_X, AREAS, BUILDING_POS, VENUE_NOTES, splitHall } from '../venue';
+import {
+  AREAS,
+  BOX_W,
+  NODES,
+  NODE_BY_ID,
+  ROW_H,
+  ROW_TOP,
+  X_DONGLU,
+  X_MAX,
+  X_MIDDLE,
+  X_PROMENADE_WEST,
+  X_XILU,
+  Y_C,
+  Y_MAX,
+  Y_NORTH,
+  Y_PROMENADE,
+  Y_ROAD_BOTTOM,
+  Y_ROAD_TOP,
+  nodeOfHall,
+  walkPath,
+} from '../venue';
 
 interface Props {
   plan: Plan;
@@ -13,44 +33,56 @@ interface Props {
   onHall: (hall: string) => void;
 }
 
-const U = 80; // px per schematic unit
-const BW = 70; // building width
-const BH = 156; // building height
+const U = 80; // px per venue unit
 const PAD = 20;
-const Y0 = 64;
-const Y1 = Y0 + BH + 70;
-const CHIP_H = 28;
-const CHIP_GAP = 4;
-const MAX_X = Math.max(...Object.values(BUILDING_POS).map((p) => p.x));
-const W = PAD * 2 + MAX_X * U + BW;
-const H = Y1 + BH + PAD;
+const TOP = 34;
+const BW = BOX_W * U;
+const CHIP_H = 26;
+const CHIP_STEP = 30;
+const W = PAD * 2 + X_MAX * U;
+const H = TOP + Y_MAX * U + 40;
 
-function buildingBox(b: number) {
-  const pos = BUILDING_POS[b];
-  return { x: PAD + pos.x * U, y: pos.row === 0 ? Y0 : Y1 };
-}
+const px = (x: number) => PAD + x * U;
+const py = (y: number) => TOP + y * U;
 
-/** Floors that hold at least one point, top floor first (as seen on a section). */
-const FLOORS: Map<number, string[]> = (() => {
-  const m = new Map<number, string[]>();
+/** Halls with points, grouped by map node, top level first. */
+const LEVELS: Map<string, string[]> = (() => {
+  const m = new Map<string, string[]>();
   for (const h of ALL_HALLS) {
-    const { building } = splitHall(h);
-    m.set(building, [...(m.get(building) ?? []), h]);
+    const id = nodeOfHall(h);
+    m.set(id, [...(m.get(id) ?? []), h]);
   }
-  for (const [b, hs] of m) m.set(b, hs.sort(compareHalls).reverse());
+  for (const [id, hs] of m) m.set(id, hs.sort(compareHalls).reverse());
   return m;
 })();
 
+function nodeBox(id: string) {
+  const n = NODE_BY_ID.get(id)!;
+  return { x: px(n.x), y: py(ROW_TOP[n.row]), w: BW, h: ROW_H[n.row] * U };
+}
+
 function chipBox(hall: string) {
-  const { building } = splitHall(hall);
-  const floors = FLOORS.get(building) ?? [hall];
-  const i = Math.max(0, floors.indexOf(hall));
-  const box = buildingBox(building);
-  return { x: box.x + 4, y: box.y + 26 + i * (CHIP_H + CHIP_GAP), w: BW - 8, h: CHIP_H };
+  const id = nodeOfHall(hall);
+  if (!NODE_BY_ID.has(id)) return null;
+  const levels = LEVELS.get(id) ?? [hall];
+  const i = Math.max(0, levels.indexOf(hall));
+  const b = nodeBox(id);
+  return { x: b.x + 4, y: b.y + 22 + i * CHIP_STEP, w: BW - 8, h: CHIP_H };
 }
 
 export function pointsInHall(hall: string): Point[] {
   return POINTS.filter((p) => p.halls.includes(hall));
+}
+
+/** One route leg as an orthogonal polyline: chip → door → walkways → door → chip. */
+function legPoints(a: string, b: string): string | null {
+  const ca = chipBox(a);
+  const cb = chipBox(b);
+  if (!ca || !cb) return null;
+  const mid = (c: NonNullable<typeof ca>) => ({ x: c.x + c.w / 2, y: c.y + c.h / 2 });
+  const walk = walkPath(a, b).map((p) => ({ x: px(p.x), y: py(p.y) }));
+  const all = [mid(ca), ...walk, mid(cb)];
+  return all.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 }
 
 export function MapView({ plan, states, current, focusHall, onHall }: Props) {
@@ -85,33 +117,35 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
 
   useEffect(() => {
     const el = scroller.current;
-    if (!el || !target || fit) return;
-    const c = chipBox(target);
-    el.scrollTo({ left: Math.max(0, (c.x + c.w / 2) * scale - el.clientWidth / 2), behavior: 'smooth' });
+    const c = target ? chipBox(target) : null;
+    if (!el || !c || fit) return;
+    el.scrollTo({
+      left: Math.max(0, (c.x + c.w / 2) * scale - el.clientWidth / 2),
+      top: Math.max(0, (c.y + c.h / 2) * scale - el.clientHeight / 2),
+      behavior: 'smooth',
+    });
   }, [target, fit, scale]);
 
-  // Route polyline: current hall → stop 1 → stop 2 …
-  const pathHalls = [...(current && ALL_HALLS.includes(current) ? [current] : []), ...plan.stops.map((s) => s.hall)];
-  // Moves between the north row and Area C go through the road crossing, not straight across the map.
-  const crossTop = `${PAD + AB_JUNCTION_X * U + BW / 2},${Y0 + BH - 6}`;
-  const crossBottom = `${buildingBox(15).x + BW / 2},${Y1 - 30}`;
-  const pts: string[] = [];
-  pathHalls
-    .filter((h, i) => h !== pathHalls[i - 1])
-    .forEach((h, i, arr) => {
-      const c = chipBox(h);
-      if (i > 0) {
-        const r0 = BUILDING_POS[splitHall(arr[i - 1]).building]?.row;
-        const r1 = BUILDING_POS[splitHall(h).building]?.row;
-        if (r0 !== undefined && r1 !== undefined && r0 !== r1) pts.push(...(r0 === 0 ? [crossTop, crossBottom] : [crossBottom, crossTop]));
-      }
-      pts.push(`${c.x + c.w / 2},${c.y + c.h / 2}`);
-    });
+  const halls = Array.from(new Set([...ALL_HALLS, ...(current ? [current] : [])])).filter((h) => chipBox(h));
+
+  const pathHalls = [...(current && chipBox(current) ? [current] : []), ...plan.stops.map((s) => s.hall)].filter(
+    (h, i, arr) => h !== arr[i - 1],
+  );
+  const legs = pathHalls.slice(1).map((h, i) => legPoints(pathHalls[i], h)).filter((x): x is string => !!x);
+
+  const areaBox = (id: string) => {
+    const ns = NODES.filter((n) => n.area === id);
+    const x0 = Math.min(...ns.map((n) => px(n.x))) - 8;
+    const x1 = Math.max(...ns.map((n) => px(n.x) + BW)) + 8;
+    const y0 = Math.min(...ns.map((n) => py(ROW_TOP[n.row]))) - 8;
+    const y1 = Math.max(...ns.map((n) => py(ROW_TOP[n.row] + ROW_H[n.row]))) + 22;
+    return { x0, x1, y0, y1 };
+  };
 
   return (
     <div className="map">
       <div className="map-toolbar">
-        <span className="small muted">Схема по официальному layout, не в масштабе · точки привязаны к Hall</span>
+        <span className="small muted">Официальный Complex Layout (Phase 1), план · точки привязаны к Hall</span>
         <button className="toggle" onClick={() => setFit(!fit)}>
           {fit ? '🔍 Крупно' : '⤢ Весь комплекс'}
         </button>
@@ -124,62 +158,77 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
             </marker>
           </defs>
 
+          <text x={W / 2} y={18} textAnchor="middle" className="road-label">
+            Yuejiang Zhonglu · север
+          </text>
+
           {AREAS.map((a) => {
-            const xs = a.buildings.map((b) => buildingBox(b).x);
-            const y = buildingBox(a.buildings[0]).y;
-            const x0 = Math.min(...xs) - 8;
-            const x1 = Math.max(...xs) + BW + 8;
+            const b = areaBox(a.id);
             return (
               <g key={a.id}>
-                <rect x={x0} y={y - 30} width={x1 - x0} height={BH + 38} rx={14} className="area-box" />
-                <text x={x0 + 10} y={y - 11} className="area-label">
-                  {a.label} · Hall {Math.min(...a.buildings)}–{Math.max(...a.buildings)}
+                <rect x={b.x0} y={b.y0} width={b.x1 - b.x0} height={b.y1 - b.y0} rx={14} className="area-box" />
+                <text x={b.x0 + 10} y={b.y1 - 7} className="area-label">
+                  {a.label} · {a.halls}
                 </text>
               </g>
             );
           })}
-          <rect x={PAD} y={Y0 + BH + 18} width={W - PAD * 2} height={24} className="road" />
-          <text x={PAD + 12} y={Y0 + BH + 35} className="road-label">
-            Xingang Dong Rd
+
+          {/* Xingang Donglu */}
+          <rect x={PAD} y={py(Y_ROAD_TOP)} width={W - PAD * 2} height={(Y_ROAD_BOTTOM - Y_ROAD_TOP) * U} className="road" />
+          <text x={px(0.2)} y={py(Y_ROAD_TOP) + 20} className="road-label">
+            Xingang Donglu
           </text>
 
-          {/* Pearl River Promenade: east–west through Areas A and B (official) */}
-          <rect x={buildingBox(1).x} y={Y0 + BH - 12} width={buildingBox(13).x + BW - buildingBox(1).x} height={12} rx={6} className="promenade" />
-          <text x={buildingBox(4).x} y={Y0 + BH - 2.5} className="promenade-label">
-            Pearl River Promenade
+          {/* walkways */}
+          <line x1={px(X_XILU)} y1={py(Y_NORTH)} x2={px(X_DONGLU)} y2={py(Y_NORTH)} className="walkway" />
+          <line x1={px(X_XILU)} y1={py(Y_NORTH)} x2={px(X_XILU)} y2={py(Y_PROMENADE)} className="walkway" />
+          <line x1={px(X_DONGLU)} y1={py(Y_NORTH)} x2={px(X_DONGLU)} y2={py(Y_PROMENADE)} className="walkway" />
+          <line x1={px(X_MIDDLE)} y1={py(Y_NORTH)} x2={px(X_MIDDLE)} y2={py(Y_PROMENADE)} className="walkway" />
+          <text x={px(X_XILU) - 4} y={py(Y_NORTH) + 40} className="lane-label" textAnchor="end">
+            Zhanchang Xilu
+          </text>
+          <text x={px(X_DONGLU) + 4} y={py(Y_NORTH) + 40} className="lane-label">
+            Zhanchang Donglu
           </text>
 
-          {/* Connecting Corridor D ↔ A (official) */}
-          <rect x={buildingBox(20).x + BW} y={Y0 + 48} width={buildingBox(1).x - buildingBox(20).x - BW} height={16} className="corridor" />
-          <text x={(buildingBox(20).x + BW + buildingBox(1).x) / 2} y={Y0 + 44} textAnchor="middle" className="corridor-label">
-            Corridor
+          <rect x={px(X_PROMENADE_WEST)} y={py(Y_PROMENADE) - 7} width={px(X_DONGLU) - px(X_PROMENADE_WEST)} height={14} rx={7} className="promenade" />
+          <text x={px(6.3)} y={py(Y_PROMENADE) + 3.5} className="promenade-label">
+            Pearl Promenade
+          </text>
+          <rect x={px(0.3)} y={py(Y_PROMENADE) - 4} width={px(X_PROMENADE_WEST) - px(0.3)} height={8} rx={4} className="corridor" />
+          <text x={px(0.4)} y={py(Y_PROMENADE) - 8} className="corridor-label">
+            D ↔ A
           </text>
 
-          {/* Xingang Dong Rd crossing (position approximate) */}
-          <line x1={PAD + AB_JUNCTION_X * U + BW / 2} y1={Y0 + BH} x2={buildingBox(15).x + BW / 2} y2={Y1 - 30} className="crossing" />
-          <text x={PAD + AB_JUNCTION_X * U + BW / 2 + 8} y={Y0 + BH + 58} className="crossing-label">
-            ≈ переход A/B ↔ C
+          {/* Middle Platform and the link over Xingang Donglu to Area C */}
+          <rect x={px(X_MIDDLE) - 7} y={py(Y_PROMENADE)} width={14} height={py(Y_C) - py(Y_PROMENADE)} rx={5} className="link" />
+          <line x1={px(X_MIDDLE)} y1={py(Y_C)} x2={px(13.6 + BOX_W / 2)} y2={py(Y_C)} className="walkway" />
+
+          {NODES.map((n) => {
+            const b = nodeBox(n.id);
+            const used = LEVELS.has(n.id);
+            return (
+              <g key={n.id}>
+                <rect x={b.x} y={b.y} width={b.w} height={b.h} rx={8} className={`bld ${used ? 'bld-used' : ''} ${n.kind !== 'hall' ? `bld-${n.kind}` : ''}`} />
+                <text x={b.x + b.w / 2} y={b.y + 15} textAnchor="middle" className="bld-num">
+                  {n.kind === 'outdoor' ? 'open area' : n.label}
+                </text>
+              </g>
+            );
+          })}
+
+          {legs.map((pts, i) => (
+            <polyline key={i} points={pts} className="route-line" markerEnd="url(#arrow)" />
+          ))}
+
+          <rect x={px(X_MIDDLE) - 46} y={py(Y_PROMENADE) - 11} width={92} height={22} rx={6} className="platform" />
+          <text x={px(X_MIDDLE)} y={py(Y_PROMENADE) + 4} textAnchor="middle" className="platform-label">
+            Middle Platform
           </text>
 
-          {AREAS.flatMap((a) =>
-            a.buildings.map((b) => {
-              const box = buildingBox(b);
-              const floors = FLOORS.get(b);
-              return (
-                <g key={b}>
-                  <rect x={box.x} y={box.y} width={BW} height={BH - 16} rx={8} className={`bld ${floors ? 'bld-used' : ''}`} />
-                  <text x={box.x + BW / 2} y={box.y + 18} textAnchor="middle" className="bld-num">
-                    {b}
-                  </text>
-                </g>
-              );
-            }),
-          )}
-
-          {pts.length > 1 && <polyline points={pts.join(' ')} className="route-line" markerEnd="url(#arrow)" markerMid="url(#arrow)" />}
-
-          {ALL_HALLS.map((h) => {
-            const c = chipBox(h);
+          {halls.map((h) => {
+            const c = chipBox(h)!;
             const all = pointsInHall(h);
             const pending = all.filter((p) => states[p.id].visit === 'pending');
             const nums = order.get(h);
@@ -209,10 +258,10 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
                   {h}
                 </text>
                 <text x={c.x + c.w - 6} y={c.y + 17} textAnchor="end" className="chip-count">
-                  {routed ? routed : extraOnly ? 'доп.' : '✓'}
+                  {routed ? routed : extraOnly ? 'доп.' : all.length ? '✓' : ''}
                 </text>
                 {segs.map((s, i) => (
-                  <rect key={i} x={s.x} y={c.y + c.h - 6} width={s.w} height={3} fill={s.color} />
+                  <rect key={i} x={s.x} y={c.y + c.h - 5} width={s.w} height={3} fill={s.color} />
                 ))}
                 {nums && (
                   <g>
@@ -223,7 +272,7 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
                   </g>
                 )}
                 {isCur && (
-                  <text x={c.x + c.w / 2} y={c.y - 3} textAnchor="middle" className="here-label">
+                  <text x={c.x + c.w / 2} y={c.y - 2} textAnchor="middle" className="here-label">
                     ВЫ ЗДЕСЬ
                   </text>
                 )}
@@ -239,6 +288,7 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
         <span><i className="k k-order">1</i> порядок обхода</span>
         <span>число — точек по маршруту</span>
         <span>«доп.» — второй стенд, визит в другом Hall</span>
+        <span>этажи x.1–x.4 — один корпус · x.0 — открытая площадка</span>
       </div>
 
       <h3>Легенда товарных групп</h3>
@@ -256,14 +306,12 @@ export function MapView({ plan, states, current, focusHall, onHall }: Props) {
           );
         })}
       </div>
-      <h3>Геометрия комплекса</h3>
-      <ul className="venue-notes">
-        {VENUE_NOTES.map((n) => (
-          <li key={n.text} className={n.basis}>
-            <span className="basis">{n.basis === 'official' ? '✓ official' : '≈ approx'}</span> {n.text}
-          </li>
-        ))}
-      </ul>
+      <p className="muted small">
+        Расположение Area и Hall — по официальному Exhibition Section Floor Map 140-й сессии (Phase 1) и Complex Layout.
+        Линии маршрута идут по проходам: Pearl Promenade, Middle Platform, переход через Xingang Donglu. Координат стендов
+        нет — точки привязаны к Hall.
+      </p>
     </div>
   );
 }
+
