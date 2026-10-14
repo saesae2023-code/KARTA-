@@ -2,7 +2,8 @@ import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } fro
 import { POINTS } from './data';
 import { AMAP_KEY } from './amap';
 import { WALK_M_PER_MIN, fitGeoref, hallCenter } from './geo';
-import { loadPoiCache, savePoiCache, toHallGeo, type PoiCache } from './poi';
+import { haversine } from './coords';
+import { COMPLEX_WGS, loadPoiCache, savePoiCache, toHallGeo, type PoiCache } from './poi';
 import { lockFromPlan, lockIsStale, planCost, planFromLock, planRoute, type Plan, type Start } from './route';
 import { computeStats } from './stats';
 import { useAppStore } from './store';
@@ -176,7 +177,7 @@ export default function App() {
     quality: geo.quality,
     mPerUnit: geo.mPerUnit,
     hallGuess: gpsStart ? nodeAt(gpsStart)?.id ?? null : null,
-    outsideMeters: gpsVenue && !gpsInside ? Math.hypot(gpsVenue.x - 8, gpsVenue.y - 4) * geo.mPerUnit : null,
+    outsideMeters: gps.fix && !gpsInside ? haversine([gps.fix.lon, gps.fix.lat], COMPLEX_WGS) : null,
     target: firstLatLon,
   };
 

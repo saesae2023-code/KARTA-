@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AMAP_KEY, createMap, describe, loadAMap, loadRender, mapTiming, saveRender, serviceError, type AMapDiag, type AMapNS, type RenderMode } from '../amap';
 import { net, netSummary, webglSupport } from '../amapDiag';
-import { metersBetween, wgs84ToGcj02, type LngLat } from '../coords';
+import { haversine, metersBetween, wgs84ToGcj02, type LngLat } from '../coords';
 import { HALL_GEO_BY_ID, WALK_M_PER_MIN } from '../geo';
 import { groupColor } from '../groups';
-import { HALL_AREA, areaHits, discoverHalls, hallHits, toHallGeo, type PoiCache } from '../poi';
+import { COMPLEX_GCJ, HALL_AREA, areaHits, discoverHalls, hallHits, toHallGeo, type PoiCache } from '../poi';
 import type { Plan } from '../route';
 import { nodeOfHall } from '../venue';
 import { formatMeters, SuggestBanner } from './LegInfo';
@@ -263,6 +263,12 @@ export function AmapView(props: Props) {
     if (user && map.current) map.current.setZoomAndCenter(18, user);
   };
   const showAll = () => map.current?.setFitView(null, false, [60, 60, 60, 60]);
+  const showComplex = () => {
+    setFollow(false);
+    map.current?.setZoomAndCenter(16, COMPLEX_GCJ);
+  };
+  // Distance from the real position to the complex — far away the map has little or no AMap data.
+  const farKm = user ? haversine(user, COMPLEX_GCJ) / 1000 : 0;
 
   const sheetLeg: LegInfo | null =
     walk && !walk.failed && user && target
@@ -299,8 +305,19 @@ export function AmapView(props: Props) {
         <button className="toggle" onClick={showAll}>
           ⤢ Весь маршрут
         </button>
+        <button className="toggle" onClick={showComplex}>
+          🏢 Canton Fair
+        </button>
       </div>
       <GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />
+      {farKm > 20 && (
+        <div className="gps-panel warn">
+          Вы в {Math.round(farKm).toLocaleString('ru')} км от Canton Fair — там у AMap может не быть подробной карты (пустая сетка).{' '}
+          <button className="btn-link" onClick={showComplex}>
+            Показать Canton Fair
+          </button>
+        </div>
+      )}
       {status === 'error' && diag && <AmapDiagPanel d={diag} onSchema={onSchema} />}
       {walk?.failed && user && (
         <div className="gps-panel warn">Маршрут приблизительный: AMap.Walking не вернул пешеходный путь ({walk.error}) — пунктир по прямой (≈ {formatMeters(walk.meters)}).</div>

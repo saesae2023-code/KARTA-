@@ -52,3 +52,13 @@ export function gcj02ToWgs84(g: LngLat): LngLat {
 export function metersBetween(a: LngLat, b: LngLat): number {
   return Math.hypot((a[0] - b[0]) * 111320 * Math.cos((a[1] * PI) / 180), (a[1] - b[1]) * 110574);
 }
+
+/** Great-circle distance (haversine), metres — correct at any distance. */
+export function haversine(a: LngLat, b: LngLat): number {
+  const R = 6371008.8;
+  const r = (d: number) => (d * PI) / 180;
+  const dLat = r(b[1] - a[1]);
+  const dLng = r(b[0] - a[0]);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a[1])) * Math.cos(r(b[1])) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+}
