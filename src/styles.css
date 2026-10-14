@@ -476,3 +476,16 @@ main { padding: 12px 16px; }
 .gps-panel { padding: 6px 10px; font-size: 0.78rem; }
 .map-toolbar .toggle { font-size: 0.82rem; white-space: nowrap; padding: 7px 10px; }
 .ns-btns .btn { white-space: nowrap; font-size: 0.95rem; }
+
+/* ---- geographic map ---- */
+.map-kind { grid-template-columns: 1fr 1fr; }
+.geo-box { width: 100%; height: 56vh; min-height: 320px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: #e5e7eb; }
+.geo-marker {
+  display: grid; place-items: center; position: relative; width: 34px; height: 34px; border-radius: 99px; border: 3px solid #fff;
+  color: #fff; font: 900 14px/1 -apple-system, system-ui, sans-serif; box-shadow: 0 2px 6px rgba(0,0,0,0.35); cursor: pointer; padding: 0;
+}
+.geo-marker.first { width: 42px; height: 42px; font-size: 17px; box-shadow: 0 0 0 4px rgba(37,99,235,0.45), 0 2px 6px rgba(0,0,0,0.35); }
+.geo-marker.approx { border-style: dashed; }
+.geo-marker i { position: absolute; top: -8px; right: -12px; font-style: normal; font-size: 10px; background: var(--navy); color: var(--gold); border-radius: 99px; padding: 1px 4px; }
+.geo-marker span { position: absolute; top: 100%; margin-top: 2px; font-size: 10px; font-weight: 800; color: var(--navy); background: rgba(255,255,255,0.9); border-radius: 4px; padding: 0 3px; white-space: nowrap; }
+.k-rest { width: 22px; height: 0; border-top: 3px dashed var(--gold); border-radius: 0; }

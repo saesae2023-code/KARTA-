@@ -15,7 +15,10 @@ export function LegLine({ leg }: { leg: LegInfo }) {
         {leg.approx ? '≈ ' : ''}
         {formatMeters(leg.meters)} · ~{leg.minutes} мин
       </b>
-      <span className="muted small">{leg.fromGps ? 'от вашей GPS-позиции' : 'от текущего Hall'} по проходам комплекса</span>
+      <span className="muted small">
+        {leg.fromGps ? 'от вашей GPS-позиции' : 'от текущего Hall'}
+        {leg.via === 'streets' ? ' по улицам (OSM)' : leg.via === 'straight' ? ' — по прямой, приблизительно' : ' по проходам комплекса'}
+      </span>
     </div>
   );
 }

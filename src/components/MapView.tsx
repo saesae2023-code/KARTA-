@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ALL_HALLS, POINTS, compareHalls } from '../data';
 import { GROUP_LEGEND, groupColor } from '../groups';
-import type { Plan } from '../route';
+import type { Plan, Step } from '../route';
 import type { GeoQuality } from '../geo';
 import type { GpsFix, GpsStatus } from '../useGps';
 import type { Point, PointState } from '../types';
@@ -39,6 +39,8 @@ export interface LegInfo {
   known: boolean;
   fromGps: boolean;
   approx: boolean;
+  /** How the distance was obtained. */
+  via?: 'walkways' | 'streets' | 'straight';
 }
 
 export interface GpsView {
@@ -78,6 +80,7 @@ const QUALITY_LABEL: Record<GeoQuality, string> = {
   approx: 'привязка ≈ ±100 м (по метро)',
   partial: 'привязка уточнена по 1 Hall',
   calibrated: 'привязка уточнена на месте',
+  osm: 'привязка по зданиям OpenStreetMap',
 };
 
 const U = 80; // px per venue unit
@@ -259,42 +262,22 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
       <GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />
       {suggest && <SuggestBanner savingM={suggest.savingM} onReplan={onReplan} onDismiss={onDismissSuggest} />}
       {step1 && (
-        <div className="next-sheet">
-          <div className="ns-top">
-            <span className="ns-num" style={{ background: groupColor(step1.point.mapGroup) }}>1</span>
-            <span className="ns-label">Следующая точка</span>
-            <PriorityBadge p={step1.point} />
-          </div>
-          <div className="ns-where">
-            Hall {step1.hall} · Booth {step1.booths.join('; ')}
-          </div>
-          <div className="ns-row">
-            <button className="ns-company" onClick={() => onOpen(step1.point.id)}>
-              {step1.point.company} ›
-            </button>
-            <GroupTag group={step1.point.mapGroup} short />
-          </div>
-          {leg && <LegLine leg={leg} />}
-          <div className="ns-btns">
-            <button
-              className={`btn ${follow ? 'btn-secondary' : 'btn-start'}`}
-              onClick={() => {
-                const next = !follow;
-                setFollow(next);
-                if (next) {
-                  setFit(false);
-                  if (userPx) centerOn(userPx.x, userPx.y);
-                  else if (firstChip) centerOn(firstChip.x + firstChip.w / 2, firstChip.y + firstChip.h / 2);
-                }
-              }}
-            >
-              {follow ? '■ Остановить' : '▶ Начать маршрут'}
-            </button>
-            <button className="btn btn-visit" onClick={() => onVisited(step1.point.id)}>
-              ✓ Посетила
-            </button>
-          </div>
-        </div>
+        <NextSheet
+          step={step1}
+          leg={leg}
+          follow={follow}
+          onOpen={onOpen}
+          onVisited={onVisited}
+          onToggleFollow={() => {
+            const next = !follow;
+            setFollow(next);
+            if (next) {
+              setFit(false);
+              if (userPx) centerOn(userPx.x, userPx.y);
+              else if (firstChip) centerOn(firstChip.x + firstChip.w / 2, firstChip.y + firstChip.h / 2);
+            }
+          }}
+        />
       )}
 
       <div className="map-scroll" ref={scroller}>
@@ -482,7 +465,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
 }
 
 
-function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }: Pick<Props, 'gps' | 'current' | 'onCalibrate' | 'onEnableGps' | 'onPickHall'>) {
+export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }: Pick<Props, 'gps' | 'current' | 'onCalibrate' | 'onEnableGps' | 'onPickHall'>) {
   if (gps.status === 'off')
     return (
       <div className="gps-panel">
@@ -547,6 +530,43 @@ function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }: Pick<P
           Уточнить: выбрать Hall
         </button>
       )}
+    </div>
+  );
+}
+
+export function NextSheet({ step, leg, follow, onToggleFollow, onOpen, onVisited }: {
+  step: Step;
+  leg: LegInfo | null;
+  follow: boolean;
+  onToggleFollow: () => void;
+  onOpen: (id: number) => void;
+  onVisited: (id: number) => void;
+}) {
+  return (
+    <div className="next-sheet">
+      <div className="ns-top">
+        <span className="ns-num" style={{ background: groupColor(step.point.mapGroup) }}>1</span>
+        <span className="ns-label">Следующая точка</span>
+        <PriorityBadge p={step.point} />
+      </div>
+      <div className="ns-where">
+        Hall {step.hall} · Booth {step.booths.join('; ')}
+      </div>
+      <div className="ns-row">
+        <button className="ns-company" onClick={() => onOpen(step.point.id)}>
+          {step.point.company} ›
+        </button>
+        <GroupTag group={step.point.mapGroup} short />
+      </div>
+      {leg && <LegLine leg={leg} />}
+      <div className="ns-btns">
+        <button className={`btn ${follow ? 'btn-secondary' : 'btn-start'}`} onClick={onToggleFollow}>
+          {follow ? '■ Остановить' : '▶ Начать маршрут'}
+        </button>
+        <button className="btn btn-visit" onClick={() => onVisited(step.point.id)}>
+          ✓ Посетила
+        </button>
+      </div>
     </div>
   );
 }

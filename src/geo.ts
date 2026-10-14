@@ -7,14 +7,30 @@
  * APPROXIMATE (≈ ±100 m). On site the user refines it with "Я в Hall X" — each confirmation with a good GPS fix
  * becomes a calibration anchor; with two separated anchors the default ones are no longer used.
  */
+import hallGeoData from './data/hallGeo.json';
 import { NODE_BY_ID, BOX_W, ROW_H, ROW_TOP, nodeOfHall, type Pt } from './venue';
+
+/** Real building geometry per hall (scripts/build_hall_geo.py, from OpenStreetMap). */
+export interface HallGeo {
+  hall: string;
+  area: string;
+  lat: number;
+  lng: number;
+  /** [lng, lat] ring. */
+  polygon: [number, number][];
+  accuracy: 'building_polygon' | 'entrance' | 'centroid';
+  source: string;
+}
+
+export const HALL_GEO: HallGeo[] = hallGeoData as HallGeo[];
+export const HALL_GEO_BY_ID = new Map(HALL_GEO.map((h) => [h.hall, h]));
 
 export interface Anchor {
   x: number;
   y: number;
   lat: number;
   lon: number;
-  kind: 'default' | 'calib';
+  kind: 'default' | 'calib' | 'osm';
   label: string;
   acc?: number;
   at?: string;
@@ -44,7 +60,7 @@ const div = (a: C, b: C): C => {
   return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d };
 };
 
-export type GeoQuality = 'approx' | 'partial' | 'calibrated';
+export type GeoQuality = 'approx' | 'partial' | 'calibrated' | 'osm';
 
 export interface Georef {
   quality: GeoQuality;
@@ -53,13 +69,24 @@ export interface Georef {
   toVenue: (lat: number, lon: number) => Pt;
   toLatLon: (p: Pt) => { lat: number; lon: number };
   anchors: Anchor[];
+  /** RMS residual of the anchors, metres. */
+  rmsM: number;
 }
+
+/** Anchors from real building centroids: plan centre of hall N ↔ OSM polygon centroid of hall N. */
+const OSM_ANCHORS: Anchor[] = HALL_GEO.flatMap((h) => {
+  const n = NODE_BY_ID.get(h.hall);
+  if (!n) return [];
+  return [{ x: n.x + BOX_W / 2, y: ROW_TOP[n.row] + ROW_H[n.row] / 2, lat: h.lat, lon: h.lng, kind: 'osm' as const, label: `OSM Hall ${h.hall}` }];
+});
 
 /** Weighted least-squares similarity transform (scale, rotation, shift): EN = a·z + b. */
 export function fitGeoref(calib: Anchor[]): Georef {
   const spread = calib.length >= 2 && Math.max(...calib.map((c) => Math.hypot(c.x - calib[0].x, c.y - calib[0].y))) >= 1.5;
-  const used = spread ? calib : [...DEFAULT_ANCHORS, ...calib];
-  const w = (a: Anchor) => (a.kind === 'calib' ? 10 : 1);
+  const osm = OSM_ANCHORS.length >= 3;
+  // Real building polygons when available; otherwise metro stations (approximate) until calibrated on site.
+  const used = osm ? [...OSM_ANCHORS, ...calib] : spread ? calib : [...DEFAULT_ANCHORS, ...calib];
+  const w = (a: Anchor) => (a.kind === 'calib' ? (osm ? 2 : 10) : 1);
   const W = used.reduce((s, a) => s + w(a), 0);
   let zc: C = { re: 0, im: 0 };
   let ec: C = { re: 0, im: 0 };
@@ -80,8 +107,14 @@ export function fitGeoref(calib: Anchor[]): Georef {
   // With a single anchor location (degenerate), keep the default scale/rotation.
   const a = den > 1e-9 ? { re: num.re / den, im: num.im / den } : { re: 100, im: 0 };
   const b = sub(ec, mul(a, zc));
+  const res = used.map((u) => {
+    const e = add(mul(a, toZ(u)), b);
+    const t = toEN(u.lat, u.lon);
+    return Math.hypot(e.re - t.re, e.im - t.im);
+  });
   return {
-    quality: spread ? 'calibrated' : calib.length ? 'partial' : 'approx',
+    rmsM: Math.sqrt(res.reduce((x, r) => x + r * r, 0) / Math.max(1, res.length)),
+    quality: osm ? 'osm' : spread ? 'calibrated' : calib.length ? 'partial' : 'approx',
     mPerUnit: Math.hypot(a.re, a.im),
     toVenue: (lat, lon) => {
       const z = div(sub(toEN(lat, lon), b), a);

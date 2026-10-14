@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { POINTS } from './data';
-import { WALK_M_PER_MIN, fitGeoref, hallCenter } from './geo';
+import { HALL_GEO, WALK_M_PER_MIN, fitGeoref, hallCenter } from './geo';
 import { lockFromPlan, lockIsStale, planCost, planFromLock, planRoute, type Plan, type Start } from './route';
 import { computeStats } from './stats';
 import { useAppStore } from './store';
@@ -32,6 +32,8 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'stats', label: 'Статистика', icon: '▦' },
 ];
 
+const GeoMapView = lazy(() => import('./components/GeoMapView').then((m) => ({ default: m.GeoMapView })));
+
 /** GPS fixes worse than this are shown but not used as the route start. */
 const MAX_START_ACC_M = 150;
 
@@ -45,6 +47,24 @@ export default function App() {
   const [toast, setToast] = useState<Toast | null>(null);
   const [focusHall, setFocusHall] = useState<string | null>(null);
   const [sheetHall, setSheetHall] = useState<string | null>(null);
+  const [mapKind, setMapKind] = useState<'geo' | 'schema'>(() => {
+    try {
+      const saved = localStorage.getItem('altiora-map-kind');
+      if (saved === 'geo' || saved === 'schema') return saved;
+    } catch {
+      /* ignore */
+    }
+    // Real map by default once OSM hall polygons are bundled; until then the schema keeps markers and route.
+    return HALL_GEO.length ? 'geo' : 'schema';
+  });
+  const chooseMap = (k: 'geo' | 'schema') => {
+    setMapKind(k);
+    try {
+      localStorage.setItem('altiora-map-kind', k);
+    } catch {
+      /* ignore */
+    }
+  };
 
   const { lock } = store;
   const [suggest, setSuggest] = useState<{ savingM: number } | null>(null);
@@ -57,7 +77,9 @@ export default function App() {
   const geo = useMemo(() => fitGeoref(store.anchors), [store.anchors]);
   const gpsVenue: Pt | null = gps.fix ? geo.toVenue(gps.fix.lat, gps.fix.lon) : null;
   const gpsInside = !!gpsVenue && inVenue(gpsVenue);
-  const gpsStart: Pt | null = gpsInside && gps.fix!.acc <= MAX_START_ACC_M ? gpsVenue : null;
+  // Route start = real position: inside the complex, or nearby outside it (the first hall is chosen from there).
+  const gpsNear = !!gpsVenue && Math.hypot(gpsVenue.x - 8, gpsVenue.y - 4) * geo.mPerUnit < 5000;
+  const gpsStart: Pt | null = gpsNear && gps.fix!.acc <= MAX_START_ACC_M ? gpsVenue : null;
   const startNow: Start = gpsStart ?? currentHall;
 
   const latest = useRef({ states, routeMode, startNow });
@@ -129,7 +151,8 @@ export default function App() {
         sameHall: legSameHall,
         known: legSameHall || legPath.length > 0,
         fromGps: !!gpsStart,
-        approx: geo.quality !== 'calibrated',
+        approx: !gpsInside || (geo.quality !== 'calibrated' && geo.quality !== 'osm'),
+        via: gpsStart && !gpsInside ? 'straight' : 'walkways',
       }
     : null;
 
@@ -141,7 +164,7 @@ export default function App() {
     fix: gps.fix,
     venue: gpsVenue,
     inside: gpsInside,
-    usable: !!gpsStart,
+    usable: !!gpsStart && gpsInside,
     quality: geo.quality,
     mPerUnit: geo.mPerUnit,
     hallGuess: gpsStart ? nodeAt(gpsStart)?.id ?? null : null,
@@ -290,6 +313,38 @@ export default function App() {
           />
         )}
         {tab === 'map' && (
+          <div className="segmented map-kind" role="tablist" aria-label="Вид карты">
+            <button role="tab" aria-selected={mapKind === 'geo'} className={mapKind === 'geo' ? 'on' : ''} onClick={() => chooseMap('geo')}>
+              🗺 Карта
+            </button>
+            <button role="tab" aria-selected={mapKind === 'schema'} className={mapKind === 'schema' ? 'on' : ''} onClick={() => chooseMap('schema')}>
+              ▦ Схема залов
+            </button>
+          </div>
+        )}
+        {tab === 'map' && mapKind === 'geo' && (
+          <Suspense fallback={<div className="gps-panel">Загружаю карту…</div>}>
+          <GeoMapView
+            plan={plan}
+            states={states}
+            current={currentHall}
+            georef={geo}
+            gps={gpsView}
+            legPath={legPath}
+            leg={legInfo}
+            suggest={suggest}
+            onReplan={() => replan()}
+            onDismissSuggest={() => setSuggest(null)}
+            onVisited={(id) => finish(id, 'visited')}
+            onOpen={setOpenId}
+            onHall={setSheetHall}
+            onCalibrate={calibrate}
+            onEnableGps={() => store.setGpsOn(true)}
+            onPickHall={() => setHallOpen(true)}
+          />
+          </Suspense>
+        )}
+        {tab === 'map' && mapKind === 'schema' && (
           <MapView
             plan={plan}
             states={states}
