@@ -57,8 +57,19 @@ function locate(hall: string, pois: PoiCache | null, marks: HallGeo[] = []): { p
   return null;
 }
 
-function download(name: string, content: string) {
-  const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }));
+/** iPhone: system share sheet (save to Files / send); elsewhere a normal download. */
+async function exportFile(name: string, content: string) {
+  const file = new File([content], name, { type: 'application/json' });
+  const nav = navigator as Navigator & { canShare?: (d: { files: File[] }) => boolean };
+  if (nav.canShare?.({ files: [file] })) {
+    try {
+      await nav.share({ files: [file], title: name });
+      return;
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return;
+    }
+  }
+  const url = URL.createObjectURL(file);
   const a = document.createElement('a');
   a.href = url;
   a.download = name;
@@ -391,7 +402,17 @@ export function AmapView(props: Props) {
             Повторить поиск
           </button>
           {(pois || marks.length > 0) && (
-            <button className="btn-link" onClick={() => download('hallGeo.json', JSON.stringify([...toHallGeo(pois).filter((h) => !marked.has(h.hall)), ...marks], null, 1))}>
+            <button
+              className="btn-link"
+              onClick={() => {
+                const rows = [...toHallGeo(pois).filter((h) => !marked.has(h.hall)), ...marks];
+                if (!rows.length) {
+                  alert('Пока нечего выгружать: ни один Hall не отмечен на месте и AMap не вернул координат. Встаньте в павильон и нажмите «📍 Отметить».');
+                  return;
+                }
+                void exportFile('hallGeo.json', JSON.stringify(rows, null, 1));
+              }}
+            >
               Скачать hallGeo.json
             </button>
           )}
