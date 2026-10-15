@@ -7,7 +7,8 @@ import type { GpsFix, GpsStatus } from '../useGps';
 import type { Point, PointState } from '../types';
 import { STREETS, hallLabel, isOutdoor, type From } from '../labels';
 import { formatMeters } from './LegInfo';
-import { MapShell } from './MapShell';
+import { MapShell, guideFor } from './MapShell';
+import type { NavState } from '../nav';
 import type { ReactNode } from 'react';
 import {
   AREAS,
@@ -28,6 +29,7 @@ import {
   Y_SOUTH,
   Y_ROAD_BOTTOM,
   Y_ROAD_TOP,
+  ENTRANCES,
   nodeOfHall,
   walkPath,
   type Pt,
@@ -78,6 +80,10 @@ interface Props {
   onPickHall: () => void;
   from: From;
   switcher: ReactNode;
+  nav: NavState;
+  onNav: (n: NavState) => void;
+  navPath: Pt[];
+  navOrigin: 'gps' | 'hall' | 'entrance' | null;
 }
 
 const QUALITY_LABEL: Record<GeoQuality, string> = {
@@ -139,7 +145,7 @@ function legPoints(a: string, b: string): string | null {
   return all.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 }
 
-export function MapView({ plan, states, current, focusHall, onHall, gps, legPath, leg, suggest, onReplan, onDismissSuggest, onVisited, onOpen, onCalibrate, onEnableGps, onPickHall, from, switcher }: Props) {
+export function MapView({ plan, states, current, focusHall, onHall, gps, legPath, leg, suggest, onReplan, onDismissSuggest, onVisited, onOpen, onCalibrate, onEnableGps, onPickHall, from, switcher, nav, onNav, navPath, navOrigin }: Props) {
   const scroller = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(false);
   const [boxW, setBoxW] = useState(360);
@@ -207,6 +213,36 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
     if (follow && userPx && !fit) centerOn(userPx.x, userPx.y);
   }, [follow, userPx?.x, userPx?.y, fit]);
 
+  // Direction of movement on the schema: from successive GPS positions (≥ ~0.12 units apart).
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+  const [heading, setHeading] = useState<number | null>(null);
+  useEffect(() => {
+    if (!userPx) return;
+    const l = lastPos.current;
+    if (!l) {
+      lastPos.current = userPx;
+      return;
+    }
+    if (Math.hypot(userPx.x - l.x, userPx.y - l.y) < 0.12 * U) return;
+    setHeading((Math.atan2(userPx.y - l.y, userPx.x - l.x) * 180) / Math.PI);
+    lastPos.current = userPx;
+  }, [userPx?.x, userPx?.y]);
+
+  // Navigation mode: zoom in, follow the user (or show the next waypoint when there is no GPS).
+  const step1 = plan.steps[0];
+  const g = nav.on && step1 ? guideFor(step1, from, nav, navPath, gps.mPerUnit) : null;
+  const wp = g?.waypoint ? { x: px(g.waypoint.x), y: py(g.waypoint.y) } : null;
+  useEffect(() => {
+    if (!nav.on) return;
+    setFit(false);
+    if (userPx) setFollow(true);
+  }, [nav.on]);
+  useEffect(() => {
+    if (!nav.on || (follow && userPx)) return;
+    const c = wp ?? (firstChipNow ? { x: firstChipNow.x + firstChipNow.w / 2, y: firstChipNow.y + firstChipNow.h / 2 } : null);
+    if (c) centerOn(c.x, c.y);
+  }, [nav.on, wp?.x, wp?.y, g?.idx]);
+
   const locate = () => {
     if (gps.status === 'off' || gps.status === 'denied' || gps.status === 'error') onEnableGps();
     if (userPx) {
@@ -238,7 +274,14 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
       activeLeg = legPoints(current, firstStop.hall);
     }
   }
-  const step1 = plan.steps[0];
+  // Navigation mode: the followed path (GPS / hall / entrance → target door → stand chip), with arrows.
+  const targetNode = firstStop ? nodeOfHall(firstStop.hall) : null;
+  const navPts =
+    nav.on && firstChip && navPath.length > 1 ? [...navPath.map((p) => ({ x: px(p.x), y: py(p.y) })), { x: firstChip.x + firstChip.w / 2, y: firstChip.y + firstChip.h / 2 }] : [];
+  const navLine = (pts: { x: number; y: number }[]) => pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const navHead = navOrigin === 'gps' ? navPts.slice(0, 2) : [];
+  const navBody = navOrigin === 'gps' ? navPts.slice(1) : navPts;
+  const navArrows = arrowsAlong(navBody, 70);
   const badgeColor = (hall: string) => {
     const st = plan.stops.find((s) => s.hall === hall);
     return st ? groupColor(st.points[0].mapGroup) : undefined;
@@ -279,8 +322,11 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
       infoLabel={gpsChipLabel(gps)}
       info={<GpsPanel gps={gps} current={current} onCalibrate={onCalibrate} onEnableGps={onEnableGps} onPickHall={onPickHall} />}
       legend={<MapLegend states={states} />}
-      follow={follow}
-      onToggleFollow={toggleFollow}
+      nav={nav}
+      onNav={onNav}
+      navPath={navPath}
+      navOrigin={navOrigin}
+      mPerUnit={gps.mPerUnit}
       onOpen={onOpen}
       onVisited={onVisited}
     >
@@ -364,10 +410,38 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
           })}
 
           {legs.map((pts, i) => (
-            <polyline key={i} points={pts} className="route-line" markerEnd="url(#arrow)" />
+            <polyline key={i} points={pts} className={`route-line ${nav.on ? 'route-dim' : ''}`} markerEnd="url(#arrow)" />
           ))}
-          {approxLeg && <polyline points={approxLeg} className="active-approx" />}
-          {activeLeg && <polyline points={activeLeg} className="active-leg" markerEnd="url(#arrow-active)" />}
+          {!nav.on && approxLeg && <polyline points={approxLeg} className="active-approx" />}
+          {!nav.on && activeLeg && <polyline points={activeLeg} className="active-leg" markerEnd="url(#arrow-active)" />}
+          {nav.on && targetNode && NODE_BY_ID.has(targetNode) && (() => {
+            const b = nodeBox(targetNode);
+            return <rect x={b.x - 5} y={b.y - 5} width={b.w + 10} height={b.h + 10} rx={12} className="bld-target" />;
+          })()}
+          {navPts.length > 1 && (
+            <g className="nav-route" aria-label="Маршрут">
+              {navHead.length > 1 && <polyline points={navLine(navHead)} className="nav-approx" />}
+              <polyline points={navLine(navBody)} className="nav-casing" />
+              <polyline points={navLine(navBody)} className="nav-line" />
+              {navArrows.map((a, i) => (
+                <path key={i} d="M-6,-5 L5,0 L-6,5 z" transform={`translate(${a.x.toFixed(1)},${a.y.toFixed(1)}) rotate(${a.a.toFixed(0)})`} className="nav-arrow" />
+              ))}
+              {navOrigin === 'entrance' && (
+                <g className="nav-start">
+                  <circle cx={navPts[0].x} cy={navPts[0].y} r={8} />
+                  <text x={navPts[0].x} y={navPts[0].y - 13} textAnchor="middle">
+                    старт
+                  </text>
+                </g>
+              )}
+            </g>
+          )}
+          {wp && (
+            <g className="nav-wp" aria-label="Следующая точка маршрута">
+              <circle cx={wp.x} cy={wp.y} r={16} className="nav-wp-pulse" />
+              <circle cx={wp.x} cy={wp.y} r={7} className="nav-wp-dot" />
+            </g>
+          )}
 
           <rect x={px(X_MIDDLE) - 46} y={py(Y_PROMENADE) - 11} width={92} height={22} rx={6} className="platform" />
           <text x={px(X_MIDDLE)} y={py(Y_PROMENADE) + 4} textAnchor="middle" className="platform-label">
@@ -395,7 +469,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
             return (
               <g
                 key={h}
-                className={`chip ${isCur ? 'chip-current' : ''} ${isNext ? 'chip-next' : ''} ${isFocus ? 'chip-focus' : ''} ${pending.length ? '' : 'chip-done'} ${extraOnly ? 'chip-extra' : ''}`}
+                className={`chip ${nav.on && nodeOfHall(h) !== targetNode && !isCur ? 'chip-dim' : ''} ${isCur ? 'chip-current' : ''} ${isNext ? 'chip-next' : ''} ${isFocus ? 'chip-focus' : ''} ${pending.length ? '' : 'chip-done'} ${extraOnly ? 'chip-extra' : ''}`}
                 onClick={() => onHall(h)}
                 role="button"
                 aria-label={`${hallLabel(h)}: ${routed} по маршруту, ${pending.length} из ${all.length} осталось`}
@@ -433,6 +507,9 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
           {userPx && gps.fix && (
             <g className="user" aria-label="Вы здесь">
               <circle cx={userPx.x} cy={userPx.y} r={Math.min(400, (gps.fix.acc / gps.mPerUnit) * U)} className="user-acc" />
+              {heading !== null && (
+                <path d="M0,-30 L13,-6 L-13,-6 z" transform={`translate(${userPx.x},${userPx.y}) rotate(${heading + 90})`} className="user-heading" />
+              )}
               <circle cx={userPx.x} cy={userPx.y} r={9} className="user-dot" />
               <text x={userPx.x} y={userPx.y - 15} textAnchor="middle" className="user-label">
                 Вы здесь
@@ -444,6 +521,22 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
 
     </MapShell>
   );
+}
+
+/** Direction arrows every `spacing` px along a polyline. */
+function arrowsAlong(pts: { x: number; y: number }[], spacing: number) {
+  const out: { x: number; y: number; a: number }[] = [];
+  let carry = spacing / 2;
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1];
+    const b = pts[i];
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    const ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+    let t = carry;
+    for (; t < len; t += spacing) out.push({ x: a.x + ((b.x - a.x) * t) / len, y: a.y + ((b.y - a.y) * t) / len, a: ang });
+    carry = t - len;
+  }
+  return out;
 }
 
 /** Legend ("Обозначения"): map symbols, product groups, data notes. */
@@ -579,16 +672,6 @@ export function GpsPanel({ gps, current, onCalibrate, onEnableGps, onPickHall }:
     </div>
   );
 }
-
-/** Entrance tags placed on the side of each zone where entrances exist (positions along the side are schematic). */
-const ENTRANCES: { x: number; y: number; label: string }[] = [
-  { x: 1.9, y: 5.52, label: '≈ вход D' },
-  { x: 8.6, y: 5.52, label: '≈ вход A' },
-  { x: 14.95, y: 5.52, label: '≈ вход B' },
-  { x: 8.2, y: -0.25, label: '≈ вход A' },
-  { x: 14.6, y: -0.25, label: '≈ вход B' },
-  { x: 12.9, y: 6.3, label: '≈ вход C' },
-];
 
 function StreetLabel({ x, y, s, anchor = 'start', small, note }: { x: number; y: number; s: { ru: string; en: string; zh: string }; anchor?: 'start' | 'middle' | 'end'; small?: boolean; note?: string }) {
   return (

@@ -162,10 +162,16 @@ export interface Landmarks {
 }
 const LANDMARKS = landmarksData as Record<string, Landmarks>;
 
+export type NavKind = 'approach' | 'complex' | 'exit' | 'zone' | 'platform' | 'toPavilion' | 'enter' | 'floorUp' | 'floorDown' | 'floorStay' | 'sector' | 'stand' | 'extra';
+
 export interface NavStep {
   text: string;
   sub?: string;
   landmark?: string;
+  /** What kind of manoeuvre this is (icon + where on the path it happens). */
+  kind?: NavKind;
+  /** Target zone of a 'zone' step. */
+  zone?: ZoneId;
 }
 
 export interface NavPlan {
@@ -213,34 +219,34 @@ export function navPlan(from: From, hall: string, booths: string[]): NavPlan {
     start = `Вы в павильоне ${building}`;
   } else if (inside) {
     start = fromB ? `Вы в ${isOutdoor(from.hall!) ? 'открытой площадке' : 'павильоне'} ${fromB} · ${zoneLabel(fromZone)}` : `Вы в ${zoneLabel(fromZone).replace('Зона', 'Зоне')}`;
-    if (fromB) steps.push({ text: `Выйдите из ${isOutdoor(from.hall!) ? 'открытой площадки' : 'павильона'} ${fromB}` });
+    if (fromB) steps.push({ text: `Выйдите из ${isOutdoor(from.hall!) ? 'открытой площадки' : 'павильона'} ${fromB}`, kind: 'exit' });
     if (fromZone && fromZone !== z) {
-      for (const t of zoneTransferSteps(fromZone, z)) steps.push({ text: t });
+      steps.push(...zoneTransferSteps(fromZone, z));
       route.push(zoneLabel(z));
     }
-    steps.push({ text: `Следуйте к ${placeDat}`, landmark: lm.route });
+    steps.push({ text: `Следуйте к ${placeDat}`, landmark: lm.route, kind: 'toPavilion' });
   } else {
     entrance = entranceFor(z, from.approach ?? 'south');
     route.push(entrance.label);
-    steps.push({ text: `Подойдите ко входу в Зону ${z}`, sub: `Со стороны ${entrance.street}`, landmark: lm.entrance });
-    steps.push({ text: 'Войдите на территорию комплекса', sub: `Через вход в Зону ${z}` });
-    steps.push({ text: `Двигайтесь в Зону ${z}` });
-    steps.push({ text: `Следуйте к ${placeDat}`, landmark: lm.route });
+    steps.push({ text: `Подойдите ко входу в Зону ${z}`, sub: `Со стороны ${entrance.street}`, landmark: lm.entrance, kind: 'approach' });
+    steps.push({ text: 'Войдите на территорию комплекса', sub: `Через вход в Зону ${z}`, kind: 'complex' });
+    steps.push({ text: `Двигайтесь в Зону ${z}`, kind: 'zone', zone: z });
+    steps.push({ text: `Следуйте к ${placeDat}`, landmark: lm.route, kind: 'toPavilion' });
   }
   route.push(place);
-  if (!samePlace) steps.push({ text: `Войдите в ${outdoor ? 'открытую площадку' : 'павильон'} ${building}`, landmark: lm.pavilion });
+  if (!samePlace) steps.push({ text: `Войдите в ${outdoor ? 'открытую площадку' : 'павильон'} ${building}`, landmark: lm.pavilion, kind: 'enter' });
 
   if (!outdoor && floor) {
     route.push(floorLabel(floor));
     const cur = samePlace ? fromFloor : 1;
-    if (cur === null || cur === floor) steps.push({ text: `Оставайтесь на ${floor} этаже` });
-    else steps.push({ text: `${floor > cur ? 'Поднимитесь' : 'Спуститесь'} на ${floorLabel(floor)}` });
+    if (cur === null || cur === floor) steps.push({ text: `Оставайтесь на ${floor} этаже`, kind: 'floorStay' });
+    else steps.push({ text: `${floor > cur ? 'Поднимитесь' : 'Спуститесь'} на ${floorLabel(floor)}`, kind: floor > cur ? 'floorUp' : 'floorDown' });
   }
   const sector = booths.length ? sectorOf(booths[0]) : null;
-  if (sector) steps.push({ text: `Найдите сектор ${sector}`, sub: 'Буква в номере стенда', landmark: lm.indoor });
+  if (sector) steps.push({ text: `Найдите сектор ${sector}`, sub: 'Буква в номере стенда', landmark: lm.indoor, kind: 'sector' });
   if (stands.length) {
-    steps.push({ text: `Следуйте к ${/[–]/.test(stands[0]) ? 'стендам' : 'стенду'} ${stands[0]}` });
-    for (const extra of stands.slice(1)) steps.push({ text: `Дополнительный стенд — ${extra}` });
+    steps.push({ text: `Следуйте к ${/[–]/.test(stands[0]) ? 'стендам' : 'стенду'} ${stands[0]}`, kind: 'stand' });
+    for (const extra of stands.slice(1)) steps.push({ text: `Дополнительный стенд — ${extra}`, kind: 'extra' });
     route.push(stands.join(' / '));
   }
 
@@ -256,12 +262,17 @@ export function navPlan(from: From, hall: string, booths: string[]): NavPlan {
   };
 }
 
-function zoneTransferSteps(from: ZoneId, to: ZoneId): string[] {
+function zoneTransferSteps(from: ZoneId, to: ZoneId): NavStep[] {
   const north = (q: ZoneId) => q === 'A' || q === 'B';
-  if ((from === 'D' && to === 'A') || (from === 'A' && to === 'D')) return [`Перейдите в Зону ${to} по переходу D ↔ A`];
-  if (north(from) && north(to)) return [`Идите по Pearl Promenade в Зону ${to}`];
-  if (from === 'D' && to === 'B') return ['Пройдите через Зону A', 'По Pearl Promenade идите в Зону B'];
-  if (from === 'B' && to === 'D') return ['По Pearl Promenade пройдите через Зону A', 'Перейдите в Зону D по переходу D ↔ A'];
-  if (to === 'C') return [...(from === 'D' ? ['Перейдите в Зону A по переходу D ↔ A'] : []), 'Идите к Middle Platform (между Зонами A и B)', 'Перейдите ул. Синган-Дунлу по переходу в Зону C'];
-  return ['Идите по переходу через ул. Синган-Дунлу к Middle Platform', ...(to === 'D' ? ['Через Зону A идите к переходу D ↔ A', 'Перейдите в Зону D'] : [`Идите по Pearl Promenade в Зону ${to}`])];
+  const zs = (text: string, zone: ZoneId): NavStep => ({ text, kind: 'zone', zone });
+  const platform: NavStep = { text: 'Идите к Middle Platform (между Зонами A и B)', kind: 'platform' };
+  if ((from === 'D' && to === 'A') || (from === 'A' && to === 'D')) return [zs(`Перейдите в Зону ${to} по переходу D ↔ A`, to)];
+  if (north(from) && north(to)) return [zs(`Идите по Pearl Promenade в Зону ${to}`, to)];
+  if (from === 'D' && to === 'B') return [zs('Пройдите через Зону A', 'A'), zs('По Pearl Promenade идите в Зону B', 'B')];
+  if (from === 'B' && to === 'D') return [zs('По Pearl Promenade пройдите через Зону A', 'A'), zs('Перейдите в Зону D по переходу D ↔ A', 'D')];
+  if (to === 'C') return [...(from === 'D' ? [zs('Перейдите в Зону A по переходу D ↔ A', 'A')] : []), platform, zs('Перейдите ул. Синган-Дунлу по переходу в Зону C', 'C')];
+  return [
+    { text: 'Идите по переходу через ул. Синган-Дунлу к Middle Platform', kind: 'platform' },
+    ...(to === 'D' ? [zs('Через Зону A идите к переходу D ↔ A', 'A'), zs('Перейдите в Зону D', 'D')] : [zs(`Идите по Pearl Promenade в Зону ${to}`, to)]),
+  ];
 }

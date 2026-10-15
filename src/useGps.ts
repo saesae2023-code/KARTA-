@@ -5,6 +5,8 @@ export interface GpsFix {
   lon: number;
   acc: number;
   ts: number;
+  /** Compass heading of movement (degrees from north) when the device reports it while moving. */
+  heading?: number;
 }
 
 export type GpsStatus = 'off' | 'waiting' | 'ok' | 'denied' | 'unavailable' | 'error';
@@ -28,7 +30,9 @@ export function useGps(enabled: boolean): { status: GpsStatus; fix: GpsFix | nul
     setStatus((s) => (s === 'ok' ? s : 'waiting'));
     const id = navigator.geolocation.watchPosition(
       (pos) => {
-        setFix({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy, ts: pos.timestamp });
+        const h = pos.coords.heading;
+        const moving = (pos.coords.speed ?? 0) > 0.5;
+        setFix({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy, ts: pos.timestamp, heading: moving && h !== null && !Number.isNaN(h) ? h : undefined });
         setStatus('ok');
         setMessage('');
       },

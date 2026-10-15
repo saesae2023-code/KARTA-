@@ -11,8 +11,9 @@ import { computeStats } from './stats';
 import { useAppStore } from './store';
 import type { PointState } from './types';
 import { useGps } from './useGps';
-import { boothLabel, hallLabel, type From, type ZoneId } from './labels';
-import { BOX_W, NODES, ROW_H, ROW_TOP, Y_PROMENADE, inVenue, nodeAt, nodeOfHall, pathLength, walkPath, walkPathFromPoint, type Pt } from './venue';
+import { boothLabel, hallLabel, zoneOf, type From, type ZoneId } from './labels';
+import type { NavState } from './nav';
+import { BOX_W, NODES, ROW_H, ROW_TOP, Y_PROMENADE, entrancePoint, inVenue, nodeAt, nodeOfHall, pathLength, walkPath, walkPathFromPoint, type Pt } from './venue';
 import { HallSelector } from './components/HallSelector';
 import { HallSheet } from './components/HallSheet';
 import { MapView, type GpsView, type LegInfo } from './components/MapView';
@@ -50,6 +51,17 @@ function nearestZone(p: Pt): ZoneId | null {
   return best?.z ?? null;
 }
 
+const NAV_KEY = 'altiora-nav';
+function readNav(): NavState {
+  try {
+    const v = JSON.parse(localStorage.getItem(NAV_KEY) ?? 'null');
+    if (v && typeof v.on === 'boolean' && typeof v.idx === 'number') return { on: v.on, idx: v.idx, key: String(v.key ?? '') };
+  } catch {
+    /* ignore */
+  }
+  return { on: false, idx: 0, key: '' };
+}
+
 const AmapView = lazy(() => import('./components/AmapView').then((m) => ({ default: m.AmapView })));
 
 /** GPS fixes worse than this are shown but not used as the route start. */
@@ -64,6 +76,16 @@ export default function App() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [toast, setToast] = useState<Toast | null>(null);
   const [focusHall, setFocusHall] = useState<string | null>(null);
+  // Navigation mode ("Начать маршрут"): survives tab and Карта/Схема switches and reloads.
+  const [nav, setNavState] = useState<NavState>(readNav);
+  const setNav = (n: NavState) => {
+    setNavState(n);
+    try {
+      localStorage.setItem(NAV_KEY, JSON.stringify(n));
+    } catch {
+      /* not remembered */
+    }
+  };
   const [sheetHall, setSheetHall] = useState<string | null>(null);
   const [mapKind, setMapKind] = useState<'geo' | 'schema'>(() => {
     try {
@@ -245,6 +267,18 @@ export default function App() {
         ? { hall: gpsBuilding }
         : { hall: null, outside: !!gps.fix && !gpsInside, zone: gpsInside && gpsVenue ? nearestZone(gpsVenue) : null, approach };
 
+  // Path the navigator follows: GPS / current hall → point #1; with no position, from the zone entrance
+  // on the approach side (the same entrance the step list names).
+  const navOrigin: 'gps' | 'hall' | 'entrance' | null = legPath.length
+    ? gpsStart
+      ? 'gps'
+      : 'hall'
+    : first && !legSameHall && !currentHall && !gpsStart
+      ? 'entrance'
+      : null;
+  const navPath: Pt[] =
+    navOrigin === 'entrance' && first ? walkPathFromPoint(entrancePoint(zoneOf(first.hall) ?? 'A', from.approach ?? 'south'), first.hall) : legPath;
+
   /** "📍 Отметить: я в павильоне X" — the real GPS fix becomes this hall's coordinate (and refines the georeference). */
   const markHall = (hall: string) => {
     if (!hallCenter(hall) || !gps.fix) return;
@@ -324,6 +358,11 @@ export default function App() {
     window.scrollTo({ top: 0 });
   };
 
+  const startNav = (hall: string) => {
+    setNav({ on: true, idx: 0, key: '' });
+    showMap(hall);
+  };
+
   const toggle = (id: number, key: 'price' | 'followUp' | 'contact') => store.update(id, { [key]: !states[id][key] });
 
   const open = openId != null ? POINTS.find((p) => p.id === openId) : undefined;
@@ -371,6 +410,7 @@ export default function App() {
             mode={routeMode}
             onMode={store.setRouteMode}
             onShowMap={showMap}
+            onStart={startNav}
             states={states}
             current={currentHall}
             onPickHall={() => setHallOpen(true)}
@@ -420,6 +460,11 @@ export default function App() {
             onEnableGps={() => store.setGpsOn(true)}
             onPickHall={() => setHallOpen(true)}
             onSchema={() => chooseMap('schema')}
+            venueToWgs={geo.toLatLon}
+            nav={nav}
+            onNav={setNav}
+            navPath={navPath}
+            navOrigin={navOrigin}
           />
           </Suspense>
         )}
@@ -434,6 +479,10 @@ export default function App() {
             onHall={setSheetHall}
             gps={gpsView}
             legPath={legPath}
+            nav={nav}
+            onNav={setNav}
+            navPath={navPath}
+            navOrigin={navOrigin}
             leg={legInfo}
             suggest={suggest}
             onReplan={() => replan()}
@@ -502,7 +551,8 @@ export default function App() {
           onToggle={(k) => toggle(open.id, k)}
           onReset={() => store.update(open.id, { visit: 'pending' })}
           onNotes={(notes) => store.update(open.id, { notes })}
-          onShowMap={() => showMap(openStep?.hall ?? open.halls[0])}
+          onShowMap={() => (openStep && openStep === plan.steps[0] ? startNav(openStep.hall) : showMap(openStep?.hall ?? open.halls[0]))}
+          startLabel={openStep && openStep === plan.steps[0] ? undefined : '🗺 Показать на карте'}
           hall={openStep?.hall ?? open.halls[0]}
           booths={openStep?.booths ?? openBooths}
           from={from}

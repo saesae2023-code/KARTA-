@@ -138,11 +138,11 @@ export function StatusActions({ s, onVisited, onSkip, onToggle, onReset }: Actio
 }
 
 /** Numbered "Как пройти" list: one action per step, optional real landmark. */
-export function RouteSteps({ steps }: { steps: NavStep[] }) {
+export function RouteSteps({ steps, current, onPick }: { steps: NavStep[]; current?: number; onPick?: (i: number) => void }) {
   return (
     <ol className="pnav-steps" aria-label="Как пройти">
       {steps.map((st, i) => (
-        <li key={i}>
+        <li key={i} className={i === current ? 'cur' : current !== undefined && i < current ? 'done' : ''} onClick={onPick ? () => onPick(i) : undefined}>
           <span className="pnav-n">{i + 1}</span>
           <div>
             <div className="pnav-t">{st.text}</div>
@@ -201,7 +201,7 @@ export function PointContact({ p, notes }: { p: Point; notes?: string }) {
  * Point navigation block: company → pavilion · floor → stand → entrance + street → short route →
  * "Начать маршрут" → "Показать шаги" (collapsed by default) → contact / note.
  */
-export function PointNav({ p, hall, booths, from, notes, onStart, children }: { p: Point; hall: string; booths: string[]; from: From; notes?: string; onStart?: () => void; children?: React.ReactNode }) {
+export function PointNav({ p, hall, booths, from, notes, onStart, startLabel, children }: { p: Point; hall: string; booths: string[]; from: From; notes?: string; onStart?: () => void; startLabel?: string; children?: React.ReactNode }) {
   const plan = navPlan(from, hall, booths);
   const [open, setOpen] = useState(false);
   return (
@@ -227,7 +227,7 @@ export function PointNav({ p, hall, booths, from, notes, onStart, children }: { 
       {children}
       {onStart && (
         <button className="btn btn-start pnav-cta" onClick={onStart}>
-          ▶ Начать маршрут
+          {startLabel ?? '▶ Начать маршрут'}
         </button>
       )}
       <button className="pnav-toggle" onClick={() => setOpen(!open)} aria-expanded={open}>

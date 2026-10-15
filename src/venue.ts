@@ -366,3 +366,32 @@ export function pathLength(pts: Pt[]): number {
   for (let i = 1; i < pts.length; i++) s += dist2(pts[i - 1], pts[i]);
   return s;
 }
+
+/**
+ * Zone entrance tags (schematic): the side of each zone where entrances exist is confirmed,
+ * the exact place along that side and gate numbers are not.
+ */
+export const ENTRANCES: { x: number; y: number; label: string; area: AreaId; side: 'north' | 'south' }[] = [
+  { x: 1.9, y: 5.52, label: '≈ вход D', area: 'D', side: 'south' },
+  { x: 8.6, y: 5.52, label: '≈ вход A', area: 'A', side: 'south' },
+  { x: 14.95, y: 5.52, label: '≈ вход B', area: 'B', side: 'south' },
+  { x: 8.2, y: -0.25, label: '≈ вход A', area: 'A', side: 'north' },
+  { x: 14.6, y: -0.25, label: '≈ вход B', area: 'B', side: 'north' },
+  { x: 12.9, y: 6.3, label: '≈ вход C', area: 'C', side: 'south' },
+];
+
+/** Entrance tag of a zone on the side the user approaches from (south if that side has none). */
+export function entrancePoint(area: AreaId, side: 'north' | 'south'): Pt {
+  const e = ENTRANCES.find((x) => x.area === area && x.side === side) ?? ENTRANCES.find((x) => x.area === area)!;
+  return { x: e.x, y: e.y };
+}
+
+/** Whether a point lies inside a zone's footprint (bounding box of its buildings). */
+export function inArea(area: AreaId, p: Pt, margin = 0.15): boolean {
+  const ns = NODES.filter((n) => n.area === area);
+  const x0 = Math.min(...ns.map((n) => n.x)) - margin;
+  const x1 = Math.max(...ns.map((n) => n.x + BOX_W)) + margin;
+  const y0 = Math.min(...ns.map((n) => ROW_TOP[n.row])) - margin;
+  const y1 = Math.max(...ns.map((n) => ROW_TOP[n.row] + ROW_H[n.row])) + margin;
+  return p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1;
+}

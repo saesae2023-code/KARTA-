@@ -10,7 +10,9 @@ import { nodeOfHall } from '../venue';
 
 import { hallLabel, type From } from '../labels';
 import { GpsPanel, MapLegend, MapPills, gpsChipLabel, type GpsView, type LegInfo } from './MapView';
-import { MapShell } from './MapShell';
+import { MapShell, guideFor } from './MapShell';
+import type { NavState } from '../nav';
+import type { Pt } from '../venue';
 import type { ReactNode } from 'react';
 import type { PointState } from '../types';
 
@@ -35,6 +37,12 @@ interface Props {
   onSchema: () => void;
   switcher: ReactNode;
   states: Record<number, PointState>;
+  nav: NavState;
+  onNav: (n: NavState) => void;
+  navPath: Pt[];
+  navOrigin: 'gps' | 'hall' | 'entrance' | null;
+  /** Venue plan → WGS-84 (georeference), for the next waypoint when the georeference is calibrated. */
+  venueToWgs: (p: Pt) => { lat: number; lon: number };
 }
 
 type Status = 'nokey' | 'loading' | 'ready' | 'error';
@@ -88,12 +96,12 @@ async function exportFile(name: string, content: string) {
 }
 
 export function AmapView(props: Props) {
-  const { plan, current, gps, leg, suggest, pois, marks, from, onPois, onReplan, onDismissSuggest, onVisited, onOpen, onHall, onCalibrate, onEnableGps, onPickHall, onSchema, switcher, states } = props;
+  const { plan, current, gps, leg, suggest, pois, marks, from, onPois, onReplan, onDismissSuggest, onVisited, onOpen, onHall, onCalibrate, onEnableGps, onPickHall, onSchema, switcher, states, nav, onNav, navPath, navOrigin, venueToWgs } = props;
   const box = useRef<HTMLDivElement>(null);
   const AM = useRef<AMapNS>(null);
   const map = useRef<AMapNS>(null);
   const routeLayer = useRef<AMapNS[]>([]);
-  const userLayer = useRef<{ dot: AMapNS; acc: AMapNS } | null>(null);
+  const userLayer = useRef<{ dot: AMapNS; acc: AMapNS; el: HTMLDivElement } | null>(null);
   const [status, setStatus] = useState<Status>(AMAP_KEY ? 'loading' : 'nokey');
   const [diag, setDiag] = useState<AMapDiag | null>(null);
   const [poiError, setPoiError] = useState('');
@@ -112,6 +120,34 @@ export function AmapView(props: Props) {
   const user: LngLat | null = gps.fix ? wgs84ToGcj02([gps.fix.lon, gps.fix.lat]) : null;
   const firstStop = plan.stops[0];
   const target = firstStop ? locate(firstStop.hall, pois, marks) : null;
+
+  // Direction of movement: the device heading while moving, else the bearing between fixes ≥ 8 m apart.
+  const lastPos = useRef<LngLat | null>(null);
+  const [heading, setHeading] = useState<number | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    if (gps.fix?.heading !== undefined) {
+      setHeading(gps.fix.heading);
+      lastPos.current = user;
+      return;
+    }
+    const l = lastPos.current;
+    if (!l) {
+      lastPos.current = user;
+      return;
+    }
+    if (metersBetween(l, user) < 8) return;
+    const y = Math.sin(((user[0] - l[0]) * Math.PI) / 180) * Math.cos((user[1] * Math.PI) / 180);
+    const x = Math.cos((l[1] * Math.PI) / 180) * Math.sin((user[1] * Math.PI) / 180) - Math.sin((l[1] * Math.PI) / 180) * Math.cos((user[1] * Math.PI) / 180) * Math.cos(((user[0] - l[0]) * Math.PI) / 180);
+    setHeading(((Math.atan2(y, x) * 180) / Math.PI + 360) % 360);
+    lastPos.current = user;
+  }, [user?.[0], user?.[1], gps.fix?.heading]);
+
+  // Navigation mode: next waypoint (only with a calibrated / real georeference — otherwise it could be ±100 m off).
+  const step1 = plan.steps[0];
+  const g = nav.on && step1 ? guideFor(step1, from, nav, navPath, gps.mPerUnit) : null;
+  const wpGeo = g?.waypoint && (gps.quality === 'calibrated' || gps.quality === 'real') ? venueToWgs(g.waypoint) : null;
+  const wp: LngLat | null = wpGeo ? wgs84ToGcj02([wpGeo.lon, wpGeo.lat]) : null;
 
   const runSearch = (AMap: AMapNS) => {
     setSearching(true);
@@ -225,7 +261,7 @@ export function AmapView(props: Props) {
         new AMap.Polyline({
           path: ordered.map((d) => d.loc!.pos),
           strokeColor: '#c8922e',
-          strokeOpacity: 0.75,
+          strokeOpacity: nav.on ? 0.25 : 0.75,
           strokeWeight: 3,
           strokeStyle: 'dashed',
           strokeDasharray: [8, 6],
@@ -234,7 +270,21 @@ export function AmapView(props: Props) {
       );
     if (user && target && !(target.level === 'hall' && metersBetween(user, target.pos) < 40)) {
       if (walk && !walk.failed && walk.path?.length)
-        layer.push(new AMap.Polyline({ path: [user, ...walk.path, target.pos], strokeColor: '#2563eb', strokeWeight: 8, strokeOpacity: 0.95, lineJoin: 'round', lineCap: 'round', zIndex: 90, showDir: true }));
+        layer.push(
+          new AMap.Polyline({
+            path: [user, ...walk.path, target.pos],
+            strokeColor: '#2563eb',
+            strokeWeight: nav.on ? 10 : 8,
+            strokeOpacity: 0.95,
+            isOutline: nav.on,
+            outlineColor: '#ffffff',
+            borderWeight: 2,
+            lineJoin: 'round',
+            lineCap: 'round',
+            zIndex: 90,
+            showDir: true,
+          }),
+        );
       else if (walk?.failed)
         layer.push(new AMap.Polyline({ path: [user, target.pos], strokeColor: '#2563eb', strokeWeight: 3, strokeStyle: 'dashed', strokeDasharray: [2, 8], zIndex: 90 }));
     }
@@ -245,7 +295,7 @@ export function AmapView(props: Props) {
       const loc = locate(b + '.1', pois, marks);
       if (!loc || loc.level !== 'hall') continue;
       const el = document.createElement('button');
-      el.className = 'geo-marker idle';
+      el.className = `geo-marker idle${nav.on ? ' dim' : ''}`;
       el.innerHTML = `<b>${b}</b>`;
       el.title = `Павильон ${b} · ${loc.source}`;
       el.onclick = () => onHall(b + '.1');
@@ -254,16 +304,22 @@ export function AmapView(props: Props) {
     for (const d of markerData) {
       if (!d.loc) continue;
       const el = document.createElement('button');
-      el.className = `geo-marker${d.nums[0] === 1 ? ' first' : ''}${d.loc.level === 'area' ? ' approx' : ''}`;
+      el.className = `geo-marker${d.nums[0] === 1 ? ' first' : ''}${nav.on && d.nums[0] === 1 ? ' target' : ''}${nav.on && d.nums[0] !== 1 ? ' dim' : ''}${d.loc.level === 'area' ? ' approx' : ''}`;
       el.style.background = d.color;
       el.innerHTML = `<b>${d.nums[0]}</b>${d.nums.length > 1 ? `<i>+${d.nums.length - 1}</i>` : ''}<span>${d.loc.level === 'area' ? `Зона ${HALL_AREA[nodeOfHall(d.halls[0])]} · ${d.halls.length} пав.` : `П.${nodeOfHall(d.halls[0])}`}</span>`;
       el.title = `Шаг ${d.nums.join(', ')} · ${d.halls.map(hallLabel).join(', ')} · ${d.loc.source}`;
       el.onclick = () => onHall(d.halls[0]);
       layer.push(new AMap.Marker({ position: d.loc.pos, content: el, anchor: 'center', zIndex: 120 - Math.min(d.nums[0], 60) }));
     }
+    if (wp) {
+      const el = document.createElement('div');
+      el.className = 'amap-wp';
+      el.title = 'Следующая точка маршрута';
+      layer.push(new AMap.Marker({ position: wp, content: el, anchor: 'center', zIndex: 150 }));
+    }
     m.add(layer);
     routeLayer.current = layer;
-  }, [status, markerData, walk, user?.[0], user?.[1], target?.pos[0]]);
+  }, [status, markerData, walk, user?.[0], user?.[1], target?.pos[0], nav.on, wp?.[0], wp?.[1]]);
 
   // ---- user position (blue dot + accuracy), live ----
   useEffect(() => {
@@ -273,18 +329,33 @@ export function AmapView(props: Props) {
     if (!userLayer.current) {
       const el = document.createElement('div');
       el.className = 'amap-user';
-      el.innerHTML = '<span>Вы здесь</span>';
+      el.innerHTML = '<i class="amap-head"></i><span>Вы здесь</span>';
       const dot = new AMap.Marker({ position: user, content: el, anchor: 'center', zIndex: 200 });
       const acc = new AMap.Circle({ center: user, radius: gps.fix.acc, strokeColor: '#2563eb', strokeWeight: 1, strokeOpacity: 0.5, fillColor: '#2563eb', fillOpacity: 0.14, zIndex: 60 });
       m.add([acc, dot]);
-      userLayer.current = { dot, acc };
+      userLayer.current = { dot, acc, el };
     } else {
       userLayer.current.dot.setPosition(user);
       userLayer.current.acc.setCenter(user);
       userLayer.current.acc.setRadius(gps.fix.acc);
     }
+    const head = userLayer.current.el.querySelector<HTMLElement>('.amap-head');
+    if (head) {
+      head.style.display = heading === null ? 'none' : 'block';
+      if (heading !== null) head.style.transform = `rotate(${heading}deg)`;
+    }
     if (follow) m.setCenter(user);
-  }, [status, user?.[0], user?.[1], gps.fix?.acc, follow]);
+  }, [status, user?.[0], user?.[1], gps.fix?.acc, follow, heading]);
+
+  // Navigation mode: zoom to the user and follow; without GPS show the target.
+  useEffect(() => {
+    const m = map.current;
+    if (!nav.on || status !== 'ready' || !m) return;
+    if (user) {
+      setFollow(true);
+      m.setZoomAndCenter(18, user);
+    } else if (target) m.setZoomAndCenter(17, target.pos);
+  }, [nav.on, status]);
 
   // First view: "Вы здесь" and target #1 together.
   useEffect(() => {
@@ -350,7 +421,7 @@ export function AmapView(props: Props) {
 
   return (
     <MapShell
-      step={plan.steps[0] ?? null}
+      step={step1 ?? null}
       leg={sheetLeg}
       from={from}
       switcher={switcher}
@@ -459,8 +530,12 @@ export function AmapView(props: Props) {
         </div>
       }
       legend={<MapLegend states={states} />}
-      follow={follow}
-      onToggleFollow={toggleFollow}
+      nav={nav}
+      onNav={onNav}
+      navPath={navPath}
+      navOrigin={navOrigin}
+      mPerUnit={gps.mPerUnit}
+      notes={step1 ? states[step1.point.id]?.notes : undefined}
       onOpen={onOpen}
       onVisited={onVisited}
     >

@@ -15,6 +15,8 @@ interface Props {
   onPickHall: () => void;
   onOpen: (id: number) => void;
   onShowMap: (hall: string) => void;
+  /** "Начать маршрут": map in navigation mode. */
+  onStart: (hall: string) => void;
   onVisited: (id: number) => void;
   onSkip: (id: number) => void;
   onToggle: (id: number, key: 'price' | 'followUp' | 'contact') => void;
@@ -25,7 +27,7 @@ interface Props {
   from: From;
 }
 
-export function NextView({ plan, states, current, mode, onMode, onPickHall, onOpen, onShowMap, onVisited, onSkip, onToggle, leg, suggest, onReplan, from }: Props) {
+export function NextView({ plan, states, current, mode, onMode, onPickHall, onOpen, onStart, onVisited, onSkip, onToggle, leg, suggest, onReplan, from }: Props) {
   const step = plan.steps[0];
   if (!step)
     return (
@@ -61,7 +63,7 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
             </span>
           )}
         </div>
-        <PointNav p={next} hall={step.hall} booths={step.booths} from={from} notes={s?.notes} onStart={() => onShowMap(step.hall)}>
+        <PointNav p={next} hall={step.hall} booths={step.booths} from={from} notes={s?.notes} onStart={() => onStart(step.hall)}>
           {leg && <LegLine leg={leg} />}
           <SameBoothNote p={next} />
         </PointNav>

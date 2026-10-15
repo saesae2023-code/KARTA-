@@ -14,6 +14,8 @@ interface Props {
   onReset: () => void;
   onNotes: (notes: string) => void;
   onShowMap: () => void;
+  /** CTA label when this point is not the next one (then it only shows the map). */
+  startLabel?: string;
   hall: string;
   booths: string[];
   from: From;
@@ -80,7 +82,7 @@ export function Contacts({ p }: { p: Point }) {
   );
 }
 
-export function PointDetail({ p, s, onClose, onVisited, onSkip, onToggle, onReset, onNotes, onShowMap, hall, booths, from }: Props) {
+export function PointDetail({ p, s, onClose, onVisited, onSkip, onToggle, onReset, onNotes, onShowMap, startLabel, hall, booths, from }: Props) {
   return (
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet sheet-tall" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={p.company}>
@@ -97,7 +99,7 @@ export function PointDetail({ p, s, onClose, onVisited, onSkip, onToggle, onRese
           </button>
         </div>
 
-        <PointNav p={p} hall={hall} booths={booths} from={from} notes={s.notes} onStart={onShowMap}>
+        <PointNav p={p} hall={hall} booths={booths} from={from} notes={s.notes} onStart={onShowMap} startLabel={startLabel}>
           <SameBoothNote p={p} />
         </PointNav>
         <div className="tag-row">
