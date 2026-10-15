@@ -1,12 +1,12 @@
 import { COLUMNS } from '../data';
 import { emails, isUrl, phoneLinks, wechatId } from '../logic';
 import type { Point, PointState } from '../types';
-import { GroupTag, HallBooth, PriorityBadge, SameBoothNote, StatusActions } from './common';
+import { GroupTag, PointNav, PriorityBadge, SameBoothNote, StatusActions } from './common';
+import type { From } from '../labels';
 
 interface Props {
   p: Point;
   s: PointState;
-  current: string | null;
   onClose: () => void;
   onVisited: () => void;
   onSkip: () => void;
@@ -14,6 +14,9 @@ interface Props {
   onReset: () => void;
   onNotes: (notes: string) => void;
   onShowMap: () => void;
+  hall: string;
+  booths: string[];
+  from: From;
 }
 
 function Linkish({ text }: { text: string }) {
@@ -77,7 +80,7 @@ export function Contacts({ p }: { p: Point }) {
   );
 }
 
-export function PointDetail({ p, s, current, onClose, onVisited, onSkip, onToggle, onReset, onNotes, onShowMap }: Props) {
+export function PointDetail({ p, s, onClose, onVisited, onSkip, onToggle, onReset, onNotes, onShowMap, hall, booths, from }: Props) {
   return (
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet sheet-tall" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={p.company}>
@@ -94,19 +97,12 @@ export function PointDetail({ p, s, current, onClose, onVisited, onSkip, onToggl
           </button>
         </div>
 
-        <HallBooth p={p} current={current} />
+        <PointNav p={p} hall={hall} booths={booths} from={from} notes={s.notes} onStart={onShowMap}>
+          <SameBoothNote p={p} />
+        </PointNav>
         <div className="tag-row">
           <GroupTag group={p.mapGroup} />
-          <button className="btn-link" onClick={onShowMap}>
-            🗺 Показать на карте
-          </button>
         </div>
-        <SameBoothNote p={p} />
-
-        <section className="check-box">
-          <h3>Что получить / проверить</h3>
-          <p>{p.toCheck}</p>
-        </section>
 
         <StatusActions p={p} s={s} onVisited={onVisited} onSkip={onSkip} onToggle={onToggle} onReset={onReset} />
 
@@ -115,6 +111,10 @@ export function PointDetail({ p, s, current, onClose, onVisited, onSkip, onToggl
           <textarea value={s.notes} rows={3} placeholder="Цена, MOQ, имя менеджера…" onChange={(e) => onNotes(e.target.value)} />
         </label>
 
+        <details className="raw">
+          <summary>Что получить / проверить</summary>
+          <p>{p.toCheck}</p>
+        </details>
         <section>
           <h3>Что представлено</h3>
           <p>{p.products}</p>

@@ -2,7 +2,7 @@ import type { Plan, RouteMode } from '../route';
 import type { LegInfo } from './MapView';
 import { LegLine, SuggestBanner } from './LegInfo';
 import type { PointState } from '../types';
-import { Directions, GroupTag, HallBooth, PathLine, PriorityBadge, SameBoothNote, StatusActions } from './common';
+import { GroupTag, PointNav, PriorityBadge, SameBoothNote, StatusActions } from './common';
 import { buildingLabel, boothLabel, hallShort, type From } from '../labels';
 import { RouteModeSwitch } from './RouteModeSwitch';
 
@@ -61,26 +61,10 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
             </span>
           )}
         </div>
-        <HallBooth p={next} current={current} hall={step.hall} />
-        <button className="company-btn" onClick={() => onOpen(next.id)}>
-          <span className="company">{next.company}</span>
-          <span className="muted">
-            #{next.id} · {next.category} · подробнее ›
-          </span>
-        </button>
-        <div className="tag-row">
-          <GroupTag group={next.mapGroup} />
-          <button className="btn-link" onClick={() => onShowMap(step.hall)}>
-            🗺 Показать на карте
-          </button>
-        </div>
-        {leg && <LegLine leg={leg} />}
-        <Directions from={from} hall={step.hall} booths={step.booths} />
-        <SameBoothNote p={next} />
-        <section className="check-box">
-          <h3>Что получить / проверить</h3>
-          <p>{next.toCheck}</p>
-        </section>
+        <PointNav p={next} hall={step.hall} booths={step.booths} from={from} notes={s?.notes} onStart={() => onShowMap(step.hall)}>
+          {leg && <LegLine leg={leg} />}
+          <SameBoothNote p={next} />
+        </PointNav>
         <StatusActions
           p={next}
           s={s}
@@ -89,7 +73,12 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
           onToggle={(k) => onToggle(next.id, k)}
           onReset={() => undefined}
         />
-        <PathLine hall={step.hall} booths={step.booths} />
+        <div className="tag-row">
+          <GroupTag group={next.mapGroup} />
+          <button className="btn-link" onClick={() => onOpen(next.id)}>
+            Карточка точки ›
+          </button>
+        </div>
       </div>
 
       {plan.steps.length > 1 && (

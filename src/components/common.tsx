@@ -2,7 +2,9 @@ import type { Point, PointState } from '../types';
 import { boothsInHall, nearestHall } from '../logic';
 import { SAME_BOOTH } from '../data';
 import { groupColor } from '../groups';
-import { boothLabel, boothsLabel, directions, hallLabel, isOutdoor, pathLine, zoneLabel, zoneOf, type From } from '../labels';
+import { useState } from 'react';
+import { boothLabel, boothsLabel, directions, hallLabel, isOutdoor, navPlan, pathLine, zoneLabel, zoneOf, type From, type NavStep } from '../labels';
+import { emails, isUrl, phoneLinks } from '../logic';
 import { splitHall } from '../venue';
 
 export function PriorityBadge({ p }: { p: Point }) {
@@ -107,8 +109,8 @@ interface ActionsProps {
 export function StatusActions({ s, onVisited, onSkip, onToggle, onReset }: ActionsProps) {
   return (
     <div className="actions">
-      <button className={`btn btn-visit ${s.visit === 'visited' ? 'on' : ''}`} onClick={onVisited}>
-        ✓ Посетила
+      <button className={`btn btn-visit-2 ${s.visit === 'visited' ? 'on' : ''}`} onClick={onVisited}>
+        ✓ Отметить посещённой
       </button>
       <div className="actions-row">
         <button className={`btn btn-tag ${s.price ? 'on on-price' : ''}`} onClick={() => onToggle('price')}>
@@ -131,6 +133,113 @@ export function StatusActions({ s, onVisited, onSkip, onToggle, onReset }: Actio
           Вернуть в «Не посещено»
         </button>
       )}
+    </div>
+  );
+}
+
+/** Numbered "Как пройти" list: one action per step, optional real landmark. */
+export function RouteSteps({ steps }: { steps: NavStep[] }) {
+  return (
+    <ol className="pnav-steps" aria-label="Как пройти">
+      {steps.map((st, i) => (
+        <li key={i}>
+          <span className="pnav-n">{i + 1}</span>
+          <div>
+            <div className="pnav-t">{st.text}</div>
+            {st.sub && <div className="pnav-s">{st.sub}</div>}
+            {st.landmark && <div className="pnav-l">Ориентир: {st.landmark}</div>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** Contact + note of a point (only what exists). */
+export function PointContact({ p, notes }: { p: Point; notes?: string }) {
+  const phones = phoneLinks(p.phone + ' ' + p.wechatEmail);
+  const mails = emails(p.wechatEmail + ' ' + p.phone);
+  const raw = [p.phone, p.wechatEmail].filter((x) => x && x !== '—' && !phoneLinks(x).length && !emails(x).length);
+  const note = notes?.trim() || p.notes?.trim();
+  if (!phones.length && !mails.length && !raw.length && !isUrl(p.website) && !note) return null;
+  return (
+    <div className="pnav-contact">
+      {(phones.length > 0 || mails.length > 0 || raw.length > 0 || isUrl(p.website)) && (
+        <div>
+          <div className="pnav-h">Контакт</div>
+          <div className="pnav-links">
+            {phones.map((ph) => (
+              <a key={ph.tel} className="chip-btn" href={`tel:${ph.tel}`}>
+                ☎ {ph.label}
+              </a>
+            ))}
+            {mails.map((m) => (
+              <a key={m} className="chip-btn" href={`mailto:${m}`}>
+                ✉ {m}
+              </a>
+            ))}
+            {isUrl(p.website) && (
+              <a className="chip-btn" href={p.website} target="_blank" rel="noopener noreferrer">
+                🌐 Сайт
+              </a>
+            )}
+          </div>
+          {raw.length > 0 && <div className="pnav-s">{raw.join(' · ')}</div>}
+        </div>
+      )}
+      {note && (
+        <div>
+          <div className="pnav-h">Примечание</div>
+          <div className="pnav-note">{note}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Point navigation block: company → pavilion · floor → stand → entrance + street → short route →
+ * "Начать маршрут" → "Показать шаги" (collapsed by default) → contact / note.
+ */
+export function PointNav({ p, hall, booths, from, notes, onStart, children }: { p: Point; hall: string; booths: string[]; from: From; notes?: string; onStart?: () => void; children?: React.ReactNode }) {
+  const plan = navPlan(from, hall, booths);
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="pnav" style={{ borderLeftColor: groupColor(p.mapGroup) }}>
+      <div className="pnav-company">{p.company}</div>
+      <div className="pnav-place">
+        {plan.pavilion}
+        {plan.floor ? ` · ${plan.floor}` : ''}
+      </div>
+      <div className="pnav-stand">Стенд {plan.stand}</div>
+      {plan.entrance ? (
+        <div className="pnav-entry">
+          <span aria-hidden>📍</span> <b>{plan.entrance.label}</b> · со стороны {plan.entrance.street}
+        </div>
+      ) : (
+        plan.start && (
+          <div className="pnav-entry">
+            <span aria-hidden>📍</span> {plan.start}
+          </div>
+        )
+      )}
+      <div className="pnav-route">{plan.shortRoute}</div>
+      {children}
+      {onStart && (
+        <button className="btn btn-start pnav-cta" onClick={onStart}>
+          ▶ Начать маршрут
+        </button>
+      )}
+      <button className="pnav-toggle" onClick={() => setOpen(!open)} aria-expanded={open}>
+        {open ? 'Скрыть шаги ▴' : 'Показать шаги ▾'}
+      </button>
+      {open && (
+        <section className="pnav-how">
+          <h3>Как пройти</h3>
+          <RouteSteps steps={plan.steps} />
+        </section>
+      )}
+      <PointContact p={p} notes={notes} />
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { useAppStore } from './store';
 import type { PointState } from './types';
 import { useGps } from './useGps';
 import { boothLabel, hallLabel, type From, type ZoneId } from './labels';
-import { BOX_W, NODES, ROW_H, ROW_TOP, inVenue, nodeAt, nodeOfHall, pathLength, walkPath, walkPathFromPoint, type Pt } from './venue';
+import { BOX_W, NODES, ROW_H, ROW_TOP, Y_PROMENADE, inVenue, nodeAt, nodeOfHall, pathLength, walkPath, walkPathFromPoint, type Pt } from './venue';
 import { HallSelector } from './components/HallSelector';
 import { HallSheet } from './components/HallSheet';
 import { MapView, type GpsView, type LegInfo } from './components/MapView';
@@ -235,13 +235,15 @@ export default function App() {
 
   // Where the user is, for "Куда идти": chosen hall (with floor) wins; else the GPS building; else outside.
   const gpsBuilding = gpsView.hallGuess;
+  // Approach side from GPS: north of the Pearl Promenade → Yuejiang Zhonglu side, otherwise Xingang Donglu.
+  const approach: 'north' | 'south' = gpsVenue && gpsVenue.y < Y_PROMENADE ? 'north' : 'south';
   const from: From = gps.fix && !gpsInside && !currentHall
-    ? { hall: null, outside: true }
+    ? { hall: null, outside: true, approach }
     : currentHall
       ? { hall: currentHall }
       : gpsBuilding
         ? { hall: gpsBuilding }
-        : { hall: null, outside: !!gps.fix && !gpsInside, zone: gpsInside && gpsVenue ? nearestZone(gpsVenue) : null };
+        : { hall: null, outside: !!gps.fix && !gpsInside, zone: gpsInside && gpsVenue ? nearestZone(gpsVenue) : null, approach };
 
   /** "📍 Отметить: я в павильоне X" — the real GPS fix becomes this hall's coordinate (and refines the georeference). */
   const markHall = (hall: string) => {
@@ -325,6 +327,9 @@ export default function App() {
   const toggle = (id: number, key: 'price' | 'followUp' | 'contact') => store.update(id, { [key]: !states[id][key] });
 
   const open = openId != null ? POINTS.find((p) => p.id === openId) : undefined;
+  const openStep = open ? plan.steps.find((st) => st.point.id === open.id) : undefined;
+  const openOwn = open ? open.booths.filter((b) => b.hall === open.halls[0]).map((b) => b.label) : [];
+  const openBooths = open ? (openOwn.length ? openOwn : open.booths.map((b) => b.label)) : [];
 
   return (
     <div className={`app ${tab === 'map' ? 'app-map' : ''}`}>
@@ -491,14 +496,16 @@ export default function App() {
         <PointDetail
           p={open}
           s={states[open.id]}
-          current={currentHall}
           onClose={() => setOpenId(null)}
           onVisited={() => finish(open.id, 'visited')}
           onSkip={() => finish(open.id, 'skipped')}
           onToggle={(k) => toggle(open.id, k)}
           onReset={() => store.update(open.id, { visit: 'pending' })}
           onNotes={(notes) => store.update(open.id, { notes })}
-          onShowMap={() => showMap(plan.steps.find((st) => st.point.id === open.id)?.hall ?? open.halls[0])}
+          onShowMap={() => showMap(openStep?.hall ?? open.halls[0])}
+          hall={openStep?.hall ?? open.halls[0]}
+          booths={openStep?.booths ?? openBooths}
+          from={from}
         />
       )}
       {sheetHall && (

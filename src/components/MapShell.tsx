@@ -1,9 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import { groupColor } from '../groups';
-import { boothsLabel, compactDirections, hallLabel, zoneLabel, zoneOf, type From } from '../labels';
-import { emails, phoneLinks } from '../logic';
+import { boothsLabel, compactDirections, hallLabel, navPlan, zoneLabel, zoneOf, type From } from '../labels';
 import type { Step } from '../route';
-import { Directions, GroupTag, PriorityBadge } from './common';
+import { GroupTag, PointContact, PriorityBadge, RouteSteps } from './common';
 import { formatMeters } from './LegInfo';
 import type { LegInfo } from './MapView';
 
@@ -64,7 +63,7 @@ export function MapShell({ step, leg, from, notes, switcher, controls, pills, in
           </div>
           <button className="ns3" onClick={() => setModal('directions')}>
             <span className="ns3-text">{compactDirections(from, step.hall, step.booths)}</span>
-            <span className="ns3-more">Подробнее</span>
+            <span className="ns3-more">Показать шаги</span>
           </button>
         </div>
       )}
@@ -112,35 +111,14 @@ export function MapShell({ step, leg, from, notes, switcher, controls, pills, in
               <button className={`btn ${follow ? 'btn-secondary' : 'btn-start'}`} onClick={onToggleFollow}>
                 {follow ? '■ Стоп' : '▶ Начать маршрут'}
               </button>
-              <button className="btn btn-visit" onClick={() => onVisited(p.id)}>
-                ✓ Посетила
+              <button className="btn btn-visit-2" onClick={() => onVisited(p.id)}>
+                ✓ Отметить посещённой
               </button>
             </div>
             {expanded && (
               <div className="bs-more">
                 <GroupTag group={p.mapGroup} />
-                <section className="check-box">
-                  <h3>Что получить / проверить</h3>
-                  <p>{p.toCheck}</p>
-                </section>
-                <div className="bs-contacts">
-                  {phoneLinks(p.phone + ' ' + p.wechatEmail).map((ph) => (
-                    <a key={ph.tel} className="chip-btn" href={`tel:${ph.tel}`}>
-                      ☎ {ph.label}
-                    </a>
-                  ))}
-                  {emails(p.wechatEmail + ' ' + p.phone).map((m) => (
-                    <a key={m} className="chip-btn" href={`mailto:${m}`}>
-                      ✉ {m}
-                    </a>
-                  ))}
-                  {/^https?:\/\//.test(p.website) && (
-                    <a className="chip-btn" href={p.website} target="_blank" rel="noopener noreferrer">
-                      🌐 Сайт
-                    </a>
-                  )}
-                </div>
-                {notes && <p className="muted small">Заметки: {notes}</p>}
+                <PointContact p={p} notes={notes} />
                 <button className="btn btn-secondary full" onClick={() => onOpen(p.id)}>
                   Открыть карточку (статусы, заметки)
                 </button>
@@ -154,17 +132,38 @@ export function MapShell({ step, leg, from, notes, switcher, controls, pills, in
         <div className="sheet-backdrop" onClick={() => setModal(null)}>
           <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog">
             <div className="sheet-head">
-              <h2>{modal === 'directions' ? 'Куда идти' : modal === 'legend' ? 'Обозначения' : 'GPS и данные карты'}</h2>
+              <h2>{modal === 'directions' ? 'Как пройти' : modal === 'legend' ? 'Обозначения' : 'GPS и данные карты'}</h2>
               <button className="icon-btn" onClick={() => setModal(null)} aria-label="Закрыть">
                 ✕
               </button>
             </div>
-            {modal === 'directions' && step && <Directions from={from} hall={step.hall} booths={step.booths} />}
+            {modal === 'directions' && step && <NavModal from={from} hall={step.hall} booths={step.booths} />}
             {modal === 'legend' && legend}
             {modal === 'info' && info}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function NavModal({ from, hall, booths }: { from: From; hall: string; booths: string[] }) {
+  const plan = navPlan(from, hall, booths);
+  return (
+    <div className="pnav-modal">
+      {plan.entrance ? (
+        <div className="pnav-entry">
+          <span aria-hidden>📍</span> <b>{plan.entrance.label}</b> · со стороны {plan.entrance.street}
+        </div>
+      ) : (
+        plan.start && (
+          <div className="pnav-entry">
+            <span aria-hidden>📍</span> {plan.start}
+          </div>
+        )
+      )}
+      <div className="pnav-route">{plan.shortRoute}</div>
+      <RouteSteps steps={plan.steps} />
     </div>
   );
 }
