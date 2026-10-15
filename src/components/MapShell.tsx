@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
 import { groupColor } from '../groups';
-import { boothsLabel, compactDirections, hallLabel, navPlan, zoneLabel, zoneOf, type From } from '../labels';
+import { navPlan, type From } from '../labels';
 import type { Step } from '../route';
-import { GroupTag, PointContact, PriorityBadge, RouteSteps } from './common';
+import { PriorityBadge, RouteSteps } from './common';
 import { formatMeters } from './LegInfo';
 import type { LegInfo } from './MapView';
 
@@ -38,34 +38,73 @@ interface Props {
   children: ReactNode;
 }
 
+const SHEET_KEY = 'altiora-map-sheet';
+function readSheet(): boolean {
+  try {
+    return localStorage.getItem(SHEET_KEY) === 'open';
+  } catch {
+    return false;
+  }
+}
+
 const legText = (leg: LegInfo | null) =>
   !leg ? '' : leg.sameHall ? 'вы в этом павильоне' : leg.known ? `${leg.approx ? '≈ ' : ''}${formatMeters(leg.meters)} · ~${leg.minutes} мин` : '';
 
 /** Navigator-style map screen: compact strip on top, full-height map, compact bottom sheet. */
-export function MapShell({ step, leg, from, notes, switcher, controls, pills, info, infoLabel, legend, follow, onToggleFollow, onOpen, onVisited, children }: Props) {
-  const [expanded, setExpanded] = useState(false);
+export function MapShell({ step, leg, from, switcher, controls, pills, info, infoLabel, legend, follow, onToggleFollow, onOpen, onVisited, children }: Props) {
+  const [expanded, setExpandedRaw] = useState(readSheet);
+  const setExpanded = (v: boolean) => {
+    setExpandedRaw(v);
+    try {
+      localStorage.setItem(SHEET_KEY, v ? 'open' : 'closed');
+    } catch {
+      /* storage unavailable: state just isn't remembered */
+    }
+  };
   const [modal, setModal] = useState<null | 'directions' | 'legend' | 'info'>(null);
+  const drag = useRef<{ y0: number; dy: number } | null>(null);
+  const [dragY, setDragY] = useState(0);
   const dist = legText(leg);
   const p = step?.point;
+  const plan = step ? navPlan(from, step.hall, step.booths) : null;
+  const cur = plan?.steps[0];
+
+  // Drag-handle / header: tap toggles, swipe down collapses, swipe up expands.
+  const onDown = (e: RPointerEvent<HTMLDivElement>) => {
+    drag.current = { y0: e.clientY, dy: 0 };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: RPointerEvent<HTMLDivElement>) => {
+    if (!drag.current) return;
+    drag.current.dy = e.clientY - drag.current.y0;
+    setDragY(Math.max(0, drag.current.dy));
+  };
+  const onUp = () => {
+    const d = drag.current;
+    drag.current = null;
+    setDragY(0);
+    if (!d) return;
+    if (Math.abs(d.dy) < 8) setExpanded(!expanded);
+    else if (d.dy > 40) setExpanded(false);
+    else if (d.dy < -40) setExpanded(true);
+  };
 
   return (
     <div className="map-screen">
-      {step && p && (
-        <div className="nav-strip" style={{ borderLeftColor: groupColor(p.mapGroup) }}>
-          <div className="ns1">
-            {hallLabel(step.hall)} · стенд {boothsLabel(step.booths)}
-          </div>
-          <div className="ns2">
-            <span>
-              {zoneLabel(zoneOf(step.hall))} · {p.company}
-            </span>
-            {dist && <b>{dist}</b>}
-          </div>
-          <button className="ns3" onClick={() => setModal('directions')}>
-            <span className="ns3-text">{compactDirections(from, step.hall, step.booths)}</span>
-            <span className="ns3-more">Показать шаги</span>
-          </button>
-        </div>
+      {plan && (
+        <button className="nav-strip" onClick={() => setModal('directions')}>
+          <span className="ns-text">
+            <span aria-hidden>📍</span>{' '}
+            {plan.entrance ? (
+              <>
+                <b>{plan.entrance.label}</b> · {plan.entrance.street}
+              </>
+            ) : (
+              plan.start
+            )}
+          </span>
+          <span className="ns3-more">Шаги ›</span>
+        </button>
       )}
 
       <div className="map-stage">
@@ -88,40 +127,67 @@ export function MapShell({ step, leg, from, notes, switcher, controls, pills, in
           </button>
         </div>
 
-        {step && p && (
-          <div className={`bsheet ${expanded ? 'open' : ''}`}>
-            <button className="bs-handle" onClick={() => setExpanded(!expanded)} aria-label={expanded ? 'Свернуть' : 'Развернуть'}>
-              <span />
-            </button>
-            <div className="bs-top" aria-label="Следующая точка">
-              <span className="bs-num" style={{ background: groupColor(p.mapGroup) }} title="Следующая точка">
-                1
-              </span>
-              <button className="bs-company" onClick={() => onOpen(p.id)}>
-                {p.company}
-              </button>
-              <PriorityBadge p={p} />
-            </div>
-            <div className="bs-where">
-              <b>{hallLabel(step.hall)}</b>
-              {dist && <span className="bs-dist">{dist}</span>}
-            </div>
-            <div className="bs-booth">Стенд {boothsLabel(step.booths)}</div>
-            <div className="bs-btns">
-              <button className={`btn ${follow ? 'btn-secondary' : 'btn-start'}`} onClick={onToggleFollow}>
-                {follow ? '■ Стоп' : '▶ Начать маршрут'}
-              </button>
-              <button className="btn btn-visit-2" onClick={() => onVisited(p.id)}>
-                ✓ Отметить посещённой
-              </button>
+        {step && p && plan && (
+          <div
+            className={`bsheet ${expanded ? 'open' : ''} ${dragY ? 'dragging' : ''}`}
+            style={dragY ? { transform: `translateY(${dragY}px)` } : undefined}
+            aria-label="Следующая точка"
+          >
+            <div
+              className="bs-head"
+              role="button"
+              tabIndex={0}
+              aria-expanded={expanded}
+              aria-label={expanded ? 'Свернуть карточку' : 'Развернуть карточку'}
+              onPointerDown={onDown}
+              onPointerMove={onMove}
+              onPointerUp={onUp}
+              onPointerCancel={onUp}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setExpanded(!expanded)}
+            >
+              <span className="bs-grip" aria-hidden />
+              <div className="bs-row">
+                <span className="bs-num" style={{ background: groupColor(p.mapGroup) }} title="Следующая точка">
+                  1
+                </span>
+                <span className="bs-company">{p.company}</span>
+                {dist && <span className="bs-dist">{dist}</span>}
+                <span className="bs-chev" aria-hidden>
+                  {expanded ? '▾' : '▴'}
+                </span>
+              </div>
+              <div className="bs-place">
+                {plan.pavilion}
+                {plan.floor ? ` · ${plan.floor}` : ''} · стенд {plan.stand}
+              </div>
             </div>
             {expanded && (
-              <div className="bs-more">
-                <GroupTag group={p.mapGroup} />
-                <PointContact p={p} notes={notes} />
-                <button className="btn btn-secondary full" onClick={() => onOpen(p.id)}>
-                  Открыть карточку (статусы, заметки)
+              <div className="bs-body">
+                {cur && (
+                  <div className="bs-step">
+                    <div className="bs-step-k">
+                      Шаг 1 из {plan.steps.length}
+                    </div>
+                    <div className="bs-step-t">{cur.text}</div>
+                    {cur.sub && <div className="pnav-s">{cur.sub}</div>}
+                    {cur.landmark && <div className="pnav-l">Ориентир: {cur.landmark}</div>}
+                  </div>
+                )}
+                <button className={`btn ${follow ? 'btn-secondary' : 'btn-start'} full`} onClick={onToggleFollow}>
+                  {follow ? '■ Остановить маршрут' : '▶ Начать маршрут'}
                 </button>
+                <button className="pnav-toggle" onClick={() => setModal('directions')}>
+                  Показать шаги
+                </button>
+                <button className="btn btn-visit-2 full" onClick={() => onVisited(p.id)}>
+                  ✓ Отметить посещённой
+                </button>
+                <div className="bs-foot">
+                  <PriorityBadge p={p} />
+                  <button className="btn-link" onClick={() => onOpen(p.id)}>
+                    Карточка точки ›
+                  </button>
+                </div>
               </div>
             )}
           </div>
