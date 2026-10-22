@@ -10,6 +10,10 @@ export interface Dataset {
   phase: number;
   source: string;
   sheet: string;
+  /** Phase dates from the Excel summary («23–27 октября 2026»). */
+  dates?: string;
+  /** Zone order when there is no GPS / current hall (Excel ROUTE STRATEGY), e.g. ["B","C","D","A"]. */
+  defaultAreaOrder?: string[];
   columns: string[];
   points: Point[];
 }

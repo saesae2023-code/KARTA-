@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { POINTS } from './data';
 import { initialStateFor } from './logic';
 import type { Anchor } from './geo';
-import type { RouteLock, RouteMode } from './route';
+import { ROUTE_MODES, type RouteLock, type RouteMode } from './route';
 import type { PointState } from './types';
 
 const KEY = phaseKey('altiora-canton-fair-v1');
@@ -37,7 +37,7 @@ function load(): Persisted {
     if (saved.lock && Array.isArray(saved.lock.items)) base.lock = saved.lock;
     if (Array.isArray(saved.anchors)) base.anchors = saved.anchors.filter((a) => a && a.kind === 'calib');
     base.gpsOn = saved.gpsOn === true;
-    if (saved.routeMode === 'nearest' || saved.routeMode === 'aFirst' || saved.routeMode === 'onlyA') base.routeMode = saved.routeMode;
+    if (ROUTE_MODES.some((m) => m.id === saved.routeMode)) base.routeMode = saved.routeMode as RouteMode;
   } catch {
     /* storage unavailable or corrupted: start from Excel defaults */
   }

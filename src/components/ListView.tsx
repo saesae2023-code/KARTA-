@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ALL_CATEGORIES, ALL_GROUPS, ALL_HALLS, ALL_PRIORITIES, POINTS } from '../data';
+import { ALL_CATEGORIES, ALL_GROUPS, ALL_HALLS, ALL_PRIORITIES, HAS_APLUS, POINTS, isAPlus } from '../data';
 import { matchesQuery, matchesStatus, priorityRank } from '../logic';
 import type { PointState, StatusFilter } from '../types';
 import { GroupTag, PriorityBadge, StatusPills } from './common';
@@ -53,7 +53,7 @@ export function ListView({ states, filters, setFilters, onOpen }: Props) {
       POINTS.filter(
         (p) =>
           matchesQuery(p, filters.q) &&
-          (!filters.priority || p.priority === filters.priority) &&
+          (!filters.priority || (filters.priority === 'A+' ? isAPlus(p) : p.priority === filters.priority)) &&
           (!filters.hall || p.halls.includes(filters.hall)) &&
           (!filters.category || p.category === filters.category) &&
           (!filters.group || p.mapGroup === filters.group) &&
@@ -75,7 +75,7 @@ export function ListView({ states, filters, setFilters, onOpen }: Props) {
           onChange={(e) => set({ q: e.target.value })}
         />
         <div className="filter-grid">
-          <Select label="Приоритет" value={filters.priority} onChange={(v) => set({ priority: v })} options={opts(ALL_PRIORITIES)} />
+          <Select label="Приоритет" value={filters.priority} onChange={(v) => set({ priority: v })} options={opts(HAS_APLUS ? ['A+', ...ALL_PRIORITIES] : ALL_PRIORITIES)} />
           <Select label="Павильон" value={filters.hall} onChange={(v) => set({ hall: v })} options={ALL_HALLS.map((h) => ({ value: h, label: hallLabel(h) }))} />
           <Select label="Направление" value={filters.category} onChange={(v) => set({ category: v })} options={opts(ALL_CATEGORIES)} />
           <Select label="Группа" value={filters.group} onChange={(v) => set({ group: v })} options={opts(ALL_GROUPS)} />

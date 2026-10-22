@@ -1,14 +1,17 @@
-import { POINTS } from './data';
+import { HAS_APLUS, POINTS, isAPlus } from './data';
+import { DATASET } from './phase';
 import { priorityRank } from './logic';
 import type { Point, PointState } from './types';
 import { NODE_BY_ID, costFromPoint, hallCost, nodeOfHall, splitHall, type Pt } from './venue';
 
-export type RouteMode = 'nearest' | 'aFirst' | 'onlyA';
+export type RouteMode = 'nearest' | 'aFirst' | 'onlyA' | 'onlyAPlus';
 
 export const ROUTE_MODES: { id: RouteMode; label: string }[] = [
   { id: 'nearest', label: 'Ближайшие' },
   { id: 'aFirst', label: 'Сначала A' },
   { id: 'onlyA', label: 'Только A' },
+  // Only for phases whose Excel marks must-visit points.
+  ...(HAS_APLUS ? [{ id: 'onlyAPlus' as const, label: 'Только A+' }] : []),
 ];
 
 export interface Stop {
@@ -165,7 +168,7 @@ function orderHalls(halls: string[], start: Start): string[] {
   const byArea = groupBy(halls, areaKey);
   let best: string[] = [];
   let bestCost = Infinity;
-  for (const perm of permutations(Array.from(byArea.keys()))) {
+  for (const perm of areaOrders(Array.from(byArea.keys()), start)) {
     let at: Start = start;
     const seq: string[] = [];
     for (const area of perm) {
@@ -180,6 +183,17 @@ function orderHalls(halls: string[], start: Start): string[] {
     }
   }
   return best;
+}
+
+/**
+ * Area orders to try. With no start (no GPS, no current hall) and a default order in the Excel
+ * (Phase 2 ROUTE STRATEGY: «Зона B → Зона C → Зона D → Зона A») that order is used as is.
+ */
+function areaOrders(areas: string[], start: Start): string[][] {
+  const fixed = DATASET.defaultAreaOrder;
+  if (start || !fixed?.length) return permutations(areas);
+  const rank = (a: string) => (fixed.includes(a) ? fixed.indexOf(a) : fixed.length);
+  return [areas.slice().sort((a, b) => rank(a) - rank(b))];
 }
 
 function planSegment(points: Point[], start: Start, segment: Stop['segment']): Stop[] {
@@ -205,7 +219,9 @@ function planSegment(points: Point[], start: Start, segment: Stop['segment']): S
 export function planRoute(states: Record<number, PointState>, current: Start, mode: RouteMode): Plan {
   const pending = POINTS.filter((p) => states[p.id].visit === 'pending');
   let stops: Stop[];
-  if (mode === 'onlyA') {
+  if (mode === 'onlyAPlus') {
+    stops = planSegment(pending.filter(isAPlus), current, 'all');
+  } else if (mode === 'onlyA') {
     stops = planSegment(pending.filter((p) => p.priority === 'A'), current, 'all');
   } else if (mode === 'aFirst') {
     const a = planSegment(pending.filter((p) => p.priority === 'A'), current, 'A');
@@ -258,7 +274,7 @@ export function planFromLock(lock: RouteLock, states: Record<number, PointState>
 export function lockIsStale(lock: RouteLock | null, states: Record<number, PointState>, mode: RouteMode): boolean {
   if (!lock || lock.mode !== mode) return true;
   const ids = new Set(lock.items.map((i) => i.id));
-  return POINTS.some((p) => states[p.id].visit === 'pending' && !ids.has(p.id) && (mode !== 'onlyA' || p.priority === 'A'));
+  return POINTS.some((p) => states[p.id].visit === 'pending' && !ids.has(p.id) && (mode === 'onlyA' ? p.priority === 'A' : mode === 'onlyAPlus' ? isAPlus(p) : true));
 }
 
 /** Total walking cost of a plan from a start. */

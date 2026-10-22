@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ALL_HALLS, POINTS, compareHalls } from '../data';
-import { GROUP_LEGEND, groupColor } from '../groups';
+import { GROUP_LEGEND, groupColor, legendKey } from '../groups';
 import type { Plan } from '../route';
 import type { GeoQuality } from '../geo';
 import type { GpsFix, GpsStatus } from '../useGps';
@@ -460,7 +460,7 @@ export function MapView({ plan, states, current, focusHall, onHall, gps, legPath
             const isFocus = h === focusHall;
             let off = 0;
             const segs = GROUP_LEGEND.map((g) => {
-              const n = pending.filter((p) => p.mapGroup === g.group).length;
+              const n = pending.filter((p) => legendKey(p.mapGroup) === g.group).length;
               const w = pending.length ? (n / pending.length) * (c.w - 8) : 0;
               const seg = { x: c.x + 4 + off, w, color: g.color };
               off += w;
@@ -556,7 +556,7 @@ export function MapLegend({ states }: { states: Record<number, PointState> }) {
       <h3>Товарные группы</h3>
       <div className="legend">
         {GROUP_LEGEND.map((g) => {
-          const left = POINTS.filter((p) => p.mapGroup === g.group && states[p.id].visit === 'pending').length;
+          const left = POINTS.filter((p) => legendKey(p.mapGroup) === g.group && states[p.id].visit === 'pending').length;
           return (
             <div key={g.group} className="legend-row">
               <span className="legend-swatch" style={{ background: groupColor(g.group) }} />

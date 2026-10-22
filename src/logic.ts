@@ -12,7 +12,7 @@ export function initialStateFor(p: Point): PointState {
 }
 
 export function priorityRank(p: Point): number {
-  return p.priority === 'A' ? 0 : p.priority === 'B' ? 1 : 2;
+  return p.strategic === 'A+' ? -1 : p.priority === 'A' ? 0 : p.priority === 'B' ? 1 : 2;
 }
 
 /** Closest of the point's halls to the current hall. */

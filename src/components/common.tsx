@@ -8,6 +8,12 @@ import { emails, isUrl, phoneLinks } from '../logic';
 import { splitHall } from '../venue';
 
 export function PriorityBadge({ p }: { p: Point }) {
+  if (p.strategic === 'A+')
+    return (
+      <span className="prio prio-Aplus" title="A+ — обязательно посетить">
+        A+
+      </span>
+    );
   return <span className={`prio prio-${p.priority}`}>{p.priority}</span>;
 }
 

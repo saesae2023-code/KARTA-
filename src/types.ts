@@ -28,6 +28,10 @@ export interface Point {
   pointType: string;
   /** Parsed from `booth` (split by ';'). */
   booths: Booth[];
+  /** Strategic priority from the PRIORITY ROUTE sheet (Phase 2: «A+» = must visit), if the Excel has it. */
+  strategic?: string;
+  /** Visit rule from the PRIORITY ROUTE sheet. */
+  visitRule?: string;
   /** Halls from `hall` (split by '+') plus halls found in booth labels. */
   halls: string[];
   /** Original row keyed by Excel header. */

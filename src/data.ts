@@ -11,6 +11,9 @@ export const ALL_CATEGORIES: string[] = Array.from(new Set(POINTS.map((p) => p.c
 );
 export const ALL_GROUPS: string[] = Array.from(new Set(POINTS.map((p) => p.mapGroup))).sort();
 export const ALL_PRIORITIES: string[] = Array.from(new Set(POINTS.map((p) => p.priority))).sort();
+/** The dataset has must-visit points («A+», Excel PRIORITY ROUTE). */
+export const HAS_APLUS = POINTS.some((p) => p.strategic === 'A+');
+export const isAPlus = (p: Point) => p.strategic === 'A+';
 
 /** Records sharing exactly the same booth string (e.g. two entries for one stand). */
 export const SAME_BOOTH: Map<number, number[]> = (() => {

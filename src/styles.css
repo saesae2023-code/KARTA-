@@ -103,6 +103,8 @@ main { padding: 12px 16px; }
 }
 .prio-A { background: var(--a-soft); color: var(--a); }
 .prio-B { background: var(--b-soft); color: var(--b); }
+.prio-Aplus { background: var(--a); color: #fff; letter-spacing: -0.04em; font-size: 0.8rem; }
+.eyebrow .prio-Aplus, .bs-tags .prio-Aplus { font-size: 0.68rem; }
 .eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); font-weight: 600; }
 .eyebrow .prio { width: 22px; height: 22px; font-size: 0.75rem; }
 .pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
@@ -316,7 +318,7 @@ main { padding: 12px 16px; }
 .full { width: 100%; margin: 6px 0 10px; }
 
 /* ---- route mode ---- */
-.segmented { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--surface-2); border-radius: 12px; padding: 3px; margin-bottom: 10px; }
+.segmented { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); background: var(--surface-2); border-radius: 12px; padding: 3px; margin-bottom: 10px; }
 .segmented button { border: 0; background: none; border-radius: 9px; padding: 9px 4px; font-weight: 700; font-size: 0.88rem; color: var(--muted); }
 .segmented button.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
 
@@ -703,3 +705,5 @@ main { padding: 12px 16px; }
 .phase-row.on { border: 2px solid var(--gold); background: var(--gold-soft); }
 .phase-row:disabled { opacity: 0.55; }
 .phase-cur { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 0.75rem; font-weight: 800; color: var(--gold); }
+/* four route modes (phases with A+) */
+.segmented:has(> :nth-child(4)) button { font-size: 0.8rem; padding: 9px 2px; letter-spacing: -0.01em; }

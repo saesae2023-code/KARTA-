@@ -36,7 +36,11 @@ export function hallShort(hall: string): string {
 }
 
 /** "15.2D14-15" → "D14-15"; "EV 8.1E17-18" → "E17-18 (EV)". */
+/** A «booth» that is only a hall code («2.1»): the whole pavilion / zone, no stand number (Phase 2 International Pavilion). */
+export const HALL_ONLY = 'весь павильон';
+
 export function boothLabel(booth: string): string {
+  if (/^\d{1,2}\.\d$/.test(booth.trim())) return HALL_ONLY;
   const ev = /^EV\s*/i.test(booth);
   const rest = booth.replace(/^EV\s*/i, '').replace(/^\d{1,2}\.\d\s*/, '').trim();
   return (rest || booth) + (ev ? ' (EV)' : '');
@@ -244,7 +248,10 @@ export function navPlan(from: From, hall: string, booths: string[]): NavPlan {
   }
   const sector = booths.length ? sectorOf(booths[0]) : null;
   if (sector) steps.push({ text: `Найдите сектор ${sector}`, sub: 'Буква в номере стенда', landmark: lm.indoor, kind: 'sector' });
-  if (stands.length) {
+  if (stands.length === 1 && stands[0] === HALL_ONLY) {
+    steps.push({ text: `Осмотрите ${outdoor ? 'площадку' : 'павильон'} ${building}`, sub: 'Без номера стенда — вся зона', kind: 'stand' });
+    route.push(HALL_ONLY);
+  } else if (stands.length) {
     steps.push({ text: `Следуйте к ${/[–]/.test(stands[0]) ? 'стендам' : 'стенду'} ${stands[0]}`, kind: 'stand' });
     for (const extra of stands.slice(1)) steps.push({ text: `Дополнительный стенд — ${extra}`, kind: 'extra' });
     route.push(stands.join(' / '));

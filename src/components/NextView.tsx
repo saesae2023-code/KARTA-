@@ -55,7 +55,7 @@ export function NextView({ plan, states, current, mode, onMode, onPickHall, onOp
       <div className="next-card">
         <div className="next-top">
           <span className="eyebrow">
-            Следующая точка · <PriorityBadge p={next} /> приоритет {next.priority}
+            Следующая точка · <PriorityBadge p={next} /> приоритет {next.strategic === 'A+' ? 'A+ · обязательно' : next.priority}
           </span>
           {current && (
             <span className={`where ${inHall ? 'here' : 'move'}`}>

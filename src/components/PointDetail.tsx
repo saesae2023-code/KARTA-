@@ -125,6 +125,12 @@ export function PointDetail({ p, s, onClose, onVisited, onSkip, onToggle, onRese
           <h3>Почему точка релевантна</h3>
           <p>{p.why}</p>
         </section>
+        {p.visitRule && (
+          <section>
+            <h3>Правило посещения{p.strategic ? ` · ${p.strategic}` : ''}</h3>
+            <p>{p.visitRule}</p>
+          </section>
+        )}
         <section>
           <h3>Контакты</h3>
           <Contacts p={p} />

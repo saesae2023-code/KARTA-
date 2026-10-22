@@ -24,7 +24,7 @@ export function PhaseSwitch() {
                 return (
                   <button key={n} className={`phase-row ${n === PHASE ? 'on' : ''}`} disabled={!d} onClick={() => (n === PHASE ? setOpen(false) : switchPhase(n))}>
                     <b>Фаза {n}</b>
-                    <span className="small">{d ? `${d.points.length} точек · ${d.source}` : 'нет данных — Excel этой фазы ещё не загружен'}</span>
+                    <span className="small">{d ? `${d.dates ? `${d.dates} · ` : ''}${d.points.length} точек · ${d.source}` : 'нет данных — Excel этой фазы ещё не загружен'}</span>
                     {n === PHASE && <span className="phase-cur">открыта</span>}
                   </button>
                 );

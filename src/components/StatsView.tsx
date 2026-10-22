@@ -1,11 +1,12 @@
 import { useRef } from 'react';
-import { ALL_GROUPS, COLUMNS, POINTS } from '../data';
+import { COLUMNS, POINTS } from '../data';
+import { GROUP_LEGEND, legendKey } from '../groups';
 import { DATASET } from '../phase';
 import { toCsv } from '../logic';
 import { computeStats } from '../stats';
 import type { Persisted } from '../store';
 import type { PointState } from '../types';
-import { GroupDot, PriorityBadge } from './common';
+import { PriorityBadge } from './common';
 import { boothsLabel, hallShort } from '../labels';
 
 interface Props {
@@ -68,12 +69,12 @@ export function StatsView({ states, snapshot, onOpen, onImport, onReset }: Props
           </tr>
         </thead>
         <tbody>
-          {ALL_GROUPS.map((g) => {
-            const ps = POINTS.filter((p) => p.mapGroup === g);
+          {GROUP_LEGEND.map(({ group: g, color }) => {
+            const ps = POINTS.filter((p) => legendKey(p.mapGroup) === g);
             return (
               <tr key={g}>
                 <td>
-                  <GroupDot group={g} /> {g}
+                  <span className="group-dot" style={{ background: color }} /> {g}
                 </td>
                 <td>{ps.length}</td>
                 <td>{ps.filter((p) => states[p.id].visit === 'visited').length}</td>
