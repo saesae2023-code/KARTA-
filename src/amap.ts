@@ -139,6 +139,9 @@ let loading: Promise<AMapNS> | null = null;
 export function loadAMap(timeoutMs = 20000): Promise<AMapNS> {
   if (!AMAP_KEY) return Promise.reject(describe({ errcode: 'NO_KEY', errmsg: 'VITE_AMAP_KEY не задан в сборке' }, 'config'));
   if (loading) return loading;
+  // No internet (offline mode): fail at once instead of waiting for the timeout — the schema works offline.
+  if (typeof navigator !== 'undefined' && navigator.onLine === false)
+    return Promise.reject(describe({ errcode: 'OFFLINE', errmsg: 'Нет интернета — карта AMap недоступна, схема работает без сети' }, 'script'));
   loading = new Promise<AMapNS>((resolve, reject) => {
     // Must be set before the script request.
     installNetDiag();
