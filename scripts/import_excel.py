@@ -4,9 +4,12 @@ Every row and every column is kept verbatim (`raw`), plus a few parsed helper
 fields (booth list, halls). Hall/Booth from Excel are authoritative; nothing is
 invented here (no coordinates).
 
-Usage: python3 scripts/import_excel.py <xlsx> <out.json>
+Usage: python3 scripts/import_excel.py <xlsx> <phase> [out.json]
+  e.g. python3 scripts/import_excel.py data/Canton_Fair_Phase2_....xlsx 2
+  writes src/data/phase<phase>.json (the app picks every phaseN.json up automatically).
 """
 import json
+import os
 import re
 import sys
 
@@ -45,7 +48,7 @@ def text(v):
     return str(v).strip()
 
 
-def main(src, out):
+def main(src, phase, out):
     ws = openpyxl.load_workbook(src, data_only=True)[SHEET]
     rows = list(ws.iter_rows(values_only=True))
     header = [text(h) for h in rows[0]]
@@ -75,9 +78,10 @@ def main(src, out):
         p["raw"] = raw
         points.append(p)
     with open(out, "w", encoding="utf-8") as f:
-        json.dump({"sheet": SHEET, "columns": header, "points": points}, f, ensure_ascii=False, indent=1)
+        json.dump({"phase": phase, "source": os.path.basename(src), "sheet": SHEET, "columns": header, "points": points}, f, ensure_ascii=False, indent=1)
     print(f"Imported {len(points)} points, {len(header)} columns -> {out}")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    phase = int(sys.argv[2])
+    main(sys.argv[1], phase, sys.argv[3] if len(sys.argv) > 3 else f"src/data/phase{phase}.json")

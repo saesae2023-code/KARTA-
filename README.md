@@ -1,14 +1,23 @@
 # ALTIORA Canton Fair Map
 
-Mobile-first веб-приложение для обхода 64 подтверждённых точек Canton Fair Phase 1.
+Mobile-first веб-приложение для обхода подтверждённых точек Canton Fair — по фазам (Phase 1: 64 точки).
 
 ## Данные
 
 - Источник: `data/Canton_Fair_Phase1_FULL_64_POINTS_MASTER.xlsx`, лист **FULL MASTER LIST** (64 строки, 19 колонок).
-- Импорт: `npm run import:excel` (нужен Python 3 + `openpyxl`) → `src/data/points.json`.
+- Импорт: `python3 scripts/import_excel.py <xlsx> <фаза>` (нужен Python 3 + `openpyxl`) → `src/data/phase<фаза>.json`.
   Все колонки сохраняются дословно (поле `raw`), плюс разобранный список Booth и Hall.
 - Hall и Booth из Excel — authoritative. Координаты стендов не выдумываются: GPS используется только как
   подсказка, текущий Hall выбирается вручную (Hall Selector).
+
+## Фазы
+
+- Каждая фаза — свой Excel (те же 19 колонок, лист **FULL MASTER LIST**) и свой файл `src/data/phaseN.json`.
+  Приложение само находит все `phaseN.json`; фаза без файла показывается в переключателе как «нет данных».
+- Добавить фазу 2: положить Excel в `data/`, выполнить `python3 scripts/import_excel.py data/<файл>.xlsx 2`, собрать и задеплоить.
+- Переключатель — в шапке («Canton Fair Map · Фаза N ▾»); прямая ссылка: `?phase=2`. Выбор запоминается на устройстве.
+- Статусы, маршрут и навигация хранятся отдельно для каждой фазы (у фазы 1 прежние ключи `localStorage` — прогресс не теряется).
+  Отметки павильонов «📍 я здесь» общие: здания комплекса те же. Резервная копия JSON помечена фазой.
 
 ## Функции
 

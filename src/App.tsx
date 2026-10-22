@@ -13,6 +13,8 @@ import type { PointState } from './types';
 import { useGps } from './useGps';
 import { boothLabel, hallLabel, zoneOf, type From, type ZoneId } from './labels';
 import type { NavState } from './nav';
+import { phaseKey } from './phase';
+import { PhaseSwitch } from './components/PhaseSwitch';
 import { BOX_W, NODES, ROW_H, ROW_TOP, Y_PROMENADE, entrancePoint, inVenue, nodeAt, nodeOfHall, pathLength, walkPath, walkPathFromPoint, type Pt } from './venue';
 import { HallSelector } from './components/HallSelector';
 import { HallSheet } from './components/HallSheet';
@@ -51,7 +53,7 @@ function nearestZone(p: Pt): ZoneId | null {
   return best?.z ?? null;
 }
 
-const NAV_KEY = 'altiora-nav';
+const NAV_KEY = phaseKey('altiora-nav');
 function readNav(): NavState {
   try {
     const v = JSON.parse(localStorage.getItem(NAV_KEY) ?? 'null');
@@ -376,7 +378,7 @@ export default function App() {
       <header className="top">
         <div className="brand">
           <span className="logo">ALTIORA</span>
-          <span className="sub">Canton Fair Map · Phase 1</span>
+          <PhaseSwitch />
         </div>
         <button className={`hall-chip ${currentHall ? '' : 'unset'}`} onClick={() => setHallOpen(true)}>
           <span className="small">Я в павильоне</span>

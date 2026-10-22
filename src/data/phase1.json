@@ -1,4 +1,6 @@
 {
+ "phase": 1,
+ "source": "Canton_Fair_Phase1_FULL_64_POINTS_MASTER.xlsx",
  "sheet": "FULL MASTER LIST",
  "columns": [
   "ID / порядок",

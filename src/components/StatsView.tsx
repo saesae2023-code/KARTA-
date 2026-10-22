@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { ALL_GROUPS, COLUMNS, POINTS } from '../data';
+import { DATASET } from '../phase';
 import { toCsv } from '../logic';
 import { computeStats } from '../stats';
 import type { Persisted } from '../store';
@@ -108,12 +109,12 @@ export function StatsView({ states, snapshot, onOpen, onImport, onReset }: Props
       <h3>Данные</h3>
       <p className="muted small">Статусы хранятся только на этом устройстве (localStorage). Делайте резервную копию.</p>
       <div className="data-btns">
-        <button className="btn btn-secondary" onClick={() => download(`altiora-canton-${stamp}.csv`, toCsv(COLUMNS, states), 'text/csv;charset=utf-8')}>
+        <button className="btn btn-secondary" onClick={() => download(`altiora-canton-phase${DATASET.phase}-${stamp}.csv`, toCsv(COLUMNS, states), 'text/csv;charset=utf-8')}>
           Экспорт CSV (все поля + статусы)
         </button>
         <button
           className="btn btn-secondary"
-          onClick={() => download(`altiora-canton-backup-${stamp}.json`, JSON.stringify(snapshot, null, 1), 'application/json')}
+          onClick={() => download(`altiora-canton-phase${DATASET.phase}-backup-${stamp}.json`, JSON.stringify({ ...snapshot, phase: DATASET.phase }, null, 1), 'application/json')}
         >
           Резервная копия JSON
         </button>
@@ -130,8 +131,13 @@ export function StatsView({ states, snapshot, onOpen, onImport, onReset }: Props
             e.target.value = '';
             if (!f) return;
             try {
-              const parsed = JSON.parse(await f.text()) as Persisted;
+              const parsed = JSON.parse(await f.text()) as Persisted & { phase?: number };
               if (!parsed || typeof parsed.states !== 'object') throw new Error('bad');
+              // Backups without a phase predate phases and belong to Phase 1.
+              if ((parsed.phase ?? 1) !== DATASET.phase) {
+                alert(`Это резервная копия фазы ${parsed.phase ?? 1}, а открыта фаза ${DATASET.phase}. Переключите фазу и восстановите снова.`);
+                return;
+              }
               const merged: Persisted = { ...snapshot, currentHall: parsed.currentHall ?? null, lock: null, states: { ...states } };
               for (const p of POINTS) if (parsed.states[p.id]) merged.states[p.id] = { ...states[p.id], ...parsed.states[p.id] };
               onImport(merged);
@@ -151,7 +157,7 @@ export function StatsView({ states, snapshot, onOpen, onImport, onReset }: Props
         </button>
       </div>
       <p className="muted small">
-        Источник: Canton_Fair_Phase1_FULL_64_POINTS_MASTER.xlsx, лист FULL MASTER LIST — {POINTS.length} строк, {COLUMNS.length} колонок.
+        Источник: {DATASET.source}, лист {DATASET.sheet} — {POINTS.length} строк, {COLUMNS.length} колонок.
       </p>
     </div>
   );

@@ -569,7 +569,7 @@ export function MapLegend({ states }: { states: Record<number, PointState> }) {
         })}
       </div>
       <p className="muted small">
-        Расположение зон и павильонов — по официальному Exhibition Section Floor Map 140-й сессии (Phase 1). Маршрут идёт по
+        Расположение зон и павильонов — по официальному Exhibition Section Floor Map 140-й сессии (Phase 1); здания и зоны комплекса те же во всех фазах. Маршрут идёт по
         проходам: Pearl Promenade, Middle Platform, переход через ул. Синган-Дунлу. Внутри павильона — по номерам стендов (не
         GPS). GPS внутри павильонов может ошибаться на десятки метров.
       </p>

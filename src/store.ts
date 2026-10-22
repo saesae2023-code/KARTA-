@@ -1,3 +1,4 @@
+import { phaseKey } from './phase';
 import { useCallback, useEffect, useState } from 'react';
 import { POINTS } from './data';
 import { initialStateFor } from './logic';
@@ -5,7 +6,7 @@ import type { Anchor } from './geo';
 import type { RouteLock, RouteMode } from './route';
 import type { PointState } from './types';
 
-const KEY = 'altiora-canton-fair-v1';
+const KEY = phaseKey('altiora-canton-fair-v1');
 
 interface Persisted {
   states: Record<number, PointState>;

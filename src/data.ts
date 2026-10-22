@@ -1,5 +1,5 @@
 import { hallCost } from './venue';
-import dataset from './data/points.json';
+import { DATASET as dataset } from './phase';
 import type { Point } from './types';
 
 export const POINTS: Point[] = (dataset.points as Point[]).slice().sort((a, b) => a.id - b.id);
